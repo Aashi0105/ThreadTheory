@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ThreadTheory | Create Account</title>
+    <meta name="description" content="Join ThreadTheory — build your digital wardrobe and personal style diary." />
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,700;0,6..96,900;1,6..96,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,400&family=Caveat:wght@400;700&family=Jost:wght@200;300;400;500&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Jost', sans-serif;
+            min-height: 100vh;
+            background-color: #FFF0F2;
+            background-image: repeating-linear-gradient(90deg, #F7D4D9 0px, #F7D4D9 25px, #FFF0F2 25px, #FFF0F2 50px);
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 28px 16px;
+        }
+
+        .grid-paper {
+            background-color: #ffffff;
+            background-image: linear-gradient(0deg, #F2F5F8 1px, transparent 1px), linear-gradient(90deg, #F2F5F8 1px, transparent 1px);
+            background-size: 16px 16px;
+        }
+
+        .brand {
+            font-family: 'Bodoni Moda', serif;
+            font-weight: 900;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+        }
+
+        .brand-sub {
+            font-family: 'Jost', sans-serif;
+            font-weight: 200;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            font-size: 0.55rem;
+        }
+
+        .font-display {
+            font-family: 'Bodoni Moda', serif;
+            font-weight: 700;
+        }
+
+        .font-hand {
+            font-family: 'Caveat', cursive;
+        }
+
+        .font-label {
+            font-family: 'Jost', sans-serif;
+            font-weight: 300;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            font-size: 0.65rem;
+        }
+
+        .gingham {
+            background-color: #FBCFE8;
+            background-image: linear-gradient(90deg, rgba(255, 255, 255, .5) 50%, transparent 50%), linear-gradient(rgba(255, 255, 255, .5) 50%, transparent 50%);
+            background-size: 8px 8px;
+        }
+
+        .field-wrap {
+            position: relative;
+        }
+
+        .field-wrap input {
+            width: 100%;
+            background: #FAFAF9;
+            border: 1.5px solid #EAE6DF;
+            border-radius: 8px;
+            padding: 10px 38px 10px 12px;
+            font-family: 'Jost', sans-serif;
+            font-size: 13px;
+            color: #1A1817;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .field-wrap input:focus {
+            border-color: #EC4899;
+            box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.08);
+        }
+
+        .field-wrap input.error {
+            border-color: #EF4444;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.08);
+        }
+
+        .field-wrap input.success {
+            border-color: #10B981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.08);
+        }
+
+        .field-wrap select {
+            width: 100%;
+            background: #FAFAF9;
+            border: 1.5px solid #EAE6DF;
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-family: 'Jost', sans-serif;
+            font-size: 13px;
+            color: #1A1817;
+            outline: none;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        .field-wrap select:focus {
+            border-color: #EC4899;
+            box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.08);
+        }
+
+        .field-icon {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 16px;
+            color: #8E8A85;
+            cursor: pointer;
+            transition: color 0.2s;
+            user-select: none;
+        }
+
+        .field-icon:hover {
+            color: #EC4899;
+        }
+
+        .field-icon.static-icon {
+            cursor: default;
+            pointer-events: none;
+            font-size: 15px;
+        }
+
+        .field-msg {
+            font-size: 10px;
+            font-family: 'Jost', sans-serif;
+            font-weight: 300;
+            letter-spacing: 0.04em;
+            margin-top: 3px;
+            min-height: 14px;
+            transition: all 0.2s;
+        }
+
+        .field-msg.err {
+            color: #EF4444;
+        }
+
+        .field-msg.ok {
+            color: #10B981;
+        }
+
+        .field-msg.hint {
+            color: #8E8A85;
+        }
+
+        /* Password strength bar */
+        .strength-bar-wrap {
+            display: flex;
+            gap: 3px;
+            margin-top: 6px;
+        }
+
+        .strength-seg {
+            flex: 1;
+            height: 3px;
+            background: #EAE6DF;
+            border-radius: 2px;
+            transition: background 0.3s;
+        }
+
+        .strength-seg.weak {
+            background: #EF4444;
+        }
+
+        .strength-seg.fair {
+            background: #F59E0B;
+        }
+
+        .strength-seg.good {
+            background: #3B82F6;
+        }
+
+        .strength-seg.strong {
+            background: #10B981;
+        }
+
+        .strength-label {
+            font-size: 9px;
+            font-family: 'Jost', sans-serif;
+            font-weight: 300;
+            letter-spacing: 0.08em;
+            margin-top: 3px;
+        }
+
+        /* Password rules checklist */
+        .pw-rules {
+            margin-top: 6px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2px 12px;
+        }
+
+        .pw-rule {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 9px;
+            font-family: 'Jost', sans-serif;
+            color: #8E8A85;
+            transition: color 0.2s;
+        }
+
+        .pw-rule .dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: #D1D5DB;
+            flex-shrink: 0;
+            transition: background 0.2s;
+        }
+
+        .pw-rule.pass {
+            color: #10B981;
+        }
+
+        .pw-rule.pass .dot {
+            background: #10B981;
+        }
+
+        /* Username availability */
+        .avail-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            transition: background 0.2s;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 11px;
+            background: #E60023;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Jost', sans-serif;
+            font-weight: 500;
+            font-size: 12px;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+            box-shadow: 0 2px 8px rgba(230, 0, 35, 0.2);
+        }
+
+        .btn-primary:hover {
+            background: #C0001E;
+            box-shadow: 0 4px 14px rgba(230, 0, 35, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: scale(0.99);
+        }
+
+        .btn-primary:disabled {
+            background: #D1D5DB;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #EAE6DF;
+        }
+
+        .divider span {
+            font-size: 10px;
+            font-family: 'Jost', sans-serif;
+            font-weight: 300;
+            letter-spacing: 0.1em;
+            color: #8E8A85;
+            white-space: nowrap;
+        }
+
+        .btn-social {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 9px;
+            background: white;
+            border: 1.5px solid #EAE6DF;
+            border-radius: 8px;
+            font-family: 'Jost', sans-serif;
+            font-size: 11px;
+            color: #1A1817;
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        .btn-social:hover {
+            border-color: #EC4899;
+            background: #FDF2F8;
+        }
+
+        .step-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #EAE6DF;
+            transition: background 0.3s;
+        }
+
+        .step-dot.active {
+            background: #EC4899;
+        }
+
+        .step-dot.done {
+            background: #10B981;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0)
+            }
+
+            20% {
+                transform: translateX(-6px)
+            }
+
+            40% {
+                transform: translateX(6px)
+            }
+
+            60% {
+                transform: translateX(-4px)
+            }
+
+            80% {
+                transform: translateX(4px)
+            }
+        }
+
+        .shake {
+            animation: shake 0.35s ease;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            display: inline-block;
+        }
+
+        @keyframes fadein {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fadein {
+            animation: fadein 0.3s ease;
+        }
+
+        /* Custom checkbox */
+        .custom-check {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 15px;
+            height: 15px;
+            border: 1.5px solid #EAE6DF;
+            border-radius: 4px;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        .custom-check:checked {
+            background: #E60023;
+            border-color: #E60023;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 10 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 4l2.5 2.5L9 1' stroke='white' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 10px;
+        }
+
+        .custom-check:focus {
+            box-shadow: 0 0 0 3px rgba(230, 0, 35, 0.15);
+            outline: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="w-full max-w-[440px]">
+
+        <!-- Brand Header -->
+        <div class="text-center mb-5">
+            <div class="relative inline-block">
+                <div class="absolute -top-2 left-[20%] w-14 h-2.5 gingham rotate-[-2deg] opacity-80"></div>
+                <a href="index.html" class="brand text-2xl text-[#E60023]">ThreadTheory</a>
+            </div>
+            <p class="brand-sub text-[#EC4899] mt-1">Style Diary &nbsp;•&nbsp; Digital Wardrobe</p>
+            <p class="font-hand text-sm text-[#EC4899] mt-1 font-bold">join the style club! 🌸</p>
+        </div>
+
+        <!-- Card -->
+        <div class="grid-paper rounded-2xl border-2 border-[#EAE6DF] shadow-xl p-7 relative overflow-hidden">
+            <div class="absolute top-3 right-5 w-10 h-2 gingham rotate-[3deg] opacity-60"></div>
+
+            <!-- Progress steps -->
+            <div class="flex items-center justify-between mb-5">
+                <div class="flex items-center gap-1.5">
+                    <div class="step-dot active" id="dot-1"></div>
+                    <div class="h-px w-4 bg-[#EAE6DF]" id="line-1"></div>
+                    <div class="step-dot" id="dot-2"></div>
+                    <div class="h-px w-4 bg-[#EAE6DF]" id="line-2"></div>
+                    <div class="step-dot" id="dot-3"></div>
+                </div>
+                <p class="font-label text-[8px] text-[#8E8A85]" id="step-label">Step 1 of 3 — Account Info</p>
+            </div>
+
+            <!-- ═══ STEP 1: Account Info ═══ -->
+            <div id="step-1-content" class="fadein">
+                <h1 class="font-display text-xl text-[#1A1817] mb-0.5">Create account</h1>
+                <p class="font-label text-[9px] text-[#8E8A85] mb-5">Set up your ThreadTheory identity</p>
+
+                <div class="space-y-4">
+                    <!-- Full Name -->
+                    <div>
+                        <label class="font-label text-[8px] text-[#8E8A85] block mb-1.5" for="full-name">Full
+                            Name</label>
+                        <div class="field-wrap">
+                            <input type="text" id="full-name" placeholder="Aashi Sharma" autocomplete="name"
+                                maxlength="60" />
+                            <span class="material-symbols-outlined field-icon static-icon">person</span>
+                        </div>
+                        <p class="field-msg hint" id="name-msg">Letters only, 2–60 characters</p>
+                    </div>
+
+                    <!-- Username -->
+                    <div>
+                        <label class="font-label text-[8px] text-[#8E8A85] block mb-1.5" for="username">Username</label>
+                        <div class="field-wrap">
+                            <input type="text" id="username" placeholder="aashi_style" autocomplete="username"
+                                maxlength="20" />
+                            <span class="material-symbols-outlined field-icon static-icon"
+                                id="username-icon">alternate_email</span>
+                        </div>
+                        <div class="flex items-center gap-1.5 mt-1" id="username-avail-row"
+                            style="display:none!important">
+                            <div class="avail-dot" id="avail-dot"></div>
+                            <p class="field-msg" id="username-msg" style="margin:0;min-height:auto"></p>
+                        </div>
+                        <p class="field-msg hint" id="username-hint">3–20 characters · letters, numbers, underscores
+                            only</p>
+                    </div>
+
+                    <!-- Email -->
+                    <div>
+                        <label class="font-label text-[8px] text-[#8E8A85] block mb-1.5" for="email">Email
+                            Address</label>
+                        <div class="field-wrap">
+                            <input type="email" id="email" placeholder="aashi@example.com" autocomplete="email" />
+                            <span class="material-symbols-outlined field-icon static-icon">mail</span>
+                        </div>
+                        <p class="field-msg hint" id="email-msg"></p>
+                    </div>
+                </div>
+
+                <button class="btn-primary mt-6" id="next-1-btn" onclick="goStep2()">Continue →</button>
+
+                <div class="divider my-4"><span>or sign up with</span></div>
+                <div class="grid grid-cols-2 gap-2.5">
+                    <button class="btn-social" onclick="socialSignup('Google')">
+                        <svg width="14" height="14" viewBox="0 0 24 24">
+                            <path fill="#4285F4"
+                                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                            <path fill="#34A853"
+                                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                            <path fill="#FBBC05"
+                                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" />
+                            <path fill="#EA4335"
+                                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                        </svg>
+                        Google
+                    </button>
+                    <button class="btn-social" onclick="socialSignup('Apple')">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="#000">
+                            <path
+                                d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
+                        </svg>
+                        Apple
+                    </button>
+                </div>
+            </div>
+
+            <!-- ═══ STEP 2: Password ═══ -->
+            <div id="step-2-content" class="hidden">
+                <h2 class="font-display text-xl text-[#1A1817] mb-0.5">Set your password</h2>
+                <p class="font-label text-[9px] text-[#8E8A85] mb-5">Create a strong, unique password</p>
+
+                <div class="space-y-4">
+                    <!-- Password -->
+                    <div>
+                        <label class="font-label text-[8px] text-[#8E8A85] block mb-1.5" for="password">Password</label>
+                        <div class="field-wrap">
+                            <input type="password" id="password" placeholder="Create a strong password"
+                                autocomplete="new-password" maxlength="128" />
+                            <span class="material-symbols-outlined field-icon" id="toggle-pw1"
+                                onclick="togglePw('password','toggle-pw1')">visibility</span>
+                        </div>
+
+                        <!-- Strength bar -->
+                        <div class="strength-bar-wrap">
+                            <div class="strength-seg" id="seg-1"></div>
+                            <div class="strength-seg" id="seg-2"></div>
+                            <div class="strength-seg" id="seg-3"></div>
+                            <div class="strength-seg" id="seg-4"></div>
+                        </div>
+                        <p class="strength-label text-[#8E8A85]" id="strength-label">Minimum 6 characters</p>
+                    </div>
+
+                    <!-- Confirm Password -->
+                    <div>
+                        <label class="font-label text-[8px] text-[#8E8A85] block mb-1.5" for="confirm-password">Confirm
+                            Password</label>
+                        <div class="field-wrap">
+                            <input type="password" id="confirm-password" placeholder="Re-enter your password"
+                                autocomplete="new-password" maxlength="128" />
+                            <span class="material-symbols-outlined field-icon" id="toggle-pw2"
+                                onclick="togglePw('confirm-password','toggle-pw2')">visibility</span>
+                        </div>
+                        <p class="field-msg hint" id="confirm-msg"></p>
+                    </div>
+                </div>
+
+                <div class="flex gap-3 mt-6">
+                    <button
+                        class="flex-1 py-2.5 rounded-lg border border-[#EAE6DF] font-label text-[9px] text-[#8E8A85] hover:bg-[#F9F6F2] transition-colors"
+                        onclick="goStep1()">← Back</button>
+                    <button class="flex-[2] btn-primary" id="next-2-btn" onclick="goStep3()">Continue →</button>
+                </div>
+            </div>
+
+            <!-- ═══ STEP 3: Personal Details ═══ -->
+            <div id="step-3-content" class="hidden">
+                <h2 class="font-display text-xl text-[#1A1817] mb-0.5">Almost there!</h2>
+                <p class="font-label text-[9px] text-[#8E8A85] mb-5">Just a few more details</p>
+
+                <div class="space-y-4">
+                    <!-- Date of Birth -->
+                    <div>
+                        <label class="font-label text-[8px] text-[#8E8A85] block mb-1.5" for="dob">Date of Birth <span
+                                class="text-[#EC4899]">(must be 13+)</span></label>
+                        <div class="field-wrap">
+                            <input type="date" id="dob" autocomplete="bday" style="padding-right:12px" />
+                        </div>
+                        <p class="field-msg hint" id="dob-msg">You must be at least 13 years old to create an account
+                        </p>
+                    </div>
+
+                    <!-- Gender (optional) -->
+                    <div>
+                        <label class="font-label text-[8px] text-[#8E8A85] block mb-1.5" for="gender">Style Identity
+                            <span class="font-label text-[7px] text-[#8E8A85]">(optional)</span></label>
+                        <div class="field-wrap">
+                            <select id="gender">
+                                <option value="">Prefer not to say</option>
+                                <option value="she">She / Her</option>
+                                <option value="he">He / Him</option>
+                                <option value="they">They / Them</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Newsletter -->
+                    <div class="flex items-start gap-2.5 pt-1">
+                        <input type="checkbox" id="newsletter" class="custom-check mt-0.5" />
+                        <label for="newsletter"
+                            class="font-label text-[9px] text-[#8E8A85] leading-relaxed cursor-pointer">Send me style
+                            tips, wardrobe ideas, and ThreadTheory updates (you can unsubscribe anytime)</label>
+                    </div>
+
+                    <!-- Terms -->
+                    <div class="flex items-start gap-2.5">
+                        <input type="checkbox" id="terms" class="custom-check mt-0.5" required />
+                        <label for="terms" class="font-label text-[9px] text-[#8E8A85] leading-relaxed cursor-pointer">
+                            I agree to the <span class="text-[#EC4899] hover:underline cursor-pointer">Terms of
+                                Service</span> and <span class="text-[#EC4899] hover:underline cursor-pointer">Privacy
+                                Policy</span>.
+                            <span class="text-[#EF4444]">*</span>
+                        </label>
+                    </div>
+                    <p class="field-msg err hidden" id="terms-msg">You must accept the Terms of Service to continue</p>
+
+                    <!-- Age confirmation -->
+                    <div class="flex items-start gap-2.5">
+                        <input type="checkbox" id="age-confirm" class="custom-check mt-0.5" required />
+                        <label for="age-confirm"
+                            class="font-label text-[9px] text-[#8E8A85] leading-relaxed cursor-pointer">
+                            I confirm I am at least 13 years of age.
+                            <span class="text-[#EF4444]">*</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- General error -->
+                <div id="signup-error"
+                    class="hidden mt-3 bg-red-50 border border-red-200 rounded-lg p-3 flex items-start gap-2">
+                    <span class="material-symbols-outlined text-red-400 text-sm mt-0.5">error</span>
+                    <p class="font-label text-[9px] text-red-600" id="signup-error-msg"></p>
+                </div>
+
+                <div class="flex gap-3 mt-6">
+                    <button
+                        class="flex-1 py-2.5 rounded-lg border border-[#EAE6DF] font-label text-[9px] text-[#8E8A85] hover:bg-[#F9F6F2] transition-colors"
+                        onclick="goStep2()">← Back</button>
+                    <button class="flex-[2] btn-primary" id="submit-btn" onclick="submitSignup()">
+                        <span id="submit-text">Finish & Create Account →</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Hidden elements for signup compatibility -->
+            <input type="hidden" id="avatar-skintone" value="fair" />
+            <input type="hidden" id="avatar-size" value="M" />
+            <input type="file" id="avatar-file" class="hidden" accept="image/*" />
+            <div id="signup-error-step4" class="hidden">
+                <p id="signup-error-msg-step4"></p>
+            </div>
+            <button id="submit-btn-avatar" class="hidden"><span id="submit-text-avatar"></span></button>
+
+            <!-- ═══ SUCCESS ═══ -->
+            <div id="success-content" class="hidden text-center py-4 fadein">
+                <div class="text-5xl mb-3">🎉</div>
+                <h2 class="font-display text-2xl text-[#1A1817]">You're in!</h2>
+                <p class="font-hand text-lg text-[#EC4899] font-bold mt-1">welcome to ThreadTheory ✨</p>
+                <p class="font-label text-[9px] text-[#8E8A85] mt-3 leading-relaxed">
+                    Your style diary is ready,<br />
+                    <strong id="success-name" class="text-[#1A1817]"></strong> 🌷
+                </p>
+                <div class="mt-5 space-y-2">
+                    <a href="index.html" class="btn-primary block text-center no-underline"
+                        style="display:block; text-decoration:none; padding:11px; text-align:center;">Open My Wardrobe
+                        →</a>
+                    <a href="login.html"
+                        class="block font-label text-[9px] text-[#8E8A85] hover:text-[#EC4899] transition-colors mt-2">Or
+                        sign in with a different account</a>
+                </div>
+            </div>
+
+            <p class="text-center mt-5 font-label text-[9px] text-[#8E8A85]" id="signin-link">
+                Already have an account?
+                <a href="login.html" class="text-[#EC4899] hover:text-[#BE185D] transition-colors ml-1">Sign in →</a>
+            </p>
+        </div>
+
+        <p class="text-center mt-4 font-label text-[8px] text-[#8E8A85]">
+            🔒 Your data is encrypted and never shared with third parties.
+        </p>
+    </div>
+
+    <script>
+        // ─── Constants ────────────────────────────────────────────────
+        const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+        const USERNAME_RE = /^[a-zA-Z0-9_]{3,20}$/;
+        const NAME_RE = /^[a-zA-Zà-öø-ÿÀ-ÖØ-ß\s'\-]{2,60}$/;
+        const COMMON_PWORDS = ['password', 'password1', 'password123', '123456', 'qwerty', 'abc123', 'letmein', 'welcome', 'monkey', 'dragon'];
+        // Reserved usernames (system level)
+        const RESERVED_USERS = ['admin', 'threadtheory', 'support', 'help', 'root'];
+
+                // ─── LocalStorage account helpers ────────────────────────────
+        function getAccounts() {
+            try { return JSON.parse(localStorage.getItem('tt_users') || '[]'); } catch { return []; }
+        }
+
+        let usernameCheckTimer = null;
+        let currentStep = 1;
+
+        // ─── Field helpers ────────────────────────────────────────────
+        function setField(inputEl, msgEl, state) {
+            // state: 'idle' | 'error' | 'success'
+            inputEl.classList.remove('error', 'success');
+            if (state === 'error') inputEl.classList.add('error');
+            if (state === 'success') inputEl.classList.add('success');
+            if (!msgEl) return;
+        }
+
+        function showMsg(msgEl, text, type) {
+            // type: 'err' | 'ok' | 'hint'
+            msgEl.className = `field-msg ${type}`;
+            msgEl.textContent = text;
+        }
+
+        // ─── Validators ───────────────────────────────────────────────
+        function isValidName(v) { return NAME_RE.test(v.trim()); }
+        function isValidEmail(v) { return EMAIL_RE.test(v.trim()); }
+        function isValidUsername(v) { return USERNAME_RE.test(v.trim()); }
+
+        function checkPasswordStrength(pw) {
+            // Simple length-only strength
+            let strength = 0;
+            if (pw.length >= 6) strength = 1;
+            if (pw.length >= 10) strength = 2;
+            if (pw.length >= 14) strength = 3;
+            if (pw.length >= 18) strength = 4;
+            return { strength, valid: pw.length >= 6 };
+        }
+
+        // ─── Step Navigation ──────────────────────────────────────────
+        function showStep(n) {
+            [1, 2, 3].forEach(i => {
+                const stepContent = document.getElementById(`step-${i}-content`);
+                if (stepContent) stepContent.classList.add('hidden');
+                const dot = document.getElementById(`dot-${i}`);
+                if (dot) {
+                    dot.classList.remove('active', 'done');
+                    if (i < n) dot.classList.add('done');
+                    else if (i === n) dot.classList.add('active');
+                }
+            });
+            const el = document.getElementById(`step-${n}-content`);
+            if (el) {
+                el.classList.remove('hidden');
+                el.classList.add('fadein');
+                setTimeout(() => el.classList.remove('fadein'), 400);
+            }
+            currentStep = n;
+
+            const labels = ['Account Info', 'Password', 'Personal Details'];
+            const stepLabel = document.getElementById('step-label');
+            if (stepLabel) stepLabel.textContent = `Step ${n} of 3 — ${labels[n - 1]}`;
+        }
+
+        function goStep1() { showStep(1); }
+
+        async function goStep2() {
+            // Validate Step 1
+            const name = document.getElementById('full-name').value.trim();
+            const username = document.getElementById('username').value.trim();
+            const email = document.getElementById('email').value.trim();
+            let ok = true;
+
+            if (!name || !isValidName(name)) {
+                setField(document.getElementById('full-name'), null, 'error');
+                showMsg(document.getElementById('name-msg'), 'Full name must be 2–60 letters only', 'err');
+                ok = false;
+            } else {
+                setField(document.getElementById('full-name'), null, 'success');
+                showMsg(document.getElementById('name-msg'), '✓ Looks good!', 'ok');
+            }
+
+            if (!username || !isValidUsername(username)) {
+                setField(document.getElementById('username'), null, 'error');
+                document.getElementById('username-hint').className = 'field-msg err';
+                document.getElementById('username-hint').textContent = 'Username: 3–20 chars, letters/numbers/underscores only';
+                ok = false;
+            } else if (RESERVED_USERS.includes(username.toLowerCase())) {
+                setField(document.getElementById('username'), null, 'error');
+                document.getElementById('username-hint').className = 'field-msg err';
+                document.getElementById('username-hint').textContent = `@${username} is a reserved username.`;
+                ok = false;
+            } else {
+                try {
+                    const response = await fetch(`/api/auth/check-username?username=${encodeURIComponent(username)}`);
+                    const data = await response.json();
+                    if (data.success && !data.available) {
+                        setField(document.getElementById('username'), null, 'error');
+                        document.getElementById('username-hint').className = 'field-msg err';
+                        document.getElementById('username-hint').textContent = `@${username} is already taken — try @${username}_style or @${username}xx`;
+                        ok = false;
+                    } else {
+                        setField(document.getElementById('username'), null, 'success');
+                        document.getElementById('username-hint').className = 'field-msg ok';
+                        document.getElementById('username-hint').textContent = `✓ @${username} is available!`;
+                    }
+                } catch (err) {
+                    console.error(err);
+                    ok = false;
+                }
+            }
+
+            if (!email || !isValidEmail(email)) {
+                setField(document.getElementById('email'), null, 'error');
+                showMsg(document.getElementById('email-msg'), 'Enter a valid email address (e.g. name@domain.com)', 'err');
+                ok = false;
+            } else {
+                try {
+                    const response = await fetch(`/api/auth/check-email?email=${encodeURIComponent(email)}`);
+                    const data = await response.json();
+                    if (data.success && !data.available) {
+                        setField(document.getElementById('email'), null, 'error');
+                        showMsg(document.getElementById('email-msg'), 'An account with this email already exists — try signing in instead', 'err');
+                        ok = false;
+                    } else {
+                        setField(document.getElementById('email'), null, 'success');
+                        showMsg(document.getElementById('email-msg'), '✓ Email available', 'ok');
+                    }
+                } catch (err) {
+                    console.error(err);
+                    ok = false;
+                }
+            }
+
+            if (!ok) {
+                document.getElementById('step-1-content').classList.add('shake');
+                setTimeout(() => document.getElementById('step-1-content').classList.remove('shake'), 400);
+                return;
+            }
+
+            showStep(2);
+        }
+
+        function goStep3() {
+            const pw = document.getElementById('password').value;
+            const confirm = document.getElementById('confirm-password').value;
+            let ok = true;
+
+            if (!pw || pw.length < 6) {
+                setField(document.getElementById('password'), null, 'error');
+                document.getElementById('strength-label').textContent = 'Password must be at least 6 characters';
+                document.getElementById('strength-label').style.color = '#EF4444';
+                ok = false;
+            }
+
+            if (!confirm) {
+                setField(document.getElementById('confirm-password'), null, 'error');
+                showMsg(document.getElementById('confirm-msg'), 'Please confirm your password', 'err');
+                ok = false;
+            } else if (pw !== confirm) {
+                setField(document.getElementById('confirm-password'), null, 'error');
+                showMsg(document.getElementById('confirm-msg'), 'Passwords do not match', 'err');
+                ok = false;
+            } else if (ok) {
+                setField(document.getElementById('confirm-password'), null, 'success');
+                showMsg(document.getElementById('confirm-msg'), '✓ Passwords match!', 'ok');
+            }
+
+            if (!ok) {
+                document.getElementById('step-2-content').classList.add('shake');
+                setTimeout(() => document.getElementById('step-2-content').classList.remove('shake'), 400);
+                return;
+            }
+            showStep(3);
+        }
+
+        // ─── Submit final step ────────────────────────────────────────
+        async function submitSignup() {
+            const dob = document.getElementById('dob').value;
+            const terms = document.getElementById('terms').checked;
+            const ageOk = document.getElementById('age-confirm').checked;
+            let valid = true;
+
+            // DOB validation
+            const dobMsg = document.getElementById('dob-msg');
+            if (!dob) {
+                dobMsg.className = 'field-msg err';
+                dobMsg.textContent = 'Date of birth is required';
+                valid = false;
+            } else {
+                const birthDate = new Date(dob);
+                const today = new Date();
+                let age = today.getFullYear() - birthDate.getFullYear();
+                const m = today.getMonth() - birthDate.getMonth();
+                if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
+
+                if (birthDate > today) {
+                    dobMsg.className = 'field-msg err';
+                    dobMsg.textContent = 'Date of birth cannot be in the future';
+                    valid = false;
+                } else if (age < 13) {
+                    dobMsg.className = 'field-msg err';
+                    dobMsg.textContent = `You must be at least 13 years old. You are currently ${age} years old.`;
+                    document.getElementById('dob').classList.add('error');
+                    valid = false;
+                } else if (age > 120) {
+                    dobMsg.className = 'field-msg err';
+                    dobMsg.textContent = 'Please enter a valid date of birth';
+                    valid = false;
+                } else {
+                    dobMsg.className = 'field-msg ok';
+                    dobMsg.textContent = `✓ Age verified (${age} years old)`;
+                    document.getElementById('dob').classList.add('success');
+                }
+            }
+
+            if (!terms) {
+                document.getElementById('terms-msg').classList.remove('hidden');
+                valid = false;
+            } else {
+                document.getElementById('terms-msg').classList.add('hidden');
+            }
+
+            if (!ageOk) {
+                const errBox = document.getElementById('signup-error');
+                errBox.classList.remove('hidden');
+                document.getElementById('signup-error-msg').textContent = 'Please confirm you are at least 13 years of age.';
+                valid = false;
+            }
+
+            if (!valid) {
+                document.getElementById('step-3-content').classList.add('shake');
+                setTimeout(() => document.getElementById('step-3-content').classList.remove('shake'), 400);
+                return;
+            }
+
+            document.getElementById('signup-error').classList.add('hidden');
+            document.getElementById('signup-error-step4').classList.add('hidden');
+
+            // Network request setup
+            const btn = document.getElementById('submit-btn-avatar');
+            const text = document.getElementById('submit-text-avatar');
+            btn.disabled = true;
+            text.innerHTML = '<span class="spinner"></span>';
+
+            const name = document.getElementById('full-name').value.trim();
+            const username = document.getElementById('username').value.trim();
+            const email = document.getElementById('email').value.trim().toLowerCase();
+            const password = document.getElementById('password').value;
+            const skinTone = document.getElementById('avatar-skintone').value || 'fair';
+            const size = document.getElementById('avatar-size').value || 'M';
+            
+            const signupData = {
+                email,
+                name,
+                username,
+                password,
+                skinTone,
+                size
+            };
+            
+            try {
+                const response = await fetch('/api/auth/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(signupData)
+                });
+                
+                const data = await response.json();
+                
+                if (!data.success) {
+                    btn.disabled = false;
+                    text.textContent = 'Finish & Create Account →';
+                    
+                    const errBox = document.getElementById('signup-error-step4');
+                    errBox.classList.remove('hidden');
+                    document.getElementById('signup-error-msg-step4').textContent = data.message || 'Signup failed.';
+                    document.getElementById('step-4-content').classList.add('shake');
+                    setTimeout(() => document.getElementById('step-4-content').classList.remove('shake'), 400);
+                    return;
+                }
+                
+                // Photo upload handling
+                const fileInput = document.getElementById('avatar-file');
+                let photoUrl = "";
+                
+                if (fileInput.files && fileInput.files[0]) {
+                    const formData = new FormData();
+                    formData.append('photo', fileInput.files[0]);
+                    formData.append('email', email);
+                    
+                    const uploadResponse = await fetch('/api/profile/upload-photo', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const uploadData = await uploadResponse.json();
+                    if (uploadData.success) {
+                        photoUrl = uploadData.photoUrl;
+                    }
+                }
+                
+                // Direct login session creation
+                const sessionUser = {
+                    email,
+                    name,
+                    username,
+                    skinTone,
+                    size,
+                    avatarPhoto: photoUrl
+                };
+                localStorage.setItem('tt_session', JSON.stringify(sessionUser));
+                
+                // Accounts are now synced fully via the server-side database.
+                
+                // ── Show success ──────────────────────────────────────────
+                [1, 2, 3].forEach(i => {
+                    const dot = document.getElementById(`dot-${i}`);
+                    if (dot) dot.classList.add('done');
+                });
+                document.getElementById('step-label').textContent = 'Account created! 🎉';
+                document.getElementById('step-3-content').classList.add('hidden');
+                document.getElementById('success-content').classList.remove('hidden');
+                document.getElementById('signin-link').classList.add('hidden');
+                document.getElementById('success-name').textContent = name.split(' ')[0];
+
+                // Redirect directly to the dashboard
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 2500);
+                
+            } catch (err) {
+                console.error(err);
+                btn.disabled = false;
+                text.textContent = 'Finish & Create Account →';
+                const errBox = document.getElementById('signup-error-step4');
+                errBox.classList.remove('hidden');
+                document.getElementById('signup-error-msg-step4').textContent = 'A connection error occurred. Please try again.';
+                document.getElementById('step-4-content').classList.add('shake');
+                setTimeout(() => document.getElementById('step-4-content').classList.remove('shake'), 400);
+            }
+        }
+
+        // ─── Password live feedback ───────────────────────────────────
+        document.getElementById('password').addEventListener('input', () => {
+            const pw = document.getElementById('password').value;
+            const { strength, valid } = checkPasswordStrength(pw);
+
+            // Color segments
+            const colors = ['', 'weak', 'fair', 'good', 'strong'];
+            const segs = ['seg-1', 'seg-2', 'seg-3', 'seg-4'];
+            segs.forEach((id, i) => {
+                const el = document.getElementById(id);
+                el.className = 'strength-seg';
+                if (i < strength) el.classList.add(colors[strength]);
+            });
+
+            // Label
+            const lbl = document.getElementById('strength-label');
+            const labels = ['Minimum 6 characters', 'Okay', 'Good 👍', 'Strong 💪', 'Very Strong 🔒'];
+            const labelColors = ['#8E8A85', '#F59E0B', '#3B82F6', '#10B981', '#10B981'];
+            lbl.textContent = labels[strength];
+            lbl.style.color = labelColors[strength];
+
+            setField(document.getElementById('password'), null, pw.length === 0 ? '' : valid ? 'success' : 'error');
+        });
+
+        // Confirm password live check
+        document.getElementById('confirm-password').addEventListener('input', () => {
+            const pw = document.getElementById('password').value;
+            const cfm = document.getElementById('confirm-password').value;
+            const msg = document.getElementById('confirm-msg');
+            if (!cfm) { setField(document.getElementById('confirm-password'), null, ''); msg.textContent = ''; return; }
+            if (pw === cfm) {
+                setField(document.getElementById('confirm-password'), null, 'success');
+                showMsg(msg, '✓ Passwords match!', 'ok');
+            } else {
+                setField(document.getElementById('confirm-password'), null, 'error');
+                showMsg(msg, 'Passwords do not match', 'err');
+            }
+        });
+
+        // ─── Username availability check (debounced) ──────────────────
+        document.getElementById('username').addEventListener('input', () => {
+            clearTimeout(usernameCheckTimer);
+            const val = document.getElementById('username').value.trim();
+            const hintEl = document.getElementById('username-hint');
+
+            if (!val) { setField(document.getElementById('username'), null, ''); hintEl.className = 'field-msg hint'; hintEl.textContent = '3–20 characters · letters, numbers, underscores only'; return; }
+            if (!USERNAME_RE.test(val)) {
+                setField(document.getElementById('username'), null, 'error');
+                hintEl.className = 'field-msg err';
+                hintEl.textContent = val.length < 3 ? 'Username too short (min 3 characters)' : val.length > 20 ? 'Username too long (max 20 characters)' : 'Only letters, numbers and underscores allowed';
+                return;
+            }
+
+            hintEl.className = 'field-msg hint';
+            hintEl.textContent = 'Checking availability…';
+            setField(document.getElementById('username'), null, '');
+
+            usernameCheckTimer = setTimeout(async () => {
+                if (RESERVED_USERS.includes(val.toLowerCase())) {
+                    setField(document.getElementById('username'), null, 'error');
+                    hintEl.className = 'field-msg err';
+                    hintEl.textContent = `@${val} is a reserved username.`;
+                    return;
+                }
+                try {
+                    const response = await fetch(`/api/auth/check-username?username=${encodeURIComponent(val)}`);
+                    const data = await response.json();
+                    if (data.success && !data.available) {
+                        setField(document.getElementById('username'), null, 'error');
+                        hintEl.className = 'field-msg err';
+                        hintEl.textContent = `@${val} is already taken — try @${val}_style or @${val}xx`;
+                    } else {
+                        setField(document.getElementById('username'), null, 'success');
+                        hintEl.className = 'field-msg ok';
+                        hintEl.textContent = `✓ @${val} is available!`;
+                    }
+                } catch (err) {
+                    console.error(err);
+                }
+            }, 500);
+        });
+
+        // ─── Email live validation ────────────────────────────────────
+        document.getElementById('email').addEventListener('blur', async () => {
+            const v = document.getElementById('email').value.trim();
+            const msg = document.getElementById('email-msg');
+            if (!v) { return; }
+            if (!isValidEmail(v)) {
+                setField(document.getElementById('email'), null, 'error');
+                showMsg(msg, 'Enter a valid email address (e.g. name@domain.com)', 'err');
+                return;
+            }
+            try {
+                const response = await fetch(`/api/auth/check-email?email=${encodeURIComponent(v)}`);
+                const data = await response.json();
+                if (data.success && !data.available) {
+                    setField(document.getElementById('email'), null, 'error');
+                    showMsg(msg, 'An account with this email already exists — try signing in instead', 'err');
+                } else {
+                    setField(document.getElementById('email'), null, 'success');
+                    showMsg(msg, '✓ Email available', 'ok');
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        });
+
+        // Name live validation
+        document.getElementById('full-name').addEventListener('blur', () => {
+            const v = document.getElementById('full-name').value.trim();
+            const msg = document.getElementById('name-msg');
+            if (!v) { return; }
+            if (!isValidName(v)) {
+                setField(document.getElementById('full-name'), null, 'error');
+                showMsg(msg, v.length < 2 ? 'Name must be at least 2 characters' : 'Name can only contain letters, spaces, hyphens and apostrophes', 'err');
+            } else {
+                setField(document.getElementById('full-name'), null, 'success');
+                showMsg(msg, '✓ ', 'ok');
+            }
+        });
+
+        // ─── Show/hide password ───────────────────────────────────────
+        function togglePw(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            input.type = input.type === 'password' ? 'text' : 'password';
+            icon.textContent = input.type === 'password' ? 'visibility' : 'visibility_off';
+        }
+
+        // ─── Social signup ────────────────────────────────────────────
+        function socialSignup(provider) {
+            alert(`${provider} sign-up coming soon! 🌸 Please fill in the form for now.`);
+        }
+
+        // ─── Set max DOB (today) ──────────────────────────────────────
+        document.getElementById('dob').max = new Date().toISOString().split('T')[0];
+    </script>
+</body>
+
+</html>

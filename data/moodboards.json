@@ -1,0 +1,24 @@
+{
+  "aashivora01@gmail.com": [
+    {
+      "id": "mb_1782234953701_qfcl3",
+      "name": "1",
+      "description": "",
+      "coverImage": "https://images.pexels.com/photos/35327929/pexels-photo-35327929.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+      "createdAt": "2026-06-23T17:15:53.701Z",
+      "updatedAt": "2026-06-23T17:15:53.747Z",
+      "tags": [],
+      "cards": [
+        "insp_13"
+      ],
+      "stats": {
+        "totalCards": 1,
+        "aesthetics": [
+          "Dark Academia"
+        ],
+        "occasions": [],
+        "colorStories": []
+      }
+    }
+  ]
+}

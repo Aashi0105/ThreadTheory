@@ -1,0 +1,92 @@
+[
+  {
+    "id": "plan_1783106875992",
+    "owner": "demo@threadtheory.io",
+    "date": "2026-07-04",
+    "day": "4",
+    "name": "Studio Look 4 Jul",
+    "desc": "Style set featuring shirt.",
+    "img": "/uploads/image-1782494474069-846865506_processed.png",
+    "rating": 55,
+    "note": "[date:2026-07-04] casual outfit",
+    "outfit": {
+      "outerwear": null,
+      "tops": "custom_1782494477818",
+      "pants": null,
+      "shoes": null
+    },
+    "savedLookId": null
+  },
+  {
+    "id": "plan_1783178111856",
+    "owner": "demo@threadtheory.io",
+    "date": "60704-02-20",
+    "day": "20",
+    "name": "Studio Look Jul 4Summer Picnic Look",
+    "desc": "Style set featuring White Shirt.",
+    "img": "https://lh3.googleusercontent.com/aida-public/AB6AXuDhN1Ub5yjpZzzu6veo98VCqcdz5dyn5pFmaqE8HmDVhvIg0DSX8mXuR90mCVS1wPPdi4pzGQ0Z7dPcJBgydawD4r0Ef2dmtpNsM1kPkKtNx5NANFjeOj7a1d8I3H5svbDaSXBFoNwa_wtJdQnh8Ne_M4ReeImq55R7gxpUo0kRI6c6sgz_qJgBG-BlUR3SK8r-Bl3cNxnOVD-8NPzahhZ6bMhTxvROfxjM32-P-CJYrvpNfWv7648deare9n7YYt_04WI1WLIoHzg",
+    "rating": 81,
+    "note": "[date:60704-02-20] Going on a relaxing picnic in the park",
+    "outfit": {
+      "outerwear": null,
+      "tops": "custom_1783177390814",
+      "pants": null,
+      "shoes": null
+    },
+    "savedLookId": null
+  },
+  {
+    "id": "plan_1783178163283",
+    "owner": "demo@threadtheory.io",
+    "date": "2026-04-07",
+    "day": "7",
+    "name": "Studio Look Jul 4",
+    "desc": "Style set featuring White Shirt.",
+    "img": "https://lh3.googleusercontent.com/aida-public/AB6AXuDhN1Ub5yjpZzzu6veo98VCqcdz5dyn5pFmaqE8HmDVhvIg0DSX8mXuR90mCVS1wPPdi4pzGQ0Z7dPcJBgydawD4r0Ef2dmtpNsM1kPkKtNx5NANFjeOj7a1d8I3H5svbDaSXBFoNwa_wtJdQnh8Ne_M4ReeImq55R7gxpUo0kRI6c6sgz_qJgBG-BlUR3SK8r-Bl3cNxnOVD-8NPzahhZ6bMhTxvROfxjM32-P-CJYrvpNfWv7648deare9n7YYt_04WI1WLIoHzg",
+    "rating": 81,
+    "note": "[date:2026-04-07] ",
+    "outfit": {
+      "outerwear": null,
+      "tops": "custom_1783177390814",
+      "pants": null,
+      "shoes": null
+    },
+    "savedLookId": null
+  },
+  {
+    "id": "plan_1783178274736",
+    "owner": "demo@threadtheory.io",
+    "date": "2026-07-04",
+    "day": "4",
+    "name": "Summer Picnic Outfit",
+    "desc": "Style set featuring White Shirt.",
+    "img": "https://lh3.googleusercontent.com/aida-public/AB6AXuDhN1Ub5yjpZzzu6veo98VCqcdz5dyn5pFmaqE8HmDVhvIg0DSX8mXuR90mCVS1wPPdi4pzGQ0Z7dPcJBgydawD4r0Ef2dmtpNsM1kPkKtNx5NANFjeOj7a1d8I3H5svbDaSXBFoNwa_wtJdQnh8Ne_M4ReeImq55R7gxpUo0kRI6c6sgz_qJgBG-BlUR3SK8r-Bl3cNxnOVD-8NPzahhZ6bMhTxvROfxjM32-P-CJYrvpNfWv7648deare9n7YYt_04WI1WLIoHzg",
+    "rating": 81,
+    "note": "[date:2026-07-04] Going on a relaxing picnic in the park",
+    "outfit": {
+      "outerwear": null,
+      "tops": "custom_1783177390814",
+      "pants": null,
+      "shoes": null
+    },
+    "savedLookId": null
+  },
+  {
+    "id": "plan_1783183031429",
+    "owner": "demo@threadtheory.io",
+    "date": "2026-07-05",
+    "day": "5",
+    "name": "Studio Look 4 Jul",
+    "desc": "Style set featuring blue dress, blue heels.",
+    "img": "/uploads/image-1783182861523-304733898_processed.png",
+    "rating": 92,
+    "note": "[date:2026-07-05] casual summer outfit",
+    "outfit": {
+      "outerwear": null,
+      "tops": "custom_1783182866031",
+      "pants": null,
+      "shoes": "custom_1783182710921"
+    },
+    "savedLookId": null
+  }
+]

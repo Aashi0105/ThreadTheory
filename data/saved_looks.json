@@ -1,0 +1,70 @@
+[
+  {
+    "id": "look_1783177554452",
+    "owner": "demo@threadtheory.io",
+    "title": "Casual Summer PicnicSummer Picnic Outfit",
+    "aesthetic": "Casual",
+    "occasion": "Summer Picnic",
+    "score": 65,
+    "note": "Limited wardrobe inventory. Recommendation generated from available pieces.\n\nThe White Shirt is a classic, versatile piece perfect for summer. Its light color helps reflect sunlight, keeping you cool and comfortable. While this is the only item available, it forms a clean and fresh base suitable for a relaxed summer picnic atmosphere.",
+    "img": "https://lh3.googleusercontent.com/aida-public/AB6AXuDhN1Ub5yjpZzzu6veo98VCqcdz5dyn5pFmaqE8HmDVhvIg0DSX8mXuR90mCVS1wPPdi4pzGQ0Z7dPcJBgydawD4r0Ef2dmtpNsM1kPkKtNx5NANFjeOj7a1d8I3H5svbDaSXBFoNwa_wtJdQnh8Ne_M4ReeImq55R7gxpUo0kRI6c6sgz_qJgBG-BlUR3SK8r-Bl3cNxnOVD-8NPzahhZ6bMhTxvROfxjM32-P-CJYrvpNfWv7648deare9n7YYt_04WI1WLIoHzg",
+    "createdAt": "2026-07-04T15:05:54.453Z",
+    "outfit": {
+      "outerwear": null,
+      "tops": "custom_1783177390814",
+      "pants": null,
+      "shoes": null
+    }
+  },
+  {
+    "id": "look_1783181929363",
+    "owner": "demo@threadtheory.io",
+    "title": "Casual Everyday casual",
+    "aesthetic": "Casual",
+    "occasion": "Everyday casual",
+    "score": 55,
+    "note": "Limited wardrobe inventory. Recommendation generated from available pieces.\n\nThis outfit utilizes the only available item in your wardrobe, a light-colored shirt, as the foundation for a casual look. While it's listed for Spring, its neutral hue allows for some adaptability across seasons. Given the extreme limitations of the current inventory, this shirt is the sole piece available to meet the 'casual outfit' request.",
+    "img": "/uploads/image-1782494474069-846865506_processed.png",
+    "createdAt": "2026-07-04T16:18:49.363Z",
+    "outfit": {
+      "outerwear": null,
+      "tops": "custom_1782494477818",
+      "pants": null,
+      "shoes": null
+    }
+  },
+  {
+    "id": "look_1783183045602",
+    "owner": "demo@threadtheory.io",
+    "title": "Summer Casual Casual outing, daytime summer event, or relaxed social gathering.",
+    "aesthetic": "Summer Casual",
+    "occasion": "Casual outing, daytime summer event, or relaxed social gathering.",
+    "score": 92,
+    "note": "The blue mini dress is an excellent choice for a casual summer outfit, explicitly designed for the summer season and offering a light, breezy feel. Paired with the blue heels, the ensemble maintains a coherent color palette and provides an elevated yet comfortable look suitable for various casual summer occasions. Given the limited footwear options, the blue heels are the most appropriate and season-friendly choice.",
+    "img": "/uploads/image-1783182861523-304733898_processed.png",
+    "createdAt": "2026-07-04T16:37:25.602Z",
+    "outfit": {
+      "outerwear": null,
+      "tops": "custom_1783182866031",
+      "pants": null,
+      "shoes": "custom_1783182710921"
+    }
+  },
+  {
+    "id": "look_1783319361461",
+    "owner": "demo@threadtheory.io",
+    "title": "Romantic Chic Date Night",
+    "aesthetic": "Romantic Chic",
+    "occasion": "Date Night",
+    "score": 92,
+    "note": "The vibrant red mini dress is a perfect choice for an autumn date night, exuding confidence and romance. Paired with elegant silver heels, it creates a sophisticated and alluring ensemble that is both stylish and memorable. The combination of the bold dress and sparkling heels ensures a captivating look.",
+    "img": "/uploads/image-1783317760882-782449753_processed.png",
+    "createdAt": "2026-07-06T06:29:21.461Z",
+    "outfit": {
+      "outerwear": null,
+      "tops": "custom_1783317763988",
+      "pants": null,
+      "shoes": "custom_1783317726273"
+    }
+  }
+]

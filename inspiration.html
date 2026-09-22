@@ -1,0 +1,3063 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>ThreadTheory | Fashion Inspiration Hub</title>
+    <meta name="description" content="Discover fashion inspiration, aesthetic moodboards, and outfit ideas on ThreadTheory's Fashion Inspiration Hub." />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;0,6..96,600;0,6..96,700;0,6..96,900;1,6..96,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Caveat:wght@400;700&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
+    <style>
+        :root {
+            --bg-base: #FFF0F2;
+            --bg-surface: #FFFFFF;
+            --border-color: #EAE6DF;
+            --text-main: #1A1817;
+            --text-muted: #8E8A85;
+            --accent-rose: #EC4899;
+            --accent-rose-light: #FDF2F8;
+            --accent-lavender: #8B5CF6;
+            --accent-lavender-light: #F5F3FF;
+            --accent-sage: #10B981;
+            --accent-sage-light: #ECFDF5;
+            --accent-amber: #F59E0B;
+            --accent-amber-light: #FEF3C7;
+            --accent-red: #E60023;
+            --accent-teal: #14B8A6;
+            --bg-inactive: #F3ECE3;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            background-image: repeating-linear-gradient(90deg, #F7D4D9 0px, #F7D4D9 25px, #FFF0F2 25px, #FFF0F2 50px);
+            color: var(--text-main);
+            font-family: 'Jost', sans-serif;
+            letter-spacing: 0em;
+            padding: 30px 15px;
+        }
+
+        .font-display { font-family: 'Bodoni Moda', serif; font-weight: 700; letter-spacing: -0.02em; }
+        .font-display-light { font-family: 'Bodoni Moda', serif; font-weight: 400; font-style: italic; }
+        .font-editorial { font-family: 'Cormorant Garamond', serif; font-weight: 500; }
+        .font-label { font-family: 'Jost', sans-serif; font-weight: 300; letter-spacing: 0.15em; text-transform: uppercase; font-size: 0.65rem; }
+        .font-handwriting { font-family: 'Caveat', cursive; }
+        .brand-headline { font-family: 'Bodoni Moda', serif; font-weight: 900; letter-spacing: 0.02em; text-transform: uppercase; }
+        .brand-sub { font-family: 'Jost', sans-serif; font-weight: 200; letter-spacing: 0.3em; text-transform: uppercase; font-size: 0.55rem; }
+
+        .grid-paper {
+            background-color: #ffffff;
+            background-image: linear-gradient(0deg, #F2F5F8 1px, transparent 1px), linear-gradient(90deg, #F2F5F8 1px, transparent 1px);
+            background-size: 16px 16px;
+        }
+
+        .gingham-tape {
+            background-color: #EF4444;
+            background-image: linear-gradient(90deg, rgba(255,255,255,.5) 50%, transparent 50%), linear-gradient(rgba(255,255,255,.5) 50%, transparent 50%);
+            background-size: 10px 10px;
+        }
+        .gingham-tape-pink {
+            background-color: #FBCFE8;
+            background-image: linear-gradient(90deg, rgba(255,255,255,.5) 50%, transparent 50%), linear-gradient(rgba(255,255,255,.5) 50%, transparent 50%);
+            background-size: 10px 10px;
+        }
+        .gingham-tape-lavender {
+            background-color: #DDD6FE;
+            background-image: linear-gradient(90deg, rgba(255,255,255,.5) 50%, transparent 50%), linear-gradient(rgba(255,255,255,.5) 50%, transparent 50%);
+            background-size: 10px 10px;
+        }
+        .gingham-tape-teal {
+            background-color: #99F6E4;
+            background-image: linear-gradient(90deg, rgba(255,255,255,.5) 50%, transparent 50%), linear-gradient(rgba(255,255,255,.5) 50%, transparent 50%);
+            background-size: 10px 10px;
+        }
+        .gingham-tape-amber {
+            background-color: #FDE68A;
+            background-image: linear-gradient(90deg, rgba(255,255,255,.5) 50%, transparent 50%), linear-gradient(rgba(255,255,255,.5) 50%, transparent 50%);
+            background-size: 10px 10px;
+        }
+
+        /* === POLAROID SCRAPBOOK CARDS === */
+        .polaroid-card {
+            background: #ffffff;
+            padding: 10px 10px 14px 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.03);
+            border: 1px solid #f1ece4;
+            position: relative;
+            transform: rotate(var(--rotation, 0deg));
+            transition: transform 0.22s cubic-bezier(.34,1.56,.64,1), box-shadow 0.22s ease;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+        }
+        .polaroid-card:hover {
+            transform: translateY(-8px) scale(1.03) rotate(0deg) !important;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.12), 0 4px 12px rgba(0,0,0,0.06);
+            z-index: 40;
+        }
+        .polaroid-card:hover .pin-overlay {
+            opacity: 1;
+        }
+        .polaroid-image-container {
+            overflow: hidden;
+            background: #f7f5f0;
+            position: relative;
+            border: 1px solid rgba(0,0,0,0.03);
+        }
+        .polaroid-tape {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%) rotate(var(--tape-rotation, -1.5deg));
+            width: 60px;
+            height: 14px;
+            z-index: 10;
+            opacity: 0.85;
+        }
+        .pin-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 55%);
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 12px;
+        }
+
+        /* === MASONRY GRID === */
+        .masonry-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 24px;
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            align-items: start;
+        }
+        @media (max-width: 768px) {
+            .masonry-grid { grid-template-columns: 1fr; }
+        }
+
+        /* === STYLE CHIPS === */
+        .style-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            padding: 4px 9px;
+            border-radius: 999px;
+            font-family: 'Jost', sans-serif;
+            font-weight: 400;
+            letter-spacing: 0.04em;
+            font-size: 0.55rem;
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+            background: white;
+            color: var(--text-muted);
+            transition: all 0.15s ease;
+            white-space: nowrap;
+        }
+        .style-chip.active,
+        .style-chip:hover {
+            border-color: var(--accent-rose);
+            background: var(--accent-rose-light);
+            color: var(--accent-rose);
+            font-weight: 500;
+        }
+
+        /* === SCROLLBAR === */
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 2px; }
+
+        /* === DETAIL MODAL === */
+        #insp-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 9000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+        #insp-modal.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        #insp-modal-backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(26,24,23,0.5);
+            backdrop-filter: blur(6px);
+        }
+        #insp-modal-inner {
+            position: relative;
+            background: white;
+            border-radius: 20px;
+            border: 1px solid rgba(236,72,153,0.15);
+            box-shadow: 0 24px 80px rgba(236,72,153,0.18), 0 8px 24px rgba(0,0,0,0.12);
+            max-width: 560px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: translateY(20px) scale(0.97);
+            transition: transform 0.3s cubic-bezier(.34,1.56,.64,1);
+        }
+        #insp-modal.open #insp-modal-inner {
+            transform: translateY(0) scale(1);
+        }
+
+        /* === MOODBOARD PICKER MODAL === */
+        #moodboard-picker-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 9500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+        #moodboard-picker-modal.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        #moodboard-picker-backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(26,24,23,0.5);
+            backdrop-filter: blur(4px);
+        }
+        #moodboard-picker-inner {
+            position: relative;
+            background: white;
+            border-radius: 20px;
+            border: 1px solid rgba(236,72,153,0.15);
+            box-shadow: 0 24px 80px rgba(236,72,153,0.18), 0 8px 24px rgba(0,0,0,0.12);
+            max-width: 420px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            transform: translateY(20px) scale(0.97);
+            transition: transform 0.3s cubic-bezier(.34,1.56,.64,1);
+        }
+        #moodboard-picker-modal.open #moodboard-picker-inner {
+            transform: translateY(0) scale(1);
+        }
+
+        /* === WARDROBE MATCH MODALS === */
+        #match-modal, #moodboard-match-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 9600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+        #match-modal.open, #moodboard-match-modal.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* === COLOR SWATCH === */
+        .color-swatch {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+            flex-shrink: 0;
+            transition: transform 0.15s ease;
+        }
+        .color-swatch:hover {
+            transform: scale(1.15);
+        }
+
+        /* === CARD ENTRY ANIMATION === */
+        .pin-card-wrapper {
+            animation: pinIn 0.35s ease both;
+        }
+        @keyframes pinIn {
+            from { opacity: 0; transform: translateY(14px) scale(0.96); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .pin-card-wrapper:nth-child(1) { animation-delay: 0.04s; }
+        .pin-card-wrapper:nth-child(2) { animation-delay: 0.08s; }
+        .pin-card-wrapper:nth-child(3) { animation-delay: 0.12s; }
+        .pin-card-wrapper:nth-child(4) { animation-delay: 0.16s; }
+        .pin-card-wrapper:nth-child(5) { animation-delay: 0.20s; }
+        .pin-card-wrapper:nth-child(6) { animation-delay: 0.24s; }
+        .pin-card-wrapper:nth-child(7) { animation-delay: 0.28s; }
+        .pin-card-wrapper:nth-child(8) { animation-delay: 0.32s; }
+        .pin-card-wrapper:nth-child(9) { animation-delay: 0.36s; }
+        .pin-card-wrapper:nth-child(10) { animation-delay: 0.40s; }
+        .pin-card-wrapper:nth-child(11) { animation-delay: 0.44s; }
+        .pin-card-wrapper:nth-child(12) { animation-delay: 0.48s; }
+
+        /* === SEARCH PULSE === */
+        #insp-search:focus {
+            box-shadow: 0 0 0 3px rgba(236,72,153,0.15);
+        }
+
+        /* === FEATURED QUOTE === */
+        .featured-quote {
+            position: relative;
+            padding: 14px 16px;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid rgba(236,72,153,0.12);
+            box-shadow: 0 2px 8px rgba(236,72,153,0.07);
+        }
+
+        /* === LOADING STATE === */
+        .spinner {
+            display: inline-block;
+            width: 1.3em; height: 1.3em;
+            border: 2px solid currentColor;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* === PINTEREST BADGE === */
+        .pinterest-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: #E60023;
+            color: white;
+            font-family: 'Jost', sans-serif;
+            font-size: 0.65rem;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            text-decoration: none;
+            transition: background 0.15s ease, transform 0.15s ease;
+        }
+        .pinterest-badge:hover {
+            background: #c0001d;
+            transform: scale(1.03);
+        }
+
+        /* === EMPTY STATE === */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 48px 24px;
+            text-align: center;
+            gap: 12px;
+        }
+
+        /* Custom Scrapbook Scrollbar for sidebar */
+        .custom-sidebar-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-sidebar-scrollbar::-webkit-scrollbar-track {
+            background: #FAF8F5;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+        .custom-sidebar-scrollbar::-webkit-scrollbar-thumb {
+            background-color: var(--accent-rose);
+            border-radius: 10px;
+            border: 1px solid #FAF8F5;
+        }
+        .custom-sidebar-scrollbar::-webkit-scrollbar-thumb:hover {
+            background-color: #be185d;
+        }
+    </style>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        base: "#FAF8F5",
+                        surface: "#FFFFFF",
+                        border: "#EAE6DF",
+                        main: "#1A1817",
+                        muted: "#8E8A85",
+                        roseAccent: "#EC4899",
+                        roseAccentLight: "#FDF2F8",
+                        violetAccent: "#8B5CF6",
+                        violetAccentLight: "#F5F3FF",
+                        emeraldAccent: "#10B981",
+                        emeraldAccentLight: "#ECFDF5",
+                        amberAccent: "#F59E0B",
+                        amberAccentLight: "#FEF3C7",
+                        pinterestRed: "#E60023",
+                        tealAccent: "#14B8A6",
+                        inactive: "#F3ECE3"
+                    },
+                    fontFamily: {
+                        serif: ["Bodoni Moda", "serif"],
+                        editorial: ["Cormorant Garamond", "serif"],
+                        sans: ["Jost", "sans-serif"],
+                        handwriting: ["Caveat", "cursive"]
+                    }
+                }
+            }
+        };
+    </script>
+</head>
+
+<body class="bg-base text-main font-sans antialiased min-h-screen flex flex-col items-center justify-center p-4">
+
+    <!-- Mobile/Tablet Scrapbook Navigation Tape Bar -->
+    <div class="flex md:hidden flex-wrap justify-center gap-2 mb-4 max-w-md w-full px-2 shrink-0">
+        <a href="index.html" class="px-3 py-1.5 bg-roseAccentLight/85 border border-roseAccent/20 text-roseAccent font-label text-[9px] tracking-widest rounded-md shadow-sm active:scale-95 transition-all rotate-[-1deg] opacity-90 hover:opacity-100">
+            🌸 Dashboard
+        </a>
+        <a href="calendar.html" class="px-3 py-1.5 bg-violetAccentLight/85 border border-violetAccent/20 text-violetAccent font-label text-[9px] tracking-widest rounded-md shadow-sm active:scale-95 transition-all rotate-[1deg] opacity-90 hover:opacity-100">
+            📅 Planner
+        </a>
+        <a href="studio.html" class="px-3 py-1.5 bg-emeraldAccentLight/85 border border-emeraldAccent/20 text-emeraldAccent font-label text-[9px] tracking-widest rounded-md shadow-sm active:scale-95 transition-all rotate-[-0.5deg] opacity-90 hover:opacity-100">
+            🎨 Studio
+        </a>
+        <a href="closet.html" class="px-3 py-1.5 bg-amberAccentLight/85 border border-amberAccent/20 text-amberAccent font-label text-[9px] tracking-widest rounded-md shadow-sm active:scale-95 transition-all rotate-[1.5deg] opacity-90 hover:opacity-100">
+            👗 Closet
+        </a>
+        <a href="inspiration.html" class="px-3 py-1.5 bg-teal-500 text-white font-label text-[9px] tracking-widest rounded-md shadow-md active:scale-95 transition-all rotate-[-1deg] font-bold">
+            ✨ Inspiration
+        </a>
+        <a href="style-dna.html" class="px-3 py-1.5 bg-indigo-50 border border-indigo-200/50 text-indigo-600 font-label text-[9px] tracking-widest rounded-md shadow-sm active:scale-95 transition-all rotate-[2deg] opacity-90 hover:opacity-100">
+            🧬 DNA
+        </a>
+        <a href="my-looks.html" class="px-3 py-1.5 bg-pink-50 border border-pink-200/50 text-pink-600 font-label text-[9px] tracking-widest rounded-md shadow-sm active:scale-95 transition-all rotate-[-1.5deg] opacity-90 hover:opacity-100">
+            ❤️ Looks
+        </a>
+    </div>
+
+    <!-- ═══ MOODBOARD PICKER MODAL ═══ -->
+    <div id="moodboard-picker-modal" role="dialog" aria-modal="true" aria-label="Save to Moodboard">
+        <div id="moodboard-picker-backdrop"></div>
+        <div id="moodboard-picker-inner" class="p-5 flex flex-col gap-4">
+            <!-- Tape decoration -->
+            <div class="absolute top-3 left-[35%] w-24 h-4 gingham-tape-pink rotate-[1.5deg] opacity-90 z-20"></div>
+            
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between border-b border-border/60 pb-3 mt-4">
+                <div>
+                    <h3 class="font-display text-lg text-main">Save Inspiration 🌸</h3>
+                    <p class="font-handwriting text-xs text-roseAccent font-bold mt-0.5">add to your fashion planners ✨</p>
+                </div>
+                <button id="moodboard-picker-close-btn" class="w-8 h-8 rounded-full bg-base hover:bg-roseAccentLight flex items-center justify-center border border-border">
+                    <span class="material-symbols-outlined text-main" style="font-size:16px">close</span>
+                </button>
+            </div>
+
+            <!-- Existing Moodboards List -->
+            <div>
+                <p class="font-label text-[8.5px] text-muted mb-2 font-bold tracking-wider">Select a Moodboard</p>
+                <div id="moodboards-list-container" class="flex flex-col gap-1.5 max-h-48 overflow-y-auto pr-1">
+                    <!-- Dynamic moodboard items render here -->
+                </div>
+            </div>
+
+            <!-- Divider -->
+            <div class="h-px bg-border my-1"></div>
+
+            <!-- Create New Moodboard Form -->
+            <div>
+                <p class="font-label text-[8.5px] text-roseAccent font-bold mb-2 tracking-wider">✨ Create New Moodboard</p>
+                <div class="flex flex-col gap-2">
+                    <input
+                        id="new-moodboard-name"
+                        type="text"
+                        placeholder="e.g. Summer Capsule, Europe Trip"
+                        class="w-full px-3 py-2 rounded-xl border border-border bg-base/50 text-main font-sans text-xs focus:outline-none focus:border-roseAccent focus:ring-1 focus:ring-roseAccent/20 transition-all placeholder:text-muted"
+                    />
+                    <button id="create-moodboard-btn" class="w-full py-2 bg-roseAccent hover:bg-roseAccent/90 text-white rounded-xl font-label text-[9px] tracking-wider transition-all shadow-md">
+                        Create Moodboard
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ INSPIRATION DETAIL MODAL ═══ -->
+    <div id="insp-modal" role="dialog" aria-modal="true" aria-label="Inspiration Detail">
+        <div id="insp-modal-backdrop"></div>
+        <div id="insp-modal-inner">
+            <!-- Modal Header -->
+            <div class="relative overflow-hidden" id="modal-img-wrapper" style="min-height:200px;background:#f3ece3">
+                <!-- Tape decoration -->
+                <div class="absolute top-3 left-[35%] w-20 h-4 gingham-tape-pink rotate-[1.5deg] opacity-90 z-20"></div>
+                <img id="modal-img" src="" alt="Inspiration" class="w-full object-cover" style="max-height:340px" />
+                <!-- Gradient overlay with close btn -->
+                <div class="absolute top-0 right-0 left-0 flex justify-end p-3 z-30">
+                    <button id="modal-close-btn" class="w-9 h-9 rounded-full bg-white/90 backdrop-blur flex items-center justify-center border border-border shadow-md hover:bg-roseAccentLight transition-all">
+                        <span class="material-symbols-outlined text-main" style="font-size:18px">close</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="p-5 flex flex-col gap-4">
+                <!-- Title & Pinterest button -->
+                <div class="flex items-start justify-between gap-3">
+                    <div>
+                        <h2 class="font-display text-xl text-main leading-tight" id="modal-title">—</h2>
+                    </div>
+                    <!-- Pinterest button -->
+                    <a id="modal-pinterest-btn" href="#" target="_blank" rel="noopener noreferrer" class="pinterest-badge shrink-0 mt-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="white"><path d="M12 0C5.373 0 0 5.373 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 0 1 .083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.632-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg>
+                        View on Pinterest
+                    </a>
+                </div>
+
+                <!-- Meta Details Grid -->
+                <div class="grid grid-cols-2 gap-3 bg-base/60 p-3.5 rounded-xl border border-border/80 text-xs">
+                    <div>
+                        <span class="block font-label text-[7.5px] text-muted">Aesthetic</span>
+                        <span class="font-medium text-main" id="modal-aesthetic">—</span>
+                    </div>
+                    <div>
+                        <span class="block font-label text-[7.5px] text-muted">Occasion</span>
+                        <span class="font-medium text-main" id="modal-occasion">—</span>
+                    </div>
+                    <div class="mt-1">
+                        <span class="block font-label text-[7.5px] text-muted">Color Story</span>
+                        <span class="font-medium text-main" id="modal-color-story">—</span>
+                    </div>
+                    <div class="mt-1">
+                        <span class="block font-label text-[7.5px] text-muted">Color Combo</span>
+                        <span class="font-medium text-main" id="modal-color-combination">—</span>
+                    </div>
+                </div>
+
+                <!-- Color Palette -->
+                <div class="bg-roseAccentLight/40 rounded-xl p-3 border border-roseAccent/10">
+                    <p class="font-label text-[8px] text-roseAccent mb-2">Color Story</p>
+                    <div class="flex items-center gap-4 flex-wrap" id="modal-colors">
+                        <!-- Dynamic swatches -->
+                    </div>
+                </div>
+
+                <!-- Styling Notes -->
+                <div class="relative">
+                    <div class="absolute -top-2 left-4 w-8 h-2.5 gingham-tape-lavender rotate-[-1.5deg] opacity-90"></div>
+                    <div class="bg-white p-4 rounded-xl border border-border shadow-sm">
+                        <p class="font-label text-[8px] text-violetAccent mb-2">Styling Notes ✍️</p>
+                        <p class="font-handwriting text-sm text-main leading-snug font-bold" id="modal-notes">—</p>
+                    </div>
+                </div>
+
+                <!-- Actions Buttons Stacked -->
+                <div class="flex flex-col gap-2">
+                    <div class="flex gap-3">
+                        <button id="modal-match-btn" class="flex-1 flex items-center justify-center gap-1.5 py-3 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 text-white font-label text-[8.5px] tracking-wider shadow-md transition-all">
+                            ✨ Match Closet
+                        </button>
+                        <button id="modal-build-btn" class="flex-1 flex items-center justify-center gap-1.5 py-3 rounded-xl bg-roseAccent hover:bg-roseAccent/90 text-white font-label text-[8.5px] tracking-wider shadow-md transition-all">
+                            ✨ Build This Look
+                        </button>
+                    </div>
+                    <button id="modal-recommend-btn" class="w-full flex items-center justify-center gap-1.5 py-3 rounded-xl bg-violetAccent hover:bg-violetAccent/90 text-white font-label text-[8.5px] tracking-wider shadow-md transition-all">
+                        ✨ Improve This Look
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ WARDROBE MATCH MODAL ═══ -->
+    <div id="match-modal" role="dialog" aria-modal="true" aria-label="Wardrobe Match Report">
+        <div id="match-modal-backdrop" class="absolute inset-0 bg-neutral-900/50 backdrop-blur-sm"></div>
+        <div id="match-modal-inner" class="relative bg-white rounded-3xl border border-teal-200/40 shadow-2xl max-w-md w-full max-h-[85vh] overflow-y-auto transform translate-y-4 scale-95 transition-all duration-300">
+            <!-- Header -->
+            <div class="sticky top-0 bg-white border-b border-border/60 flex items-center justify-between px-6 py-4 z-10">
+                <div>
+                    <p class="font-label text-[8px] text-teal-600 font-bold">Outfit Match Analysis</p>
+                    <h3 class="font-display text-lg text-main leading-tight mt-0.5">Your Wardrobe Match</h3>
+                </div>
+                <button id="match-close-btn" class="w-8 h-8 flex items-center justify-center rounded-full border border-border hover:border-teal-400 hover:bg-teal-50/50 transition-all">
+                    <span class="material-symbols-outlined text-muted" style="font-size:18px">close</span>
+                </button>
+            </div>
+            
+            <!-- Body -->
+            <div class="p-6 flex flex-col gap-5">
+                <!-- Score Display -->
+                <div class="flex flex-col items-center justify-center p-5 bg-teal-50/30 rounded-2xl border border-teal-100/40 text-center">
+                    <span id="match-indicator-badge" class="font-label text-[9px] px-2.5 py-1 rounded-full bg-teal-100 text-teal-800 font-bold">🟢 Excellent Match</span>
+                    
+                    <div class="mt-3 flex items-baseline gap-0.5">
+                        <span id="match-score-value" class="font-display text-5xl text-main">—</span>
+                        <span class="font-display text-2xl text-muted">%</span>
+                    </div>
+                    
+                    <!-- Progress Bar -->
+                    <div class="w-full max-w-[200px] bg-neutral-100 h-2.5 rounded-full mt-4 overflow-hidden border border-neutral-200/30">
+                        <div id="match-progress-bar" class="bg-gradient-to-r from-teal-400 to-emerald-500 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- Explanation Post-It Note -->
+                <div class="relative bg-[#FFF9E6] p-4 rounded-xl border border-amber-200 shadow-sm">
+                    <div class="absolute -top-2 left-4 w-12 h-3.5 gingham-tape-amber rotate-[-2deg] opacity-90"></div>
+                    <p class="font-label text-[8px] text-amber-700 mb-1.5">Style Explanation 📝</p>
+                    <p id="match-explanation-text" class="font-handwriting text-sm text-main leading-snug font-bold">—</p>
+                </div>
+                
+                <!-- Match Breakdown -->
+                <div class="flex flex-col gap-4">
+                    <!-- Owned list -->
+                    <div>
+                        <p class="font-label text-[9px] text-emerald-600 font-bold mb-2">You Already Own</p>
+                        <div id="match-owned-list" class="flex flex-col gap-1.5 text-xs text-main">
+                            <!-- Dynamic -->
+                        </div>
+                    </div>
+                    
+                    <!-- Substitutes list -->
+                    <div>
+                        <p class="font-label text-[9px] text-amber-600 font-bold mb-2">Style Substitutes</p>
+                        <div id="match-substitutes-list" class="flex flex-col gap-1.5 text-xs text-main">
+                            <!-- Dynamic -->
+                        </div>
+                    </div>
+                    
+                    <!-- Missing list -->
+                    <div>
+                        <p class="font-label text-[9px] text-red-500 font-bold mb-2">Missing Pieces</p>
+                        <div id="match-missing-list" class="flex flex-col gap-1.5 text-xs text-main">
+                            <!-- Dynamic -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ MOODBOARD MATCH MODAL ═══ -->
+    <div id="moodboard-match-modal" role="dialog" aria-modal="true" aria-label="Moodboard Wardrobe Match">
+        <div id="moodboard-match-backdrop" class="absolute inset-0 bg-neutral-900/50 backdrop-blur-sm"></div>
+        <div id="moodboard-match-inner" class="relative bg-white rounded-3xl border border-teal-200/40 shadow-2xl max-w-md w-full max-h-[85vh] overflow-y-auto transform translate-y-4 scale-95 transition-all duration-300">
+            <!-- Header -->
+            <div class="sticky top-0 bg-white border-b border-border/60 flex items-center justify-between px-6 py-4 z-10">
+                <div>
+                    <p class="font-label text-[8px] text-teal-600 font-bold">Moodboard Wardrobe Match</p>
+                    <h3 id="moodboard-match-title-label" class="font-display text-lg text-main leading-tight mt-0.5">Moodboard Match Analysis</h3>
+                </div>
+                <button id="moodboard-match-close-btn" class="w-8 h-8 flex items-center justify-center rounded-full border border-border hover:border-teal-400 hover:bg-teal-50/50 transition-all">
+                    <span class="material-symbols-outlined text-muted" style="font-size:18px">close</span>
+                </button>
+            </div>
+            
+            <!-- Body -->
+            <div class="p-6 flex flex-col gap-5">
+                <div class="flex items-center gap-3 p-4 bg-teal-50/30 rounded-2xl border border-teal-100/40">
+                    <span class="text-3xl">✨</span>
+                    <div>
+                        <h4 class="font-display text-sm text-main">Wardrobe Gaps Identified</h4>
+                        <p class="text-[11px] text-muted leading-normal mt-0.5">We analyzed all saved cards in this moodboard and compared them with your wardrobe inventory.</p>
+                    </div>
+                </div>
+                
+                <div>
+                    <p class="font-label text-[9px] text-teal-600 font-bold mb-3">Most Needed Items</p>
+                    
+                    <div id="moodboard-match-gaps-list" class="flex flex-col gap-2.5 text-xs text-main">
+                        <!-- Dynamic list of gaps -->
+                    </div>
+                </div>
+                
+                <div class="mt-2 text-center">
+                    <p class="font-handwriting text-base text-roseAccent font-bold">happy styling! ✨</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ BUILD PREVIEW MODAL ═══ -->
+    <div id="build-preview-modal" class="fixed inset-0 z-[9700] hidden flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Build Preview">
+        <div id="build-preview-backdrop" class="absolute inset-0 bg-neutral-900/50 backdrop-blur-sm"></div>
+        <div id="build-preview-inner" class="relative bg-white rounded-3xl border border-rose-200/40 shadow-2xl max-w-md w-full max-h-[85vh] overflow-y-auto transform translate-y-4 scale-95 transition-all duration-300">
+            <!-- Tape decoration -->
+            <div class="absolute top-3 left-[35%] w-24 h-4 gingham-tape-pink rotate-[-1.5deg] opacity-90 z-20"></div>
+            
+            <!-- Header -->
+            <div class="sticky top-0 bg-white border-b border-border/60 flex items-center justify-between px-6 py-4 z-10 mt-4">
+                <div>
+                    <p class="font-label text-[8px] text-roseAccent font-bold">Outfit Generation Preview</p>
+                    <h3 id="build-preview-title" class="font-display text-lg text-main leading-tight mt-0.5">Build This Look</h3>
+                </div>
+                <button id="build-preview-close-btn" class="w-8 h-8 flex items-center justify-center rounded-full border border-border hover:border-rose-400 hover:bg-rose-50/50 transition-all">
+                    <span class="material-symbols-outlined text-muted" style="font-size:18px">close</span>
+                </button>
+            </div>
+            
+            <!-- Body -->
+            <div class="p-6 flex flex-col gap-5">
+                <!-- Empty Wardrobe Alert State -->
+                <div id="build-empty-state" class="hidden flex flex-col items-center justify-center text-center p-5 bg-rose-50/50 rounded-2xl border border-rose-100/40 gap-4">
+                    <span class="text-4xl">👗</span>
+                    <p class="text-xs text-main font-semibold leading-relaxed" id="build-empty-message">We couldn't find enough pieces in your closet to recreate this look.</p>
+                    <div class="flex gap-2.5 w-full">
+                        <button id="build-empty-close-btn" class="flex-1 py-2 rounded-xl border border-border hover:bg-roseAccentLight text-main font-label text-[8.5px] tracking-wider transition-all">
+                            View Inspiration
+                        </button>
+                        <a href="closet.html" class="flex-1 py-2 rounded-xl bg-roseAccent hover:bg-roseAccent/95 text-white font-label text-[8.5px] tracking-wider text-center flex items-center justify-center shadow-sm">
+                            Browse Closet
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div id="build-preview-content" class="flex flex-col gap-5">
+                    <!-- Score & Confidence Display -->
+                    <div class="flex flex-col items-center justify-center p-5 bg-rose-50/30 rounded-2xl border border-rose-100/40 text-center relative">
+                        <span id="build-confidence-badge" class="font-label text-[9px] px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 font-bold">🟢 High Confidence</span>
+                        
+                        <div class="mt-3 flex items-baseline gap-0.5">
+                            <span id="build-score-value" class="font-display text-5xl text-main">—</span>
+                            <span class="font-display text-2xl text-muted">%</span>
+                        </div>
+                        
+                        <div class="w-full max-w-[200px] bg-neutral-100 h-2.5 rounded-full mt-4 overflow-hidden border border-neutral-200/30">
+                            <div id="build-progress-bar" class="bg-gradient-to-r from-rose-400 to-rose-600 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Explanation Card -->
+                    <div class="relative bg-[#FFF9E6] p-4 rounded-xl border border-amber-200 shadow-sm">
+                        <div class="absolute -top-2 left-4 w-12 h-3.5 gingham-tape-amber rotate-[-2deg] opacity-90"></div>
+                        <p class="font-label text-[8px] text-amber-700 mb-1.5">Stylist Report 📝</p>
+                        <p id="build-explanation-text" class="font-handwriting text-sm text-main leading-snug font-bold">—</p>
+                    </div>
+                    
+                    <!-- Breakdown Lists -->
+                    <div class="flex flex-col gap-4">
+                        <!-- Owned list -->
+                        <div>
+                            <p class="font-label text-[9px] text-emerald-600 font-bold mb-2">Pieces from Closet (✓)</p>
+                            <div id="build-owned-list" class="flex flex-col gap-1.5 text-xs text-main">
+                                <!-- Dynamic -->
+                            </div>
+                        </div>
+                        
+                        <!-- Missing list -->
+                        <div>
+                            <p class="font-label text-[9px] text-red-500 font-bold mb-2">Missing Pieces (✗)</p>
+                            <div id="build-missing-list" class="flex flex-col gap-1.5 text-xs text-main">
+                                <!-- Dynamic -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Button -->
+                    <button id="build-open-studio-btn" class="w-full py-3 rounded-xl bg-roseAccent hover:bg-roseAccent/90 text-white font-label text-[9.5px] tracking-widest shadow-md transition-all flex items-center justify-center gap-1.5">
+                        <span class="material-symbols-outlined text-sm">palette</span>
+                        <span>Open In Studio</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ Phase 9: RECOMMENDATION MODAL (✨ Improve This Look) ═══ -->
+    <div id="recommendation-modal" class="fixed inset-0 z-[9700] hidden flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Style recommendations">
+        <div id="recommendation-backdrop" class="absolute inset-0 bg-neutral-900/50 backdrop-blur-sm" onclick="closeRecommendationModal()"></div>
+        <div id="recommendation-inner" class="relative bg-white rounded-3xl border border-violet-200/40 shadow-2xl max-w-lg w-full max-h-[85vh] overflow-y-auto transform translate-y-4 scale-95 transition-all duration-300">
+            <!-- Pin Tape Decor -->
+            <div class="absolute top-3 left-[35%] w-24 h-4 gingham-tape rotate-[-1.5deg] opacity-90 z-20 pointer-events-none"></div>
+            
+            <!-- Header -->
+            <div class="sticky top-0 bg-white border-b border-border/60 flex items-center justify-between px-6 py-4 z-10 mt-4">
+                <div class="min-w-0 flex-1 mr-2">
+                    <p class="font-label text-[8px] text-violetAccent font-bold">Smart Styling & Gaps Analysis</p>
+                    <h3 id="recommendation-title" class="font-display text-lg text-main leading-tight mt-0.5 truncate">Improve This Look</h3>
+                </div>
+                <button onclick="closeRecommendationModal()" class="w-8 h-8 flex items-center justify-center rounded-full border border-border hover:border-violet-400 hover:bg-violet-50/50 transition-all shrink-0">
+                    <span class="material-symbols-outlined text-muted" style="font-size:18px">close</span>
+                </button>
+            </div>
+            
+            <!-- Body -->
+            <div class="p-6 flex flex-col gap-6">
+                <!-- Missing Pieces and Alternatives Section -->
+                <div>
+                    <p class="font-label text-[10px] text-roseAccent font-bold mb-3 uppercase tracking-wider">Wardrobe Gaps & Alternatives</p>
+                    <div id="recommendation-gaps-container" class="flex flex-col gap-4">
+                        <!-- Dynamic content -->
+                    </div>
+                </div>
+
+                <hr class="border-border/60 border-dashed" />
+
+                <!-- Similar Looks Section -->
+                <div>
+                    <p class="font-label text-[10px] text-violetAccent font-bold mb-3 uppercase tracking-wider">Similar Looks You Can Style</p>
+                    <div id="recommendation-similar-container" class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <!-- Dynamic similar looks -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ MAIN NOTEBOOK WRAPPER ═══ -->
+    <div class="relative w-full max-w-[1440px] bg-white rounded-3xl border-4 border-roseAccent/20 shadow-2xl flex flex-col md:flex-row overflow-visible z-10 my-4 min-h-[680px]">
+
+        <!-- ═══ LEFT PAGE — Discover & Search ═══ -->
+        <div class="w-full md:w-[320px] md:min-w-[320px] grid-paper rounded-t-3xl md:rounded-r-none md:rounded-l-3xl p-5 flex flex-col border-b md:border-b-0 md:border-r border-border/60 shrink-0 md:sticky md:top-4 md:h-[650px]">
+
+            <!-- Pinned Top Section -->
+            <div class="flex flex-col gap-3 shrink-0 pb-3">
+                <!-- Brand Mark -->
+                <div>
+                    <span class="brand-headline text-lg text-pinterestRed tracking-widest">ThreadTheory</span>
+                    <p class="brand-sub text-tealAccent mt-0.5">Fashion Inspiration Hub</p>
+                </div>
+
+                <!-- Top Nav -->
+                <div class="flex items-center gap-2 flex-wrap">
+                    <div class="hidden sm:flex items-center gap-1.5 bg-roseAccentLight rounded-full border border-roseAccent/20 px-2.5 py-1">
+                        <a class="font-label text-[9px] text-muted hover:text-roseAccent transition-colors" href="index.html">Dashboard</a>
+                        <span class="text-[9px] text-roseAccent/40">•</span>
+                        <a class="font-label text-[9px] text-tealAccent font-bold" href="inspiration.html">Inspire</a>
+                        <span class="text-[9px] text-roseAccent/40">•</span>
+                        <a class="font-label text-[9px] text-muted hover:text-roseAccent transition-colors" href="my-looks.html">❤️ Looks</a>
+                    </div>
+                    <button id="logout-btn" title="Sign out"
+                        class="flex items-center gap-1 font-label text-[8px] text-muted hover:text-[#E60023] transition-colors px-2 py-1 rounded-full border border-border hover:border-[#E60023]/30 hover:bg-red-50">
+                        <span class="material-symbols-outlined" style="font-size:11px">logout</span>
+                        <span>Out</span>
+                    </button>
+                </div>
+
+                <!-- Divider -->
+                <div class="h-px bg-border"></div>
+
+                <!-- Page Title Block -->
+                <div class="relative">
+                    <div class="absolute -top-2 left-0 w-12 h-2.5 gingham-tape-teal rotate-[-1deg] opacity-90 z-10"></div>
+                    <p class="font-label text-[8px] text-tealAccent font-bold tracking-wider">Discover</p>
+                    <h1 class="font-display text-xl text-main leading-tight mt-1">Inspiration Hub ✨</h1>
+                    <p class="font-handwriting text-sm text-roseAccent mt-0.5 font-bold">find your next obsession 🌸</p>
+                </div>
+
+                <!-- Search Bar -->
+                <div class="relative">
+                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-muted" style="font-size:15px">search</span>
+                    <input
+                        id="insp-search"
+                        type="text"
+                        placeholder="Old Money, Coquette, Y2K…"
+                        autocomplete="off"
+                        class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-border bg-white text-main font-sans text-xs focus:outline-none focus:border-tealAccent focus:ring-1 focus:ring-tealAccent/20 transition-all shadow-sm placeholder:text-muted"
+                    />
+                </div>
+            </div>
+
+            <!-- Divider -->
+            <div class="h-px bg-border shrink-0 my-1"></div>
+            <!-- Scrollable Filters (Middle Section) -->
+            <div class="flex-1 overflow-y-auto pr-1 flex flex-col gap-3 custom-sidebar-scrollbar py-2">
+                <!-- Collapsible Filter Accordions (5-Tier) -->
+                <div class="flex flex-col gap-2.5">
+                    <!-- Section 1: Fashion Aesthetics -->
+                    <details class="group border border-border/60 rounded-xl bg-white/50 overflow-hidden shadow-sm" open>
+                        <summary class="px-3 py-2 font-label text-[8px] font-bold text-muted cursor-pointer flex items-center justify-between hover:text-roseAccent select-none">
+                            <span>🏷️ Fashion Aesthetics</span>
+                            <span class="material-symbols-outlined transition-transform group-open:rotate-180 text-[10px]">expand_more</span>
+                        </summary>
+                        <div class="flex flex-wrap gap-1 p-2 bg-white/80 border-t border-border/20" id="filter-aesthetic">
+                            <button class="style-chip active" data-type="aesthetic" data-value="">All</button>
+                            <button class="style-chip" data-type="aesthetic" data-value="Minimalism / Quiet Luxury">Minimalism / Quiet Luxury</button>
+                            <button class="style-chip" data-type="aesthetic" data-value="Y2K">Y2K</button>
+                            <button class="style-chip" data-type="aesthetic" data-value="Dark Academia">Dark Academia</button>
+                            <button class="style-chip" data-type="aesthetic" data-value="Cottagecore">Cottagecore</button>
+                            <button class="style-chip" data-type="aesthetic" data-value="Streetwear">Streetwear</button>
+                            <button class="style-chip" data-type="aesthetic" data-value="Gorpcore">Gorpcore</button>
+                            <button class="style-chip" data-type="aesthetic" data-value="Grunge">Grunge</button>
+                            <button class="style-chip" data-type="aesthetic" data-value="Coquette / Balletcore">Coquette / Balletcore</button>
+                            <button class="style-chip" data-type="aesthetic" data-value="Old Money / Preppy">Old Money / Preppy</button>
+                            <button class="style-chip" data-type="aesthetic" data-value="Eclectic Grandpa">Eclectic Grandpa</button>
+                            <button class="style-chip" data-type="aesthetic" data-value="Cyberpunk / Techwear">Cyberpunk / Techwear</button>
+                            <button class="style-chip" data-type="aesthetic" data-value="Boho Chic">Boho Chic</button>
+                            <button class="style-chip" data-type="aesthetic" data-value="Whimsigoth">Whimsigoth</button>
+                            <button class="style-chip" data-type="aesthetic" data-value="Indie Sleaze">Indie Sleaze</button>
+                            <button class="style-chip" data-type="aesthetic" data-value="Clean Girl">Clean Girl</button>
+                        </div>
+                    </details>
+
+                    <!-- Section 2: Style Movements -->
+                    <details class="group border border-border/60 rounded-xl bg-white/50 overflow-hidden shadow-sm">
+                        <summary class="px-3 py-2 font-label text-[8px] font-bold text-muted cursor-pointer flex items-center justify-between hover:text-roseAccent select-none">
+                            <span>⚫ Movements & Monochrome</span>
+                            <span class="material-symbols-outlined transition-transform group-open:rotate-180 text-[10px]">expand_more</span>
+                        </summary>
+                        <div class="flex flex-wrap gap-1 p-2 bg-white/80 border-t border-border/20" id="filter-movement">
+                            <button class="style-chip active" data-type="styleMovement" data-value="">All</button>
+                            <button class="style-chip" data-type="styleMovement" data-value="Avant-Garde / Darkwear">Avant-Garde / Darkwear</button>
+                            <button class="style-chip" data-type="styleMovement" data-value="Matrixcore / Neo-Noir">Matrixcore / Neo-Noir</button>
+                            <button class="style-chip" data-type="styleMovement" data-value="Corporate Minimalist">Corporate Minimalist</button>
+                            <button class="style-chip" data-type="styleMovement" data-value="Oatmeal / Vanilla Girl">Oatmeal / Vanilla Girl</button>
+                            <button class="style-chip" data-type="styleMovement" data-value="Dopamine Monochrome">Dopamine Monochrome</button>
+                        </div>
+                    </details>
+
+                    <!-- Section 3: Occasions -->
+                    <details class="group border border-border/60 rounded-xl bg-white/50 overflow-hidden shadow-sm">
+                        <summary class="px-3 py-2 font-label text-[8px] font-bold text-muted cursor-pointer flex items-center justify-between hover:text-roseAccent select-none">
+                            <span>📅 Occasions</span>
+                            <span class="material-symbols-outlined transition-transform group-open:rotate-180 text-[10px]">expand_more</span>
+                        </summary>
+                        <div class="flex flex-wrap gap-1 p-2 bg-white/80 border-t border-border/20" id="filter-occasion">
+                            <button class="style-chip active" data-type="occasion" data-value="">All</button>
+                            <button class="style-chip" data-type="occasion" data-value="Concerts & Festivals">Concerts & Festivals</button>
+                            <button class="style-chip" data-type="occasion" data-value="All White Soirées">All White Soirées</button>
+                            <button class="style-chip" data-type="occasion" data-value="All Black Nights">All Black Nights</button>
+                            <button class="style-chip" data-type="occasion" data-value="Europe Trip Capsule Wardrobe">Europe Trip Capsule Wardrobe</button>
+                            <button class="style-chip" data-type="occasion" data-value="Graduation Looks">Graduation Looks</button>
+                            <button class="style-chip" data-type="occasion" data-value="Birthday Milestone Looks">Birthday Milestone Looks</button>
+                            <button class="style-chip" data-type="occasion" data-value="High-End Date Nights">High-End Date Nights</button>
+                            <button class="style-chip" data-type="occasion" data-value="Instagram Content Creation">Instagram Content Creation</button>
+                            <button class="style-chip" data-type="occasion" data-value="Cozy Cafe Dates">Cozy Cafe Dates</button>
+                            <button class="style-chip" data-type="occasion" data-value="College Daily Wear">College Daily Wear</button>
+                        </div>
+                    </details>
+
+                    <!-- Section 4: Color Stories (Hidden for Phase 1) -->
+                    <details class="group border border-border/60 rounded-xl bg-white/50 overflow-hidden shadow-sm">
+                        <summary class="px-3 py-2 font-label text-[8px] font-bold text-muted cursor-pointer flex items-center justify-between hover:text-roseAccent select-none">
+                            <span>🎨 Color Stories</span>
+                            <span class="material-symbols-outlined transition-transform group-open:rotate-180 text-[10px]">expand_more</span>
+                        </summary>
+                        <div class="flex flex-wrap gap-1 p-2 bg-white/80 border-t border-border/20" id="filter-colorStory">
+                            <button class="style-chip active" data-type="colorStory" data-value="">All</button>
+                            <button class="style-chip" data-type="colorStory" data-value="Black">Black</button>
+                            <button class="style-chip" data-type="colorStory" data-value="White">White</button>
+                            <button class="style-chip" data-type="colorStory" data-value="Cream / Ivory">Cream / Ivory</button>
+                            <button class="style-chip" data-type="colorStory" data-value="Beige / Tan">Beige / Tan</button>
+                            <button class="style-chip" data-type="colorStory" data-value="Brown">Brown</button>
+                            <button class="style-chip" data-type="colorStory" data-value="Gray">Gray</button>
+                            <button class="style-chip" data-type="colorStory" data-value="Navy">Navy</button>
+                            <button class="style-chip" data-type="colorStory" data-value="Olive / Sage">Olive / Sage</button>
+                            <button class="style-chip" data-type="colorStory" data-value="Burgundy">Burgundy</button>
+                            <button class="style-chip" data-type="colorStory" data-value="Light Blue">Light Blue</button>
+                            <button class="style-chip" data-type="colorStory" data-value="Red">Red</button>
+                            <button class="style-chip" data-type="colorStory" data-value="Pink">Pink</button>
+                            <button class="style-chip" data-type="colorStory" data-value="Yellow">Yellow</button>
+                            <button class="style-chip" data-type="colorStory" data-value="Royal Blue">Royal Blue</button>
+                            <button class="style-chip" data-type="colorStory" data-value="Purple">Purple</button>
+                        </div>
+                    </details>
+
+                    <!-- Section 5: Color Combinations (Hidden for Phase 1) -->
+                    <details class="group border border-border/60 rounded-xl bg-white/50 overflow-hidden shadow-sm">
+                        <summary class="px-3 py-2 font-label text-[8px] font-bold text-muted cursor-pointer flex items-center justify-between hover:text-roseAccent select-none">
+                            <span>🔥 Trending Combos</span>
+                            <span class="material-symbols-outlined transition-transform group-open:rotate-180 text-[10px]">expand_more</span>
+                        </summary>
+                        <div class="flex flex-wrap gap-1 p-2 bg-white/80 border-t border-border/20" id="filter-colorCombination">
+                            <button class="style-chip active" data-type="colorCombination" data-value="">All</button>
+                            <button class="style-chip" data-type="colorCombination" data-value="Black + Beige">Black + Beige</button>
+                            <button class="style-chip" data-type="colorCombination" data-value="Burgundy + Cream">Burgundy + Cream</button>
+                            <button class="style-chip" data-type="colorCombination" data-value="Chocolate Brown + Cream">Chocolate Brown + Cream</button>
+                            <button class="style-chip" data-type="colorCombination" data-value="Navy + White">Navy + White</button>
+                            <button class="style-chip" data-type="colorCombination" data-value="Sage Green + Cream">Sage Green + Cream</button>
+                            <button class="style-chip" data-type="colorCombination" data-value="White + Light Blue">White + Light Blue</button>
+                            <button class="style-chip" data-type="colorCombination" data-value="Brown + Sky Blue">Brown + Sky Blue</button>
+                            <button class="style-chip" data-type="colorCombination" data-value="Gray + Burgundy">Gray + Burgundy</button>
+                            <button class="style-chip" data-type="colorCombination" data-value="Red + Pink">Red + Pink</button>
+                            <button class="style-chip" data-type="colorCombination" data-value="Black + Silver">Black + Silver</button>
+                            <button class="style-chip" data-type="colorCombination" data-value="Ivory + Camel">Ivory + Camel</button>
+                            <button class="style-chip" data-type="colorCombination" data-value="Olive + Black">Olive + Black</button>
+                            <button class="style-chip" data-type="colorCombination" data-value="Navy + Tan">Navy + Tan</button>
+                            <button class="style-chip" data-type="colorCombination" data-value="Cream + Chocolate">Cream + Chocolate</button>
+                            <button class="style-chip" data-type="colorCombination" data-value="Plum + Gray">Plum + Gray</button>
+                        </div>
+                    </details>
+
+                    <!-- Section 6: My Moodboards -->
+                    <div class="border border-border/60 rounded-xl bg-white/50 overflow-hidden shadow-sm p-3 flex flex-col gap-2">
+                        <div class="font-label text-[8px] font-bold text-muted flex items-center justify-between border-b border-border/40 pb-1.5 select-none">
+                            <span>📌 MY MOODBOARDS</span>
+                            <span class="font-handwriting text-xs text-roseAccent font-bold">your scrapbooks 📒</span>
+                        </div>
+                        <button id="view-all-moodboards-btn" class="w-full text-left py-1.5 px-2 bg-roseAccentLight hover:bg-roseAccent/10 text-roseAccent rounded-lg font-label text-[7.5px] tracking-wider transition-all flex items-center gap-1.5 border border-roseAccent/15">
+                            <span class="material-symbols-outlined" style="font-size:11px">folder_open</span>
+                            <span>View All Moodboards</span>
+                        </button>
+                        <div class="flex flex-col gap-1 mt-1 max-h-40 overflow-y-auto" id="sidebar-moodboards-list">
+                            <!-- Moodboards dynamic list (Europe Trip, etc.) -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+                <!-- Dev Setup Helper -->
+                <div class="mt-1 p-2 bg-roseAccent/5 border border-roseAccent/10 rounded-xl text-left">
+                    <p class="font-label text-[7px] text-roseAccent font-bold">🛠️ Setup Lookbook Assets</p>
+                    <a href="/api/dev/setup-inspiration" target="_blank" class="block text-center mt-1.5 px-2 py-0.5 bg-roseAccent text-white rounded-lg font-label text-[7px] tracking-wider hover:bg-roseAccent/90 transition-all shadow-sm">
+                        Run Asset Setup
+                    </a>
+                </div>
+
+            <!-- Divider -->
+            <div class="h-px bg-border shrink-0 my-1"></div>
+
+            <!-- Pinned Bottom Section -->
+            <div class="shrink-0 mt-auto pt-2">
+                <!-- Footer note -->
+                <div class="relative">
+                    <div class="absolute -top-2 left-3 w-8 h-2 gingham-tape-pink rotate-[2deg] opacity-80"></div>
+                    <div class="bg-white rounded-lg p-3 border border-border shadow-sm">
+                        <p class="font-label text-[8px] text-muted mb-1">Inspiration Note</p>
+                        <p class="font-handwriting text-xs text-roseAccent font-bold leading-snug">"Style is a way to say who you are without having to speak." 🌷</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ SPIRAL SPINE ═══ -->
+        <div class="hidden md:flex w-12 md:w-12 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-300 relative border-l border-r border-border/80 flex-col justify-around py-6 z-20 shrink-0">
+            <div class="relative w-full h-2"><div class="absolute left-1/2 transform -translate-x-1/2 -top-1 w-6 h-3.5 bg-gradient-to-r from-gray-300 via-gray-100 to-gray-400 rounded-full border border-gray-400 shadow-sm z-30"></div><div class="absolute left-[calc(50%-13px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div><div class="absolute left-[calc(50%+5px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div></div>
+            <div class="relative w-full h-2"><div class="absolute left-1/2 transform -translate-x-1/2 -top-1 w-6 h-3.5 bg-gradient-to-r from-gray-300 via-gray-100 to-gray-400 rounded-full border border-gray-400 shadow-sm z-30"></div><div class="absolute left-[calc(50%-13px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div><div class="absolute left-[calc(50%+5px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div></div>
+            <div class="relative w-full h-2"><div class="absolute left-1/2 transform -translate-x-1/2 -top-1 w-6 h-3.5 bg-gradient-to-r from-gray-300 via-gray-100 to-gray-400 rounded-full border border-gray-400 shadow-sm z-30"></div><div class="absolute left-[calc(50%-13px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div><div class="absolute left-[calc(50%+5px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div></div>
+            <div class="relative w-full h-2"><div class="absolute left-1/2 transform -translate-x-1/2 -top-1 w-6 h-3.5 bg-gradient-to-r from-gray-300 via-gray-100 to-gray-400 rounded-full border border-gray-400 shadow-sm z-30"></div><div class="absolute left-[calc(50%-13px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div><div class="absolute left-[calc(50%+5px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div></div>
+            <div class="relative w-full h-2"><div class="absolute left-1/2 transform -translate-x-1/2 -top-1 w-6 h-3.5 bg-gradient-to-r from-gray-300 via-gray-100 to-gray-400 rounded-full border border-gray-400 shadow-sm z-30"></div><div class="absolute left-[calc(50%-13px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div><div class="absolute left-[calc(50%+5px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div></div>
+            <div class="relative w-full h-2"><div class="absolute left-1/2 transform -translate-x-1/2 -top-1 w-6 h-3.5 bg-gradient-to-r from-gray-300 via-gray-100 to-gray-400 rounded-full border border-gray-400 shadow-sm z-30"></div><div class="absolute left-[calc(50%-13px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div><div class="absolute left-[calc(50%+5px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div></div>
+            <div class="relative w-full h-2"><div class="absolute left-1/2 transform -translate-x-1/2 -top-1 w-6 h-3.5 bg-gradient-to-r from-gray-300 via-gray-100 to-gray-400 rounded-full border border-gray-400 shadow-sm z-30"></div><div class="absolute left-[calc(50%-13px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div><div class="absolute left-[calc(50%+5px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div></div>
+            <div class="relative w-full h-2"><div class="absolute left-1/2 transform -translate-x-1/2 -top-1 w-6 h-3.5 bg-gradient-to-r from-gray-300 via-gray-100 to-gray-400 rounded-full border border-gray-400 shadow-sm z-30"></div><div class="absolute left-[calc(50%-13px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div><div class="absolute left-[calc(50%+5px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div></div>
+        </div>
+
+        <!-- ═══ RIGHT PAGE — Pinterest Masonry Grid ═══ -->
+        <div class="flex-1 grid-paper rounded-b-3xl md:rounded-l-none md:rounded-r-3xl relative flex flex-col overflow-visible">
+
+            <!-- Binder Tabs on right edge -->
+            <div class="hidden md:flex absolute right-[-38px] top-8 flex-col gap-2 z-30 select-none">
+                <a class="bg-roseAccent/70 text-white/90 font-sans text-[9px] font-bold tracking-wider pl-3 pr-4 py-2 rounded-r-lg cursor-pointer hover:translate-x-1.5 hover:bg-roseAccent hover:text-white transition-all shadow-[2px_1px_4px_rgba(0,0,0,0.08)] border-y border-r border-white/10" href="index.html">🌸 DASH</a>
+                <a class="bg-violetAccent/70 text-white/90 font-sans text-[9px] font-bold tracking-wider pl-3 pr-4 py-2 rounded-r-lg cursor-pointer hover:translate-x-1.5 hover:bg-violetAccent hover:text-white transition-all shadow-[2px_1px_4px_rgba(0,0,0,0.08)] border-y border-r border-white/10" href="calendar.html">📅 CAL</a>
+                <a class="bg-emeraldAccent/70 text-white/90 font-sans text-[9px] font-bold tracking-wider pl-3 pr-4 py-2 rounded-r-lg cursor-pointer hover:translate-x-1.5 hover:bg-emeraldAccent hover:text-white transition-all shadow-[2px_1px_4px_rgba(0,0,0,0.08)] border-y border-r border-white/10" href="studio.html">🎨 STUD</a>
+                <a class="bg-amberAccent/70 text-white/90 font-sans text-[9px] font-bold tracking-wider pl-3 pr-4 py-2 rounded-r-lg cursor-pointer hover:translate-x-1.5 hover:bg-amberAccent hover:text-white transition-all shadow-[2px_1px_4px_rgba(0,0,0,0.08)] border-y border-r border-white/10" href="closet.html">👗 CLOS</a>
+                <a class="bg-tealAccent text-white font-sans text-[10px] font-extrabold tracking-widest pl-4 pr-5 py-2.5 rounded-r-xl cursor-pointer hover:translate-x-1 transition-all shadow-[4px_2px_8px_rgba(0,0,0,0.15)] border-y border-r border-white/20 flex items-center gap-1 z-10" href="inspiration.html">✨ INSP</a>
+                <a class="bg-indigo-500/70 text-white/90 font-sans text-[9px] font-bold tracking-wider pl-3 pr-4 py-2 rounded-r-lg cursor-pointer hover:translate-x-1.5 hover:bg-indigo-500 hover:text-white transition-all shadow-[2px_1px_4px_rgba(0,0,0,0.08)] border-y border-r border-white/10" href="style-dna.html">🧬 DNA</a>
+                <a class="bg-pink-500/70 text-white/90 font-sans text-[9px] font-bold tracking-wider pl-3 pr-4 py-2 rounded-r-lg cursor-pointer hover:translate-x-1.5 hover:bg-pink-500 hover:text-white transition-all shadow-[2px_1px_4px_rgba(0,0,0,0.08)] border-y border-r border-white/10" href="my-looks.html">❤️ LOOKS</a>
+            </div>
+
+            <!-- Gallery Header -->
+            <div class="px-6 pt-5 pb-3 border-b border-border/60 flex flex-col gap-3">
+                <div class="flex items-start justify-between gap-3 flex-wrap w-full">
+                    <!-- Default Header -->
+                    <div id="board-header-default" class="relative">
+                        <div class="absolute -top-2 left-0 w-12 h-2.5 gingham-tape-teal rotate-[-1deg] opacity-90 z-10"></div>
+                        <p class="font-label text-tealAccent">Inspiration Board</p>
+                        <h2 class="font-display text-2xl text-main leading-tight mt-1">Discover Your Style 🌸</h2>
+                    </div>
+                    
+                    <!-- Custom Board Header -->
+                    <div id="board-header-custom" class="hidden relative flex-1">
+                        <div class="absolute -top-2 left-0 w-12 h-2.5 gingham-tape-teal rotate-[-1deg] opacity-90 z-10"></div>
+                        <span id="board-header-type" class="font-label text-roseAccent font-bold tracking-widest text-[9.5px] block">BOARD</span>
+                        <h2 id="board-header-title" class="font-display text-2xl text-main leading-none mt-1 uppercase tracking-wider">—</h2>
+                        <p id="board-header-desc" class="text-xs text-muted mt-2 leading-relaxed max-w-2xl">—</p>
+                        
+                        <!-- Moodboard Actions -->
+                        <div id="moodboard-actions-container" class="hidden mt-3 mb-1 flex items-center gap-2 flex-wrap">
+                            <button id="moodboard-match-all-btn" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 text-white font-label text-[9px] tracking-widest shadow transition-all">
+                                ✨ Match Entire Moodboard
+                            </button>
+                            <button id="moodboard-analyze-btn" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 text-white font-label text-[9px] tracking-widest shadow transition-all">
+                                ✨ Analyze Moodboard
+                            </button>
+                        </div>
+                        
+                        <!-- Board Details Grid / Table -->
+                        <div id="board-header-details" class="flex flex-wrap gap-x-4 gap-y-1.5 mt-2.5 pt-2.5 border-t border-dashed border-border/80 text-[10px] text-muted">
+                            <!-- Dynamic key-values: Season, Combo, Occasion, etc. -->
+                        </div>
+                    </div>
+                    
+                    <!-- Result count -->
+                    <div class="flex items-center gap-3 shrink-0 self-start mt-1">
+                        <span class="font-handwriting text-sm text-roseAccent font-bold" id="insp-count">0 pins</span>
+                        <div id="insp-loading" class="hidden">
+                            <span class="spinner text-tealAccent" style="width:1.1em;height:1.1em"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Active Filter Chips Bar (Compact, under heading) -->
+                <div id="active-filters-bar" class="hidden py-1.5 px-3 bg-roseAccentLight/40 rounded-xl border border-roseAccent/15 flex flex-wrap items-center gap-2 max-w-max mt-2">
+                    <span class="font-label text-[7.5px] text-muted tracking-wider">Active:</span>
+                    <div id="active-filters-list" class="flex flex-wrap gap-1">
+                        <!-- Removable chips render here -->
+                    </div>
+                    <button id="clear-all-filters-btn" class="font-label text-[7.5px] text-roseAccent hover:underline tracking-wider font-semibold ml-2 pl-2 border-l border-roseAccent/20">Clear All</button>
+                </div>
+            </div>
+
+
+
+            <!-- Masonry Gallery -->
+            <div class="flex-1 px-5 py-5 h-auto overflow-visible">
+                <!-- Empty state: no search results -->
+                <div id="insp-empty" class="hidden empty-state">
+                    <span class="text-4xl">🔍</span>
+                    <h3 class="font-display text-base text-main">No matches found</h3>
+                    <p class="font-sans text-xs text-muted max-w-sm mx-auto" id="empty-state-text">No inspiration matches your current filters. Try removing a filter or searching a broader style.</p>
+                    <button id="insp-clear-search" class="mt-2 inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-tealAccent text-tealAccent font-label text-[9px] tracking-widest hover:bg-tealAccent/10 transition-all">
+                        Clear Search & Filters
+                    </button>
+                </div>
+
+                <!-- Pinterest Masonry Grid -->
+                <div id="insp-grid" class="masonry-grid">
+                    <!-- Cards rendered dynamically -->
+                </div>
+            </div>
+
+            <!-- Related Recommendations Section -->
+            <div id="related-boards-container" class="hidden px-6 py-5 bg-base/40 border-t border-border/40">
+                <p class="font-label text-[8px] text-tealAccent font-bold mb-2">✨ You May Also Like (Explore More Boards)</p>
+                <div id="related-boards-list" class="flex flex-wrap gap-2">
+                    <!-- Dynamic related board chips -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    (() => {
+        // ─── Session Guard ─────────────────────────────────────────────────
+        const session = (() => {
+            try {
+                return JSON.parse(
+                    sessionStorage.getItem('threadtheory_user') ||
+                    localStorage.getItem('threadtheory_user') ||
+                    localStorage.getItem('tt_session') ||
+                    'null'
+                );
+            } catch { return null; }
+        })();
+        if (!session?.email) {
+            window.location.href = 'login.html';
+            return;
+        }
+
+        // ─── Logout ────────────────────────────────────────────────────────
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            sessionStorage.removeItem('threadtheory_user');
+            localStorage.removeItem('threadtheory_user');
+            localStorage.removeItem('tt_session');
+            window.location.href = 'login.html';
+        });
+
+        // ══════════════════════════════════════════════════════════════════
+        // STATE MANAGEMENT & FILTERS
+        // ══════════════════════════════════════════════════════════════════
+        let activeFilters = {
+            aesthetic: '',
+            styleMovement: '',
+            occasion: '',
+            colorStory: '',
+            colorCombination: ''
+        };
+        let searchQuery = '';
+
+        // --- MOODBOARD STATE VARIABLES (PHASE 6) ---
+        let allCuratedCards = [];      // all 300 cards preloaded for local lookup
+        let userMoodboards = [];       // user's moodboards from server
+        let savedCardIds = new Set();  // card IDs saved in any moodboard
+        let activeMoodboardId = null;  // currently opened moodboard ID, or null
+        let inMoodboardCollectionMode = false; // true if viewing all moodboards
+        let currentModalCard = null;   // currently open card in detailed view
+
+
+        // ══════════════════════════════════════════════════════════════════
+        // FUTURE-READY ARCHITECTURE INTERFACES WITH DIAGNOSTICS
+        // ══════════════════════════════════════════════════════════════════
+        
+        /**
+         * loadInspirationFeed()
+         * Fetches curated lookbook cards and metadata from the backend server.
+         * Returns: Promise<ResponseObj>
+         */
+        async function loadInspirationFeed() {
+            // Build query params based on active filters
+            const params = new URLSearchParams();
+            if (activeFilters.aesthetic) params.append('aesthetic', activeFilters.aesthetic);
+            if (activeFilters.styleMovement) params.append('styleMovement', activeFilters.styleMovement);
+            if (activeFilters.occasion) params.append('occasion', activeFilters.occasion);
+            if (activeFilters.colorStory) params.append('colorStory', activeFilters.colorStory);
+            if (activeFilters.colorCombination) params.append('colorCombination', activeFilters.colorCombination);
+            
+            const url = `/api/inspiration?${params.toString()}`;
+            console.log(`[Diagnostic] loadInspirationFeed: Fetching from url: ${url}`);
+            
+            const diag = document.getElementById('insp-diagnostic');
+            if (diag) {
+                diag.className = 'px-6 py-1.5 bg-amber-50 text-amber-800 border-b border-amber-200 text-[10px] font-mono';
+                diag.textContent = `Fetching feed from: ${url}...`;
+            }
+
+            const res = await fetch(url);
+            console.log(`[Diagnostic] loadInspirationFeed: Response status: ${res.status} (${res.statusText})`);
+            
+            if (!res.ok) {
+                throw new Error(`Server returned status ${res.status} (${res.statusText})`);
+            }
+            
+            const result = await res.json();
+            console.log(`[Diagnostic] loadInspirationFeed: Response JSON success: ${result.success}, returned cards count: ${result.data?.length}`);
+            
+            if (result.success) {
+                return result;
+            }
+            throw new Error(result.message || 'Failed to load inspiration.');
+        }
+
+        /**
+         * searchInspiration(query)
+         * Queries the backend API with a search parameter to filter results.
+         * Returns: Promise<ResponseObj>
+         */
+        async function searchInspiration(query) {
+            const params = new URLSearchParams();
+            if (activeFilters.aesthetic) params.append('aesthetic', activeFilters.aesthetic);
+            if (activeFilters.styleMovement) params.append('styleMovement', activeFilters.styleMovement);
+            if (activeFilters.occasion) params.append('occasion', activeFilters.occasion);
+            if (activeFilters.colorStory) params.append('colorStory', activeFilters.colorStory);
+            if (activeFilters.colorCombination) params.append('colorCombination', activeFilters.colorCombination);
+            if (query) params.append('q', query);
+
+            const url = `/api/inspiration?${params.toString()}`;
+            console.log(`[Diagnostic] searchInspiration: Searching from url: ${url} with query "${query}"`);
+            
+            const diag = document.getElementById('insp-diagnostic');
+            if (diag) {
+                diag.className = 'px-6 py-1.5 bg-amber-50 text-amber-800 border-b border-amber-200 text-[10px] font-mono';
+                diag.textContent = `Searching: Fetching from: ${url}...`;
+            }
+
+            const res = await fetch(url);
+            console.log(`[Diagnostic] searchInspiration: Response status: ${res.status} (${res.statusText})`);
+            
+            if (!res.ok) {
+                throw new Error(`Server returned status ${res.status} (${res.statusText})`);
+            }
+            
+            const result = await res.json();
+            console.log(`[Diagnostic] searchInspiration: Response JSON success: ${result.success}, returned cards count: ${result.data?.length}`);
+            
+            if (result.success) {
+                return result;
+            }
+            throw new Error(result.message || 'Search failed.');
+        }
+
+        /**
+         * renderInspirationCards(cards)
+         * Renders Pinterest-style pin cards into the masonry grid.
+         */
+        function renderInspirationCards(cards) {
+            const grid = document.getElementById('insp-grid');
+            const emptyState = document.getElementById('insp-empty');
+            
+            console.log(`[Diagnostic] renderInspirationCards: cards.length = ${cards.length}`);
+            grid.innerHTML = '';
+
+            if (cards.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+
+            cards.forEach((card) => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'pin-card-wrapper';
+
+                // Random rotation for the polaroid scrapbook look
+                const rotation = (Math.random() * 6 - 3).toFixed(1); // -3 to 3 deg
+                const tapeRotation = (Math.random() * 8 - 4).toFixed(1); // -4 to 4 deg
+                
+                // Random tape styles
+                const tapeStyles = [
+                    'gingham-tape',
+                    'gingham-tape-pink',
+                    'gingham-tape-lavender',
+                    'gingham-tape-teal',
+                    'gingham-tape-amber'
+                ];
+                const randomTapeClass = tapeStyles[Math.floor(Math.random() * tapeStyles.length)];
+                
+                const badgeLabel = card.boardName || card.aesthetic || card.occasion || card.colorStory || card.colorCombination || card.styleMovement || '';
+                const badgeColor = styleColor(badgeLabel);
+
+                const isAlreadySaved = savedCardIds.has(card.id);
+                const saveBtnClass = isAlreadySaved ? 'bg-emeraldAccent hover:bg-emeraldAccent/90 saved' : 'bg-pinterestRed hover:bg-[#c0001d]';
+                const saveIcon = 'favorite';
+                const saveText = isAlreadySaved ? 'Saved' : 'Save';
+
+                wrapper.innerHTML = `
+                    <div class="polaroid-card group" style="--rotation: ${rotation}deg" data-id="${card.id}" role="button" tabindex="0" aria-label="${card.title}">
+                        <!-- Tape Accent -->
+                        <div class="polaroid-tape ${randomTapeClass}" style="--tape-rotation: ${tapeRotation}deg"></div>
+                        
+                        <!-- Image Container -->
+                        <div class="polaroid-image-container rounded-lg">
+                            <img
+                                src="${card.image}"
+                                alt="${card.title}"
+                                loading="lazy"
+                                class="w-full block"
+                                style="min-height:160px; object-fit:cover"
+                                onerror="this.closest('.pin-card-wrapper').style.display='none';"
+                            />
+                            
+                            <!-- ♡ Save Button on hover -->
+                            <button class="absolute top-2 right-2 ${saveBtnClass} text-white text-[9px] font-bold px-2.5 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-150 shadow-md flex items-center gap-1 z-20 save-btn">
+                                <span class="material-symbols-outlined" style="font-size:10px; font-weight:bold;">${saveIcon}</span>
+                                <span>${saveText}</span>
+                            </button>
+                            
+                            <!-- Hover Overlay -->
+                            <div class="pin-overlay">
+                                <div class="flex flex-col gap-1">
+                                    <span class="font-sans text-white text-[10px] font-medium opacity-90">${card.boardName || card.occasion || card.aesthetic || 'ThreadTheory'}</span>
+                                    <span class="font-handwriting text-white text-base font-bold leading-tight drop-shadow">${card.title}</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Polaroid Label Area -->
+                        <div class="mt-2.5 flex flex-col gap-1.5">
+                            <h3 class="font-handwriting text-base text-main font-bold leading-tight text-center">${card.title}</h3>
+                            
+                            <div class="flex items-center justify-between mt-1">
+                                <span class="inline-block font-label text-[8px] px-2 py-0.5 rounded-full border ${badgeColor.chip}">${badgeLabel}</span>
+                                <!-- Color swatches mini -->
+                                <div class="flex gap-0.5">
+                                    ${card.colors.slice(0,3).map(c => `<div style="width:10px;height:10px;border-radius:50%;background:${c};border:1px solid rgba(0,0,0,0.1)" title="${c}"></div>`).join('')}
+                                </div>
+                            </div>
+
+                            <!-- Actions Buttons -->
+                            <div class="flex flex-col gap-1 mt-2">
+                                <button class="w-full flex items-center justify-center gap-1 py-1 px-2 rounded-lg bg-teal-50 hover:bg-teal-100/80 text-teal-700 border border-teal-200/50 font-label text-[8px] font-bold tracking-wider transition-all match-btn shadow-sm">
+                                    ✨ Match My Wardrobe
+                                </button>
+                                <button class="w-full flex items-center justify-center gap-1 py-1 px-2 rounded-lg bg-rose-50 hover:bg-rose-100/80 text-rose-700 border border-rose-200/50 font-label text-[8px] font-bold tracking-wider transition-all build-btn shadow-sm">
+                                    ✨ Build This Look
+                                </button>
+                                <button class="w-full flex items-center justify-center gap-1 py-1 px-2 rounded-lg bg-violet-50 hover:bg-violet-100/80 text-violet-700 border border-violet-200/50 font-label text-[8px] font-bold tracking-wider transition-all recommend-btn shadow-sm mt-1">
+                                    ✨ Improve This Look
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                const cardEl = wrapper.querySelector('.polaroid-card');
+                cardEl.addEventListener('click', (e) => {
+                    const saveBtn = e.target.closest('.save-btn');
+                    if (saveBtn) {
+                        e.stopPropagation();
+                        handleSaveClick(card.id);
+                        return;
+                    }
+                    const matchBtn = e.target.closest('.match-btn');
+                    if (matchBtn) {
+                        e.stopPropagation();
+                        openMatchModalForCard(card.id);
+                        return;
+                    }
+                    const buildBtn = e.target.closest('.build-btn');
+                    if (buildBtn) {
+                        e.stopPropagation();
+                        openBuildModalForCard(card.id);
+                        return;
+                    }
+                    const recommendBtn = e.target.closest('.recommend-btn');
+                    if (recommendBtn) {
+                        e.stopPropagation();
+                        openRecommendationModalForCard(card.id);
+                        return;
+                    }
+                    openModal(card);
+                });
+                
+                cardEl.addEventListener('keydown', e => { 
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        openModal(card); 
+                    }
+                });
+                
+                grid.appendChild(wrapper);
+            });
+            console.log(`[Diagnostic] renderInspirationCards: Successfully rendered ${cards.length} HTML cards into #insp-grid.`);
+        }
+
+        // Export these interfaces to the global scope for testing and extensions
+        window.loadInspirationFeed = loadInspirationFeed;
+        window.searchInspiration = searchInspiration;
+        window.renderInspirationCards = renderInspirationCards;
+
+        // ─── Style badge color mapping ─────────────────────────────────────
+        function styleColor(style) {
+            const normalized = (style || '').toLowerCase();
+            if (normalized.includes('minimal') || normalized.includes('quiet luxury')) {
+                return { chip: 'border-gray-300 bg-gray-50 text-gray-600' };
+            }
+            if (normalized.includes('y2k')) {
+                return { chip: 'border-purple-300 bg-purple-50 text-purple-600' };
+            }
+            if (normalized.includes('academia')) {
+                return { chip: 'border-red-950/20 bg-red-950/5 text-red-900 font-semibold' };
+            }
+            if (normalized.includes('cottage')) {
+                return { chip: 'border-amber-200 bg-amber-50/50 text-amber-800' };
+            }
+            if (normalized.includes('street')) {
+                return { chip: 'border-gray-400 bg-gray-100 text-gray-700' };
+            }
+            if (normalized.includes('gorp')) {
+                return { chip: 'border-emerald-300 bg-emerald-50 text-emerald-800' };
+            }
+            if (normalized.includes('grunge')) {
+                return { chip: 'border-stone-400 bg-stone-100 text-stone-800 font-semibold' };
+            }
+            if (normalized.includes('coquette') || normalized.includes('ballet')) {
+                return { chip: 'border-pink-200 bg-pink-50 text-pink-600' };
+            }
+            if (normalized.includes('old money') || normalized.includes('preppy')) {
+                return { chip: 'border-amber-300 bg-amber-50 text-amber-700 font-semibold' };
+            }
+            if (normalized.includes('grandpa')) {
+                return { chip: 'border-amber-700/20 bg-amber-900/5 text-amber-900' };
+            }
+            if (normalized.includes('cyber') || normalized.includes('tech')) {
+                return { chip: 'border-blue-400 bg-blue-50 text-blue-800' };
+            }
+            if (normalized.includes('boho')) {
+                return { chip: 'border-yellow-600/30 bg-yellow-50 text-yellow-800' };
+            }
+            if (normalized.includes('whimsigoth')) {
+                return { chip: 'border-purple-400 bg-purple-950/10 text-purple-900' };
+            }
+            if (normalized.includes('sleaze')) {
+                return { chip: 'border-zinc-400 bg-zinc-200 text-zinc-900 font-bold' };
+            }
+            if (normalized.includes('clean girl')) {
+                return { chip: 'border-yellow-200 bg-yellow-50 text-yellow-700' };
+            }
+            if (normalized.includes('avant-garde') || normalized.includes('darkwear')) {
+                return { chip: 'border-black bg-black text-white' };
+            }
+            if (normalized.includes('matrix') || normalized.includes('noir')) {
+                return { chip: 'border-zinc-700 bg-zinc-900 text-zinc-100 font-semibold' };
+            }
+            if (normalized.includes('vanilla') || normalized.includes('oatmeal')) {
+                return { chip: 'border-amber-100 bg-amber-50/30 text-amber-900' };
+            }
+            if (normalized.includes('dopamine')) {
+                return { chip: 'border-pink-500 bg-pink-500 text-white font-bold' };
+            }
+            if (normalized.includes('concerts') || normalized.includes('festival')) {
+                return { chip: 'border-amber-400 bg-amber-50 text-amber-800 font-bold' };
+            }
+            if (normalized.includes('white soir')) {
+                return { chip: 'border-slate-300 bg-white text-slate-800' };
+            }
+            if (normalized.includes('black night')) {
+                return { chip: 'border-black bg-stone-900 text-white' };
+            }
+            if (normalized.includes('europe') || normalized.includes('travel')) {
+                return { chip: 'border-teal-200 bg-teal-50 text-teal-800' };
+            }
+            if (normalized.includes('graduation')) {
+                return { chip: 'border-indigo-300 bg-indigo-50 text-indigo-800' };
+            }
+            if (normalized.includes('birthday')) {
+                return { chip: 'border-rose-300 bg-rose-50 text-rose-700 font-bold' };
+            }
+            if (normalized.includes('date night')) {
+                return { chip: 'border-red-800/20 bg-red-50 text-red-900' };
+            }
+            if (normalized.includes('instagram') || normalized.includes('content')) {
+                return { chip: 'border-sky-300 bg-sky-50 text-sky-800' };
+            }
+            if (normalized.includes('cafe date')) {
+                return { chip: 'border-yellow-900/10 bg-yellow-950/5 text-yellow-900' };
+            }
+            if (normalized.includes('college') || normalized.includes('campus')) {
+                return { chip: 'border-emerald-300 bg-emerald-50 text-emerald-800' };
+            }
+            return { chip: 'border-border bg-base text-muted' };
+        }
+
+        // ─── Modal ─────────────────────────────────────────────────────────
+        function openModal(card) {
+            currentModalCard = card;
+            const modal = document.getElementById('insp-modal');
+            
+            const modalImg = document.getElementById('modal-img');
+            modalImg.onerror = function() {
+                this.style.display = 'none';
+            };
+            modalImg.src = card.image;
+            modalImg.style.opacity = '1';
+            
+            document.getElementById('modal-title').textContent = card.title;
+            document.getElementById('modal-notes').textContent = card.notes;
+            
+            // Populate meta details grid
+            const aestheticLabel = document.getElementById('modal-aesthetic');
+            if (card.styleMovement) {
+                aestheticLabel.previousElementSibling.textContent = 'Style Movement';
+                aestheticLabel.textContent = card.styleMovement;
+            } else {
+                aestheticLabel.previousElementSibling.textContent = 'Aesthetic';
+                aestheticLabel.textContent = card.aesthetic || 'N/A';
+            }
+            document.getElementById('modal-occasion').textContent = card.occasion || 'N/A';
+            document.getElementById('modal-color-story').textContent = card.colorStory || 'N/A';
+            document.getElementById('modal-color-combination').textContent = card.colorCombination || 'N/A';
+
+            // Pinterest button
+            const pBtn = document.getElementById('modal-pinterest-btn');
+            pBtn.href = card.pinterestUrl;
+
+            // Color swatches
+            const colorsEl = document.getElementById('modal-colors');
+            colorsEl.innerHTML = '';
+            card.colors.forEach(c => {
+                const row = document.createElement('div');
+                row.className = 'flex items-center gap-2';
+                row.innerHTML = `
+                    <div class="color-swatch" style="background:${c}" title="${c}"></div>
+                    <span class="font-label text-[9px] text-muted">${c}</span>
+                `;
+                colorsEl.appendChild(row);
+            });
+
+            modal.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            currentModalCard = null;
+            document.getElementById('insp-modal').classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        document.getElementById('modal-close-btn').addEventListener('click', closeModal);
+        document.getElementById('insp-modal-backdrop').addEventListener('click', closeModal);
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+        // ─── Toast Notifications ───────────────────────────────────────────
+        function showToast(message) {
+            let toast = document.getElementById('tt-toast');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'tt-toast';
+                toast.className = 'fixed bottom-5 right-5 z-[9999] bg-main text-white px-4 py-2.5 rounded-xl font-label text-[9px] tracking-widest shadow-2xl transition-all duration-300 opacity-0 translate-y-2 pointer-events-none flex items-center gap-2 border border-white/10';
+                document.body.appendChild(toast);
+            }
+            toast.innerHTML = `📌 <span>${message}</span>`;
+            toast.classList.remove('opacity-0', 'translate-y-2', 'pointer-events-none');
+            toast.classList.add('opacity-100', 'translate-y-0');
+            
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2', 'pointer-events-none');
+                toast.classList.remove('opacity-100', 'translate-y-0');
+            }, 2000);
+        }
+
+        // ─── Dynamic Board Header Rendering ────────────────────────────────
+        function renderBoardHeader(boardMeta, cardCount) {
+            const defaultHeader = document.getElementById('board-header-default');
+            const customHeader = document.getElementById('board-header-custom');
+            const typeEl = document.getElementById('board-header-type');
+            const titleEl = document.getElementById('board-header-title');
+            const descEl = document.getElementById('board-header-desc');
+            const detailsEl = document.getElementById('board-header-details');
+            const countEl = document.getElementById('insp-count');
+
+            if (!boardMeta) {
+                defaultHeader.classList.remove('hidden');
+                customHeader.classList.add('hidden');
+                countEl.textContent = `${cardCount} pin${cardCount !== 1 ? 's' : ''}`;
+                return;
+            }
+
+            defaultHeader.classList.add('hidden');
+            customHeader.classList.remove('hidden');
+
+            typeEl.textContent = (boardMeta.type || 'Inspiration Board').toUpperCase();
+            titleEl.textContent = boardMeta.title || boardMeta.name;
+            descEl.textContent = boardMeta.description || '';
+            countEl.textContent = `Cards Found: ${cardCount}`;
+
+            const actionsContainer = document.getElementById('moodboard-actions-container');
+            if (actionsContainer) {
+                if (boardMeta.type === 'Moodboard') {
+                    actionsContainer.classList.remove('hidden');
+                } else {
+                    actionsContainer.classList.add('hidden');
+                }
+            }
+
+            detailsEl.innerHTML = '';
+            if (boardMeta.details) {
+                Object.keys(boardMeta.details).forEach(key => {
+                    const val = boardMeta.details[key];
+                    const item = document.createElement('div');
+                    item.className = 'flex items-center gap-1 bg-roseAccentLight px-2 py-0.5 rounded-md border border-roseAccent/10';
+                    item.innerHTML = `
+                        <strong class="font-label text-[7.5px] text-roseAccent tracking-wider">${key}:</strong>
+                        <span class="text-main font-medium text-[9px]">${val}</span>
+                    `;
+                    detailsEl.appendChild(item);
+                });
+            }
+        }
+
+        // ─── Dynamic Related Recommendations Rendering ─────────────────────
+        function renderRelatedBoards(boardMeta) {
+            const container = document.getElementById('related-boards-container');
+            const list = document.getElementById('related-boards-list');
+
+            if (!boardMeta || !boardMeta.recommendations || boardMeta.recommendations.length === 0) {
+                container.classList.add('hidden');
+                return;
+            }
+
+            container.classList.remove('hidden');
+            list.innerHTML = '';
+
+            boardMeta.recommendations.forEach(name => {
+                const btn = document.createElement('button');
+                btn.className = 'style-chip border-roseAccent/20 hover:border-roseAccent bg-white text-roseAccent font-medium text-[8px] tracking-wider px-3 py-1.5 shadow-sm hover:scale-[1.03] transition-transform';
+                btn.innerHTML = `📌 <span>${name}</span>`;
+                btn.addEventListener('click', () => {
+                    selectBoardByName(name);
+                });
+                list.appendChild(btn);
+            });
+        }
+
+        // Curated loop transition: transition between different boards
+        function selectBoardByName(name) {
+            // Find which filter type this board belongs to by scanning the style chip buttons
+            const chipBtn = Array.from(document.querySelectorAll('.style-chip')).find(btn => btn.dataset.value === name);
+            if (chipBtn) {
+                const type = chipBtn.dataset.type;
+                const value = chipBtn.dataset.value;
+                
+                // Clear all filters first
+                Object.keys(activeFilters).forEach(t => {
+                    activeFilters[t] = '';
+                });
+                
+                activeFilters[type] = value;
+                
+                updateFilterUI();
+                refreshFeed();
+                
+                // Smooth scroll right page content to top
+                document.querySelector('.flex-1.overflow-y-auto').scrollTop = 0;
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                showToast(`Opened board: ${name} 📌`);
+            } else {
+                console.warn(`[Inspiration Hub] Board "${name}" not found in sidebar chips.`);
+            }
+        }
+
+        // ─── Filter Dispatch & Refresh ─────────────────────────────────────
+        async function refreshFeed() {
+            document.getElementById('insp-loading').classList.remove('hidden');
+            const diag = document.getElementById('insp-diagnostic');
+            if (diag) {
+                diag.className = 'px-6 py-1.5 bg-amber-50 text-amber-800 border-b border-amber-200 text-[10px] font-mono';
+                diag.textContent = 'Loading inspiration feed...';
+            }
+            try {
+                // If viewing a specific moodboard, render it
+                if (activeMoodboardId) {
+                    renderSpecificMoodboardGrid(activeMoodboardId);
+                    document.getElementById('insp-loading').classList.add('hidden');
+                    return;
+                }
+                
+                // If in all moodboards collection view, render it
+                if (inMoodboardCollectionMode) {
+                    renderMoodboardsGrid();
+                    document.getElementById('insp-loading').classList.add('hidden');
+                    return;
+                }
+                
+                // Otherwise normal curated lookbook feed
+                let responseObj;
+                if (searchQuery) {
+                    responseObj = await searchInspiration(searchQuery);
+                } else {
+                    responseObj = await loadInspirationFeed();
+                }
+                
+                const data = responseObj.data || [];
+                const boardMeta = responseObj.boardMeta || null;
+                
+                console.log(`[Diagnostic] refreshFeed: Fetched data has ${data.length} items.`);
+                if (diag) {
+                    diag.className = 'px-6 py-1.5 bg-emerald-50 text-emerald-800 border-b border-emerald-200 text-[10px] font-mono';
+                    diag.textContent = `Loaded ${data.length} cards.`;
+                }
+                
+                renderInspirationCards(data);
+                renderActiveFiltersBar();
+                renderBoardHeader(boardMeta, data.length);
+                renderRelatedBoards(boardMeta);
+            } catch (err) {
+                console.error('Failed to load feed:', err);
+                if (diag) {
+                    diag.className = 'px-6 py-1.5 bg-red-50 text-red-800 border-b border-red-200 text-[10px] font-mono';
+                    diag.textContent = `Error: ${err.message}. Make sure server is running on port 3000.`;
+                }
+            } finally {
+                document.getElementById('insp-loading').classList.add('hidden');
+            }
+        }
+
+        // ─── Style Chips sidebar interaction ────────────────────────────────
+        document.querySelectorAll('.style-chip').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const type = btn.dataset.type;
+                const value = btn.dataset.value;
+                
+                if (value === "") {
+                    activeFilters[type] = "";
+                } else {
+                    if (activeFilters[type] === value) {
+                        activeFilters[type] = "";
+                    } else {
+                        // Clicked a single chip: clear other categories to focus on this board
+                        // This makes it feel like clicking a dedicated Pinterest board!
+                        Object.keys(activeFilters).forEach(t => {
+                            activeFilters[t] = "";
+                        });
+                        activeFilters[type] = value;
+                    }
+                }
+                
+                // Reset moodboard modes
+                activeMoodboardId = null;
+                inMoodboardCollectionMode = false;
+                
+                updateFilterUI();
+                refreshFeed();
+            });
+        });
+
+        function updateFilterUI() {
+            document.querySelectorAll('.style-chip').forEach(btn => {
+                const type = btn.dataset.type;
+                const value = btn.dataset.value;
+                
+                if (activeFilters[type] === value) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
+        // ─── Active Filter Chips Bar (removable chips) ──────────────────────
+        function renderActiveFiltersBar() {
+            const bar = document.getElementById('active-filters-bar');
+            const list = document.getElementById('active-filters-list');
+            list.innerHTML = '';
+            
+            let hasActive = false;
+            
+            Object.keys(activeFilters).forEach(type => {
+                const val = activeFilters[type];
+                if (val) {
+                    hasActive = true;
+                    const chip = document.createElement('span');
+                    chip.className = 'inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white border border-roseAccent/20 text-roseAccent font-sans text-[9px] font-medium shadow-sm';
+                    chip.innerHTML = `
+                        <span>${val}</span>
+                        <button class="hover:text-pinterestRed transition-colors font-bold ml-1 clear-single-filter-btn" data-type="${type}">×</button>
+                    `;
+                    list.appendChild(chip);
+                }
+            });
+            
+            if (hasActive) {
+                bar.classList.remove('hidden');
+            } else {
+                bar.classList.add('hidden');
+            }
+            
+            // Wire up single chip removal
+            list.querySelectorAll('.clear-single-filter-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const type = btn.dataset.type;
+                    activeFilters[type] = '';
+                    updateFilterUI();
+                    refreshFeed();
+                });
+            });
+        }
+
+        document.getElementById('clear-all-filters-btn').addEventListener('click', () => {
+            Object.keys(activeFilters).forEach(type => {
+                activeFilters[type] = '';
+            });
+            updateFilterUI();
+            refreshFeed();
+        });
+
+        // ─── Search input handling ─────────────────────────────────────────
+        let searchTimer = null;
+        document.getElementById('insp-search').addEventListener('input', e => {
+            clearTimeout(searchTimer);
+            searchTimer = setTimeout(() => {
+                searchQuery = e.target.value.trim();
+                refreshFeed();
+            }, 250);
+        });
+
+        // Clear search & filters button
+        document.getElementById('insp-clear-search').addEventListener('click', () => {
+            searchQuery = '';
+            document.getElementById('insp-search').value = '';
+            Object.keys(activeFilters).forEach(type => {
+                activeFilters[type] = '';
+            });
+            activeMoodboardId = null;
+            inMoodboardCollectionMode = false;
+            updateFilterUI();
+            refreshFeed();
+        });
+
+        // ══════════════════════════════════════════════════════════════════
+        // PERSONAL MOODBOARDS CORE FUNCTIONS (PHASE 6)
+        // ══════════════════════════════════════════════════════════════════
+        let activePickerInspirationId = null;
+        let activePickerSourceMoodboardId = null;
+
+        // Fetch user's moodboards from the server
+        async function fetchMoodboards() {
+            try {
+                const res = await fetch(`/api/moodboards?email=${encodeURIComponent(session.email)}`);
+                const data = await res.json();
+                if (data.success) {
+                    userMoodboards = data.moodboards || [];
+                    
+                    // Update savedCardIds set
+                    savedCardIds.clear();
+                    userMoodboards.forEach(mb => {
+                        (mb.cards || []).forEach(cardId => savedCardIds.add(cardId));
+                    });
+                    
+                    // Re-render sidebar moodboard list
+                    renderSidebarMoodboards();
+                }
+            } catch (err) {
+                console.error("Failed to fetch moodboards:", err);
+            }
+        }
+
+        // Render moodboard buttons in the sidebar
+        function renderSidebarMoodboards() {
+            const listEl = document.getElementById('sidebar-moodboards-list');
+            listEl.innerHTML = '';
+            
+            if (userMoodboards.length === 0) {
+                listEl.innerHTML = `<p class="text-[8px] text-muted text-center py-2 italic">No moodboards yet</p>`;
+                return;
+            }
+            
+            userMoodboards.forEach(mb => {
+                const btn = document.createElement('button');
+                btn.className = `w-full text-left py-1.5 px-2 rounded-lg font-label text-[7.5px] tracking-wider transition-colors flex items-center justify-between hover:bg-roseAccentLight text-muted hover:text-roseAccent border border-transparent ${activeMoodboardId === mb.id ? 'bg-roseAccentLight text-roseAccent border-roseAccent/25 font-bold' : ''}`;
+                btn.innerHTML = `
+                    <span class="truncate pr-1">📂 ${mb.name}</span>
+                    <span class="text-[7.5px] opacity-60 font-sans">(${(mb.cards || []).length})</span>
+                `;
+                btn.addEventListener('click', () => {
+                    openMoodboard(mb.id);
+                });
+                listEl.appendChild(btn);
+            });
+        }
+
+        // Render the grid of all user moodboards (Polaroid cards)
+        function renderMoodboardsGrid() {
+            const grid = document.getElementById('insp-grid');
+            const emptyState = document.getElementById('insp-empty');
+            grid.innerHTML = '';
+            
+            if (userMoodboards.length === 0) {
+                emptyState.classList.remove('hidden');
+                document.getElementById('empty-state-text').textContent = "You don't have any moodboards yet. Save an inspiration card to get started! 📒";
+                
+                renderBoardHeader({
+                    type: 'Collection',
+                    title: 'My Moodboards 📁',
+                    description: 'Organize your fashion inspiration cards, plan trip outfits, and curate style aesthetics.'
+                }, 0);
+                return;
+            }
+            
+            emptyState.classList.add('hidden');
+            
+            userMoodboards.forEach(mb => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'pin-card-wrapper';
+                
+                const rotation = (Math.random() * 6 - 3).toFixed(1);
+                const tapeRotation = (Math.random() * 8 - 4).toFixed(1);
+                
+                // Warm neutral placeholder if coverImage is empty
+                const coverSrc = mb.coverImage || '/assets/mannequin_base.png';
+                
+                wrapper.innerHTML = `
+                    <div class="polaroid-card group cursor-pointer" style="--rotation: ${rotation}deg" data-id="${mb.id}">
+                        <!-- Tape Accent -->
+                        <div class="polaroid-tape gingham-tape-pink" style="--tape-rotation: ${tapeRotation}deg"></div>
+                        
+                        <!-- Image Container -->
+                        <div class="polaroid-image-container rounded-lg" style="height: 180px;">
+                            <img
+                                src="${coverSrc}"
+                                alt="${mb.name}"
+                                class="w-full h-full block object-cover"
+                            />
+                        </div>
+                        
+                        <!-- Details -->
+                        <div class="mt-2.5 flex flex-col gap-1 text-center">
+                            <h3 class="font-handwriting text-lg text-main font-bold leading-tight">${mb.name}</h3>
+                            <p class="font-label text-[8px] text-roseAccent font-bold">${(mb.cards || []).length} card${(mb.cards || []).length !== 1 ? 's' : ''}</p>
+                            <p class="text-[8px] text-muted">Created: ${new Date(mb.createdAt).toLocaleDateString()}</p>
+                            
+                            <!-- Delete Board Button -->
+                            <button class="mt-2 py-1 text-[8px] font-label text-red-500 hover:text-red-700 hover:underline flex items-center justify-center gap-0.5 delete-board-btn" data-id="${mb.id}">
+                                <span class="material-symbols-outlined" style="font-size:10px">delete</span>
+                                Delete Board
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                const cardEl = wrapper.querySelector('.polaroid-card');
+                cardEl.addEventListener('click', (e) => {
+                    const deleteBtn = e.target.closest('.delete-board-btn');
+                    if (deleteBtn) {
+                        e.stopPropagation();
+                        deleteMoodboard(mb.id);
+                        return;
+                    }
+                    openMoodboard(mb.id);
+                });
+                
+                grid.appendChild(wrapper);
+            });
+            
+            // Set header for Moodboards Collection
+            renderBoardHeader({
+                type: 'Collection',
+                title: 'My Moodboards 📁',
+                description: 'Organize your fashion inspiration cards, plan trip outfits, and curate style aesthetics.'
+            }, userMoodboards.length);
+            
+            document.getElementById('related-boards-container').classList.add('hidden');
+        }
+
+        // Render the grid of cards inside a specific moodboard
+        function renderSpecificMoodboardGrid(moodboardId) {
+            const grid = document.getElementById('insp-grid');
+            const emptyState = document.getElementById('insp-empty');
+            grid.innerHTML = '';
+            
+            const mb = userMoodboards.find(m => m.id === moodboardId);
+            if (!mb) {
+                activeMoodboardId = null;
+                inMoodboardCollectionMode = false;
+                refreshFeed();
+                return;
+            }
+            
+            const savedCards = (mb.cards || []).map(id => allCuratedCards.find(c => c.id === id)).filter(Boolean);
+            
+            if (savedCards.length === 0) {
+                emptyState.classList.remove('hidden');
+                document.getElementById('empty-state-text').textContent = "This moodboard is empty. Save some lookbook inspiration cards here!";
+                
+                renderBoardHeader({
+                    type: 'Moodboard',
+                    title: mb.name,
+                    description: mb.description || 'Custom fashion moodboard planning.'
+                }, 0);
+                
+                document.getElementById('related-boards-container').classList.add('hidden');
+                return;
+            }
+            
+            emptyState.classList.add('hidden');
+            
+            savedCards.forEach(card => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'pin-card-wrapper';
+                
+                const rotation = (Math.random() * 6 - 3).toFixed(1);
+                const tapeRotation = (Math.random() * 8 - 4).toFixed(1);
+                
+                const badgeLabel = card.boardName || card.aesthetic || card.occasion || card.colorStory || card.colorCombination || card.styleMovement || '';
+                const badgeColor = styleColor(badgeLabel);
+                
+                const isCover = mb.coverImage === card.image;
+                const coverBtnText = isCover ? '⭐ Cover' : 'Set Cover';
+                const coverBtnClass = isCover ? 'text-amber-500 font-bold' : 'text-muted hover:text-amber-500';
+                
+                wrapper.innerHTML = `
+                    <div class="polaroid-card group" style="--rotation: ${rotation}deg" data-id="${card.id}">
+                        <!-- Tape Accent -->
+                        <div class="polaroid-tape gingham-tape-pink" style="--tape-rotation: ${tapeRotation}deg"></div>
+                        
+                        <!-- Image Container -->
+                        <div class="polaroid-image-container rounded-lg">
+                            <img
+                                src="${card.image}"
+                                alt="${card.title}"
+                                class="w-full block"
+                                style="min-height:160px; object-fit:cover"
+                            />
+                            
+                            <!-- Hover Overlay -->
+                            <div class="pin-overlay">
+                                <div class="flex flex-col gap-1">
+                                    <span class="font-sans text-white text-[10px] font-medium opacity-90">${badgeLabel}</span>
+                                    <span class="font-handwriting text-white text-base font-bold leading-tight drop-shadow">${card.title}</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Polaroid Label Area -->
+                        <div class="mt-2.5 flex flex-col gap-1.5">
+                            <h3 class="font-handwriting text-base text-main font-bold leading-tight text-center">${card.title}</h3>
+                            
+                            <!-- Card Info -->
+                            <div class="flex items-center justify-between">
+                                <span class="inline-block font-label text-[8px] px-2 py-0.5 rounded-full border ${badgeColor.chip}">${badgeLabel}</span>
+                                <div class="flex gap-0.5">
+                                    ${(card.colors || []).slice(0,3).map(c => `<div style="width:10px;height:10px;border-radius:50%;background:${c};border:1px solid rgba(0,0,0,0.1)" title="${c}"></div>`).join('')}
+                                </div>
+                            </div>
+                            
+                            <!-- Card Actions -->
+                            <div class="flex items-center justify-between gap-1 mt-2.5 pt-2 border-t border-dashed border-border/80 text-[8px] text-muted">
+                                <!-- View -->
+                                <button class="flex items-center gap-0.5 font-label hover:text-tealAccent transition-colors view-insp-btn">
+                                    <span class="material-symbols-outlined" style="font-size:10px">visibility</span>
+                                    <span>View</span>
+                                </button>
+                                
+                                <!-- Match -->
+                                <button class="flex items-center gap-0.5 font-label text-teal-600 hover:text-teal-800 transition-colors match-insp-btn">
+                                    <span class="material-symbols-outlined" style="font-size:10px">check_circle</span>
+                                    <span>Match</span>
+                                </button>
+                                
+                                <!-- Set Cover -->
+                                <button class="flex items-center gap-0.5 font-label ${coverBtnClass} transition-colors set-cover-btn">
+                                    <span class="material-symbols-outlined" style="font-size:10px">star</span>
+                                    <span>${coverBtnText}</span>
+                                </button>
+                                
+                                <!-- Move -->
+                                <button class="flex items-center gap-0.5 font-label hover:text-roseAccent transition-colors move-insp-btn">
+                                    <span class="material-symbols-outlined" style="font-size:10px">swap_horiz</span>
+                                    <span>Move</span>
+                                </button>
+                                
+                                <!-- Remove -->
+                                <button class="flex items-center gap-0.5 font-label text-red-500 hover:text-red-700 transition-colors remove-insp-btn">
+                                    <span class="material-symbols-outlined" style="font-size:10px">close</span>
+                                    <span>Remove</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                const cardEl = wrapper.querySelector('.polaroid-card');
+                
+                cardEl.querySelector('.view-insp-btn').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    openModal(card);
+                });
+                
+                cardEl.querySelector('.match-insp-btn').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    openMatchModalForCard(card.id);
+                });
+                
+                cardEl.querySelector('.set-cover-btn').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    setMoodboardCover(mb.id, card.id);
+                });
+                
+                cardEl.querySelector('.move-insp-btn').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    openMoodboardPicker(card.id, userMoodboards, mb.id);
+                });
+                
+                cardEl.querySelector('.remove-insp-btn').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    removeCardFromMoodboard(mb.id, card.id);
+                });
+                
+                cardEl.addEventListener('click', (e) => {
+                    if (!e.target.closest('button')) {
+                        openModal(card);
+                    }
+                });
+                
+                grid.appendChild(wrapper);
+            });
+            
+            // Set header for this Specific Moodboard
+            const mbDetails = {
+                "Created": new Date(mb.createdAt).toLocaleDateString(),
+                "Occasions": mb.stats?.occasions?.join(', ') || 'None',
+                "Aesthetics": mb.stats?.aesthetics?.join(', ') || 'None'
+            };
+            
+            renderBoardHeader({
+                type: 'Moodboard',
+                title: mb.name,
+                description: mb.description || 'Custom fashion moodboard planning.',
+                details: mbDetails
+            }, savedCards.length);
+            
+            document.getElementById('related-boards-container').classList.add('hidden');
+        }
+
+        // Open a moodboard and update active filters
+        function openMoodboard(moodboardId) {
+            Object.keys(activeFilters).forEach(t => activeFilters[t] = '');
+            updateFilterUI();
+            
+            activeMoodboardId = moodboardId;
+            inMoodboardCollectionMode = false;
+            
+            refreshFeed();
+            showToast(`Opened: ${userMoodboards.find(m => m.id === moodboardId)?.name || 'Moodboard'} 📂`);
+        }
+
+        // Save card action (Quick Save vs Picker Modal)
+        async function handleSaveClick(inspirationId) {
+            if (userMoodboards.length === 1) {
+                // Quick Save: Toggle in/out of the single moodboard
+                const mb = userMoodboards[0];
+                const isAlreadyIn = (mb.cards || []).includes(inspirationId);
+                
+                if (isAlreadyIn) {
+                    await removeCardFromMoodboard(mb.id, inspirationId);
+                    showToast(`Removed from ${mb.name} ❤️`);
+                } else {
+                    await saveCardToMoodboard(mb.id, inspirationId);
+                    showToast(`Saved to ${mb.name}! ❤️`);
+                }
+            } else {
+                // Open picker modal
+                openMoodboardPicker(inspirationId, userMoodboards);
+            }
+        }
+
+        // Open Moodboard Picker Modal
+        function openMoodboardPicker(inspirationId, moodboards, sourceMoodboardId = null) {
+            activePickerInspirationId = inspirationId;
+            activePickerSourceMoodboardId = sourceMoodboardId;
+            
+            const modal = document.getElementById('moodboard-picker-modal');
+            const listContainer = document.getElementById('moodboards-list-container');
+            
+            listContainer.innerHTML = '';
+            
+            if (moodboards.length === 0) {
+                listContainer.innerHTML = `<p class="text-xs text-muted text-center py-4">No moodboards yet. Create one below!</p>`;
+            } else {
+                moodboards.forEach(mb => {
+                    const isAlreadyIn = (mb.cards || []).includes(inspirationId);
+                    const checkIcon = isAlreadyIn ? 'check_box' : 'check_box_outline_blank';
+                    
+                    const btn = document.createElement('button');
+                    btn.className = `w-full text-left py-2 px-3 rounded-xl border flex items-center justify-between text-xs font-sans transition-all hover:bg-roseAccentLight select-none ${isAlreadyIn ? 'border-roseAccent text-roseAccent bg-roseAccentLight/30' : 'border-border text-main bg-white'}`;
+                    btn.innerHTML = `
+                        <span class="font-medium">${mb.name}</span>
+                        <span class="material-symbols-outlined text-[16px]">${checkIcon}</span>
+                    `;
+                    btn.addEventListener('click', async () => {
+                        if (isAlreadyIn) {
+                            await removeCardFromMoodboard(mb.id, inspirationId);
+                            // Refresh picker view
+                            const updatedRes = await fetch(`/api/moodboards?email=${encodeURIComponent(session.email)}`);
+                            const updatedData = await updatedRes.json();
+                            if (updatedData.success) {
+                                userMoodboards = updatedData.moodboards || [];
+                                openMoodboardPicker(inspirationId, userMoodboards, sourceMoodboardId);
+                            }
+                        } else {
+                            await saveCardToMoodboard(mb.id, inspirationId);
+                            
+                            // If Move operation, remove from source
+                            if (sourceMoodboardId) {
+                                await removeCardFromMoodboard(sourceMoodboardId, inspirationId);
+                            }
+                            
+                            closeMoodboardPicker();
+                        }
+                    });
+                    listContainer.appendChild(btn);
+                });
+            }
+            
+            modal.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeMoodboardPicker() {
+            document.getElementById('moodboard-picker-modal').classList.remove('open');
+            document.body.style.overflow = '';
+            activePickerInspirationId = null;
+            activePickerSourceMoodboardId = null;
+        }
+        
+        document.getElementById('moodboard-picker-close-btn').addEventListener('click', closeMoodboardPicker);
+        document.getElementById('moodboard-picker-backdrop').addEventListener('click', closeMoodboardPicker);
+
+        // Add card to moodboard
+        async function saveCardToMoodboard(moodboardId, inspirationId) {
+            try {
+                const res = await fetch('/api/moodboards/save', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: session.email,
+                        moodboardId,
+                        inspirationId
+                    })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast(`Saved to moodboard! ❤️`);
+                    await fetchMoodboards();
+                    
+                    if (activeMoodboardId === moodboardId) {
+                        renderSpecificMoodboardGrid(moodboardId);
+                    } else if (inMoodboardCollectionMode) {
+                        renderMoodboardsGrid();
+                    } else {
+                        refreshFeed();
+                    }
+                } else {
+                    showToast(data.message || "Failed to save.");
+                }
+            } catch (err) {
+                console.error(err);
+                showToast("Error saving card.");
+            }
+        }
+
+        // Remove card from moodboard
+        async function removeCardFromMoodboard(moodboardId, inspirationId) {
+            try {
+                const res = await fetch('/api/moodboards/save', {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: session.email,
+                        moodboardId,
+                        inspirationId
+                    })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast("Removed card from moodboard.");
+                    await fetchMoodboards();
+                    
+                    if (activeMoodboardId === moodboardId) {
+                        renderSpecificMoodboardGrid(moodboardId);
+                    } else if (inMoodboardCollectionMode) {
+                        renderMoodboardsGrid();
+                    } else {
+                        refreshFeed();
+                    }
+                } else {
+                    showToast(data.message || "Failed to remove.");
+                }
+            } catch (err) {
+                console.error(err);
+                showToast("Error removing card.");
+            }
+        }
+
+        // Set Cover Image
+        async function setMoodboardCover(moodboardId, inspirationId) {
+            try {
+                const res = await fetch('/api/moodboards/set-cover', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: session.email,
+                        moodboardId,
+                        inspirationId
+                    })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast("Moodboard cover set! ⭐");
+                    await fetchMoodboards();
+                    
+                    if (activeMoodboardId === moodboardId) {
+                        renderSpecificMoodboardGrid(moodboardId);
+                    }
+                } else {
+                    showToast(data.message || "Failed to set cover.");
+                }
+            } catch (err) {
+                console.error(err);
+                showToast("Error setting cover.");
+            }
+        }
+
+        // Create new moodboard
+        async function handleCreateMoodboardClick() {
+            const nameInput = document.getElementById('new-moodboard-name');
+            const name = nameInput.value.trim();
+            if (!name) {
+                showToast("Please enter a moodboard name.");
+                return;
+            }
+            
+            try {
+                const res = await fetch('/api/moodboards', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: session.email,
+                        name: name
+                    })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    nameInput.value = '';
+                    showToast(`Moodboard "${name}" created! 📒`);
+                    
+                    await fetchMoodboards();
+                    
+                    if (activePickerInspirationId) {
+                        await saveCardToMoodboard(data.moodboard.id, activePickerInspirationId);
+                        if (activePickerSourceMoodboardId) {
+                            await removeCardFromMoodboard(activePickerSourceMoodboardId, activePickerInspirationId);
+                        }
+                        closeMoodboardPicker();
+                    } else {
+                        if (inMoodboardCollectionMode) {
+                            renderMoodboardsGrid();
+                        }
+                    }
+                } else {
+                    showToast(data.message || "Failed to create moodboard.");
+                }
+            } catch (err) {
+                console.error(err);
+                showToast("Error creating moodboard.");
+            }
+        }
+        
+        document.getElementById('create-moodboard-btn').addEventListener('click', handleCreateMoodboardClick);
+
+        // Delete moodboard
+        async function deleteMoodboard(moodboardId) {
+            const mb = userMoodboards.find(m => m.id === moodboardId);
+            if (!mb) return;
+            
+            if (!confirm(`Are you sure you want to delete the moodboard "${mb.name}"?`)) {
+                return;
+            }
+            
+            try {
+                const res = await fetch(`/api/moodboards/${moodboardId}?email=${encodeURIComponent(session.email)}`, {
+                    method: 'DELETE'
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast(`Deleted moodboard "${mb.name}".`);
+                    
+                    if (activeMoodboardId === moodboardId) {
+                        activeMoodboardId = null;
+                        inMoodboardCollectionMode = true;
+                    }
+                    
+                    await fetchMoodboards();
+                    
+                    if (inMoodboardCollectionMode) {
+                        renderMoodboardsGrid();
+                    } else {
+                        refreshFeed();
+                    }
+                } else {
+                    showToast(data.message || "Failed to delete moodboard.");
+                }
+            } catch (err) {
+                console.error(err);
+                showToast("Error deleting moodboard.");
+            }
+        }
+
+        // View all moodboards button click
+        document.getElementById('view-all-moodboards-btn').addEventListener('click', () => {
+            Object.keys(activeFilters).forEach(t => activeFilters[t] = '');
+            updateFilterUI();
+            
+            activeMoodboardId = null;
+            inMoodboardCollectionMode = true;
+            
+            refreshFeed();
+            showToast('Opened My Moodboards 📁');
+        });
+
+        // ══════════════════════════════════════════════════════════════════
+        // WARDROBE MATCHING SYSTEM TRIGGERS & HANDLERS (PHASE 7)
+        // ══════════════════════════════════════════════════════════════════
+
+        function openMatchModalForCard(inspirationId) {
+            const modal = document.getElementById('match-modal');
+            const backdrop = document.getElementById('match-modal-backdrop');
+            const inner = document.getElementById('match-modal-inner');
+            
+            fetch('/api/inspiration/match', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: session.email,
+                    inspirationId: inspirationId
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    const report = data.report;
+                    
+                    // Populate Score
+                    document.getElementById('match-score-value').textContent = report.score;
+                    document.getElementById('match-progress-bar').style.width = report.score + '%';
+                    
+                    // Set progress bar color based on score
+                    const progressBar = document.getElementById('match-progress-bar');
+                    if (report.score >= 90) {
+                        progressBar.className = 'bg-gradient-to-r from-emerald-400 to-green-500 h-full rounded-full transition-all duration-500';
+                    } else if (report.score >= 70) {
+                        progressBar.className = 'bg-gradient-to-r from-blue-400 to-indigo-500 h-full rounded-full transition-all duration-500';
+                    } else if (report.score >= 50) {
+                        progressBar.className = 'bg-gradient-to-r from-amber-400 to-orange-500 h-full rounded-full transition-all duration-500';
+                    } else {
+                        progressBar.className = 'bg-gradient-to-r from-red-400 to-rose-600 h-full rounded-full transition-all duration-500';
+                    }
+                    
+                    // Set Indicator badge
+                    const badge = document.getElementById('match-indicator-badge');
+                    if (report.score >= 90) {
+                        badge.className = 'font-label text-[9px] px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 font-bold';
+                        badge.textContent = '🟢 Excellent Match';
+                    } else if (report.score >= 70) {
+                        badge.className = 'font-label text-[9px] px-2.5 py-1 rounded-full bg-blue-100 text-blue-800 font-bold';
+                        badge.textContent = '🔵 Strong Match';
+                    } else if (report.score >= 50) {
+                        badge.className = 'font-label text-[9px] px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 font-bold';
+                        badge.textContent = '🟠 Partial Match';
+                    } else {
+                        badge.className = 'font-label text-[9px] px-2.5 py-1 rounded-full bg-red-100 text-red-800 font-bold';
+                        badge.textContent = '🔴 Missing Essentials';
+                    }
+                    
+                    // Set Explanation Text
+                    document.getElementById('match-explanation-text').textContent = report.explanation || 'No explanation generated.';
+                    
+                    // Populate Owned list
+                    const ownedEl = document.getElementById('match-owned-list');
+                    ownedEl.innerHTML = '';
+                    if (report.owned.length === 0) {
+                        ownedEl.innerHTML = '<p class="text-muted italic text-[11px] py-1 px-2.5">None</p>';
+                    } else {
+                        report.owned.forEach(item => {
+                            ownedEl.innerHTML += `
+                                <div class="flex items-center gap-2 py-1 px-2.5 bg-emerald-50/50 rounded-lg border border-emerald-100/30">
+                                    <span class="text-emerald-500 font-bold">✓</span>
+                                    <span>${item.requiredColor} ${item.requiredCategory}</span>
+                                    <span class="text-[10px] text-muted ml-auto">(Your ${item.ownedName})</span>
+                                </div>
+                            `;
+                        });
+                    }
+                    
+                    // Populate Substitutes list
+                    const subEl = document.getElementById('match-substitutes-list');
+                    subEl.innerHTML = '';
+                    if (report.substitutes.length === 0) {
+                        subEl.innerHTML = '<p class="text-muted italic text-[11px] py-1 px-2.5">None</p>';
+                    } else {
+                        report.substitutes.forEach(item => {
+                            const label = item.score === 75 ? 'Color Near Match' : 'Style Substitute';
+                            subEl.innerHTML += `
+                                <div class="flex items-center gap-2 py-1 px-2.5 bg-amber-50/50 rounded-lg border border-amber-100/30">
+                                    <span class="text-amber-500 font-bold">≈</span>
+                                    <span>${item.requiredColor} ${item.requiredCategory}</span>
+                                    <span class="text-[10px] text-muted ml-auto">(Your ${item.ownedColor} ${item.ownedName} — ${label})</span>
+                                </div>
+                            `;
+                        });
+                    }
+                    
+                    // Populate Missing list
+                    const missingEl = document.getElementById('match-missing-list');
+                    missingEl.innerHTML = '';
+                    if (report.missing.length === 0) {
+                        missingEl.innerHTML = '<p class="text-muted italic text-[11px] py-1 px-2.5">None</p>';
+                    } else {
+                        report.missing.forEach(item => {
+                            missingEl.innerHTML += `
+                                <div class="flex items-center gap-2 py-1 px-2.5 bg-red-50/50 rounded-lg border border-red-100/30">
+                                    <span class="text-red-500 font-bold">✗</span>
+                                    <span class="line-through text-muted">${item.requiredColor} ${item.requiredCategory}</span>
+                                </div>
+                            `;
+                        });
+                    }
+                    
+                    modal.classList.add('open');
+                    inner.classList.remove('scale-95', 'translate-y-4');
+                    document.body.style.overflow = 'hidden';
+                } else {
+                    showToast(data.message || 'Failed to analyze look matching.');
+                }
+            })
+            .catch(err => {
+                console.error("Match analysis failed:", err);
+                showToast("Network error executing wardrobe match.");
+            });
+        }
+
+        function openMoodboardMatchModal(moodboardId) {
+            const modal = document.getElementById('moodboard-match-modal');
+            const backdrop = document.getElementById('moodboard-match-backdrop');
+            const inner = document.getElementById('moodboard-match-inner');
+            const mb = userMoodboards.find(m => m.id === moodboardId);
+            if (!mb) return;
+            
+            document.getElementById('moodboard-match-title-label').textContent = `${mb.name} Match Analysis`;
+            
+            fetch('/api/moodboards/match', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: session.email,
+                    moodboardId: moodboardId
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    const listEl = document.getElementById('moodboard-match-gaps-list');
+                    listEl.innerHTML = '';
+                    
+                    if (data.gaps.length === 0) {
+                        listEl.innerHTML = `
+                            <div class="p-5 text-center bg-emerald-50/30 border border-emerald-100 rounded-2xl">
+                                <span class="text-3xl">🎉</span>
+                                <h4 class="font-display text-sm text-emerald-800 mt-2">Excellent! No Wardrobe Gaps!</h4>
+                                <p class="text-[10px] text-emerald-600 mt-0.5">You own matching wardrobe pieces for all saved looks in this moodboard!</p>
+                            </div>
+                        `;
+                    } else {
+                        data.gaps.forEach(gap => {
+                            // Style priority labels
+                            let labelClass = 'bg-rose-100/50 text-rose-700';
+                            if (gap.priorityLabel) {
+                                if (gap.priorityLabel.includes('🔥')) labelClass = 'bg-red-100 text-red-800 border border-red-200/50 font-bold';
+                                else if (gap.priorityLabel.includes('✨')) labelClass = 'bg-violet-100 text-violet-800 border border-violet-200/50 font-bold';
+                                else if (gap.priorityLabel.includes('Medium')) labelClass = 'bg-amber-100 text-amber-800 border border-amber-200/50';
+                                else if (gap.priorityLabel.includes('Low')) labelClass = 'bg-gray-100 text-gray-700 border border-gray-200/50';
+                            }
+                            
+                            const reasonText = gap.reason 
+                                ? `<p class="text-[10px] text-muted leading-relaxed mt-1.5 p-2 bg-[#FFFDF6] rounded-xl border border-amber-200/30">${gap.reason}</p>` 
+                                : '';
+
+                            listEl.innerHTML += `
+                                <div class="flex flex-col gap-1.5 py-3 px-4 bg-rose-50/40 rounded-2xl border border-rose-100/30">
+                                    <div class="flex items-center gap-3">
+                                        <span class="text-rose-500 font-bold text-base">✗</span>
+                                        <div>
+                                            <p class="font-semibold text-main text-xs">${gap.color} ${gap.category}</p>
+                                            <p class="text-[9.5px] text-muted mt-0.5">Required by ${gap.count} saved look${gap.count !== 1 ? 's' : ''}</p>
+                                        </div>
+                                        <span class="ml-auto font-label text-[8px] px-2.5 py-1 rounded-full ${labelClass}">${gap.priorityLabel || 'Strong Gap'}</span>
+                                    </div>
+                                    ${reasonText}
+                                </div>
+                            `;
+                        });
+                    }
+                    
+                    modal.classList.add('open');
+                    inner.classList.remove('scale-95', 'translate-y-4');
+                    document.body.style.overflow = 'hidden';
+                } else {
+                    showToast(data.message || 'Failed to analyze moodboard wardrobe gaps.');
+                }
+            })
+            .catch(err => {
+                console.error("Moodboard gaps analysis failed:", err);
+                showToast("Network error executing moodboard gaps analysis.");
+            });
+        }
+
+        function closeMatchModal() {
+            const modal = document.getElementById('match-modal');
+            modal.classList.remove('open');
+            modal.querySelector('#match-modal-inner').classList.add('scale-95', 'translate-y-4');
+            if (!document.getElementById('moodboard-match-modal').classList.contains('open') && !document.getElementById('insp-modal').classList.contains('open')) {
+                document.body.style.overflow = '';
+            }
+        }
+
+        function closeMoodboardMatchModal() {
+            const modal = document.getElementById('moodboard-match-modal');
+            modal.classList.remove('open');
+            modal.querySelector('#moodboard-match-inner').classList.add('scale-95', 'translate-y-4');
+            if (!document.getElementById('match-modal').classList.contains('open') && !document.getElementById('insp-modal').classList.contains('open')) {
+                document.body.style.overflow = '';
+            }
+        }
+
+        // Event Listeners for match modals
+        document.getElementById('match-close-btn').addEventListener('click', closeMatchModal);
+        document.getElementById('match-modal-backdrop').addEventListener('click', closeMatchModal);
+        
+        document.getElementById('moodboard-match-close-btn').addEventListener('click', closeMoodboardMatchModal);
+        document.getElementById('moodboard-match-backdrop').addEventListener('click', closeMoodboardMatchModal);
+        
+        // Match Entire Moodboard click event
+        document.addEventListener('click', (e) => {
+            const btn = e.target.closest('#moodboard-match-all-btn');
+            if (btn && activeMoodboardId) {
+                openMoodboardMatchModal(activeMoodboardId);
+            }
+        });
+
+        // Analyze Moodboard click event
+        document.addEventListener('click', (e) => {
+            const btn = e.target.closest('#moodboard-analyze-btn');
+            if (btn && activeMoodboardId) {
+                openMoodboardMatchModal(activeMoodboardId);
+            }
+        });
+
+        // Detail Modal Match, Build, & Recommend buttons
+        document.getElementById('modal-match-btn').addEventListener('click', () => {
+            if (currentModalCard) {
+                openMatchModalForCard(currentModalCard.id);
+            }
+        });
+
+        document.getElementById('modal-build-btn').addEventListener('click', () => {
+            if (currentModalCard) {
+                openBuildModalForCard(currentModalCard.id);
+            }
+        });
+
+        document.getElementById('modal-recommend-btn').addEventListener('click', () => {
+            if (currentModalCard) {
+                openRecommendationModalForCard(currentModalCard.id);
+            }
+        });
+
+        function openRecommendationModalForCard(inspirationId) {
+            const modal = document.getElementById('recommendation-modal');
+            const inner = document.getElementById('recommendation-inner');
+            const titleEl = document.getElementById('recommendation-title');
+            
+            const card = allCuratedCards.find(c => c.id === inspirationId);
+            if (card) {
+                titleEl.textContent = `Improve Look: ${card.title}`;
+            }
+
+            fetch('/api/inspiration/recommend', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: session.email,
+                    inspirationId: inspirationId
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    const gapsEl = document.getElementById('recommendation-gaps-container');
+                    gapsEl.innerHTML = '';
+                    
+                    if (data.missing.length === 0) {
+                        gapsEl.innerHTML = `
+                            <div class="p-4 text-center bg-emerald-50/40 border border-emerald-100 rounded-2xl">
+                                <span class="text-2xl">🎉</span>
+                                <h4 class="font-display text-sm text-emerald-800 mt-2">Zero Gaps! Perfect Fit!</h4>
+                                <p class="text-[10px] text-emerald-600 mt-0.5">You own matching pieces for this lookbook card in your closet.</p>
+                            </div>
+                        `;
+                    } else {
+                        data.missing.forEach(m => {
+                            let altHtml = '';
+                            if (m.alternatives && m.alternatives.length > 0) {
+                                altHtml = `
+                                    <div class="mt-2.5 pl-4 border-l-2 border-violet-100 flex flex-col gap-2">
+                                        <p class="font-label text-[8px] text-violetAccent uppercase tracking-wider font-bold">Recommended Alternatives in Closet:</p>
+                                        ${m.alternatives.map(alt => `
+                                            <div class="flex items-start gap-2.5 p-2 bg-[#FFFDF9] border border-amber-200/50 rounded-xl">
+                                                <input type="checkbox" checked disabled class="mt-0.5 rounded border-amber-300 text-amber-500 focus:ring-amber-500/20" />
+                                                <div class="min-w-0 flex-1">
+                                                    <div class="flex items-center gap-1.5 flex-wrap">
+                                                        <span class="font-semibold text-main text-[11px]">${alt.name}</span>
+                                                        <span class="font-mono text-[8px] text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200/30">Match Score: ${alt.score}</span>
+                                                    </div>
+                                                    <p class="text-[10px] text-muted leading-relaxed mt-0.5">${alt.reason}</p>
+                                                </div>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                `;
+                            } else {
+                                altHtml = `
+                                    <p class="text-[10px] text-muted italic mt-1.5 pl-4">No alternative garments found in your closet for this piece.</p>
+                                `;
+                            }
+
+                            gapsEl.innerHTML += `
+                                <div class="bg-rose-50/20 border border-rose-100/30 rounded-2xl p-4 flex flex-col gap-1.5">
+                                    <div class="flex items-start justify-between gap-3">
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-rose-500 font-bold text-base">✗</span>
+                                            <span class="font-bold text-main text-xs">${m.color} ${m.category}</span>
+                                        </div>
+                                        <span class="font-label text-[8px] px-2.5 py-0.5 rounded-full font-bold ${m.priorityLabel.includes('🔥') ? 'bg-red-100 text-red-800' : 'bg-violet-100 text-violet-800'}">${m.priorityLabel}</span>
+                                    </div>
+                                    <p class="text-[10.5px] text-muted leading-relaxed mt-0.5">${m.reason}</p>
+                                    ${altHtml}
+                                </div>
+                            `;
+                        });
+                    }
+
+                    const similarEl = document.getElementById('recommendation-similar-container');
+                    similarEl.innerHTML = '';
+                    if (!data.similarLooks || data.similarLooks.length === 0) {
+                        similarEl.innerHTML = '<p class="text-muted italic text-[11px] col-span-3 text-center py-4">No similar looks found.</p>';
+                    } else {
+                        data.similarLooks.forEach(s => {
+                            similarEl.innerHTML += `
+                                <div class="flex flex-col gap-2 p-2.5 bg-violet-50/20 border border-violet-100/30 rounded-2xl cursor-pointer hover:border-violet-300 hover:bg-violet-50/50 transition-all" onclick="viewSimilarLook('${s.id}')">
+                                    <div class="aspect-[3/4] rounded-xl overflow-hidden bg-muted">
+                                        <img src="${s.img || '/assets/mannequin_base.png'}" alt="${s.title}" class="w-full h-full object-cover" />
+                                    </div>
+                                    <h4 class="font-handwriting text-sm text-main font-bold leading-tight line-clamp-1">${s.title}</h4>
+                                    <p class="text-[9px] text-muted leading-relaxed line-clamp-3">${s.reason}</p>
+                                </div>
+                            `;
+                        });
+                    }
+                    
+                    modal.classList.add('open');
+                    inner.classList.remove('scale-95', 'translate-y-4');
+                    document.body.style.overflow = 'hidden';
+                } else {
+                    showToast(data.message || 'Failed to fetch style recommendations.');
+                }
+            })
+            .catch(err => {
+                console.error("Style recommendations failed:", err);
+                showToast("Network error executing recommendations analysis.");
+            });
+        }
+        
+        function closeRecommendationModal() {
+            const modal = document.getElementById('recommendation-modal');
+            modal.classList.remove('open');
+            modal.querySelector('#recommendation-inner').classList.add('scale-95', 'translate-y-4');
+            if (!document.getElementById('match-modal').classList.contains('open') && !document.getElementById('insp-modal').classList.contains('open') && !document.getElementById('moodboard-match-modal').classList.contains('open')) {
+                document.body.style.overflow = '';
+            }
+        }
+        
+        function viewSimilarLook(id) {
+            const card = allCuratedCards.find(c => c.id === id);
+            if (card) {
+                closeRecommendationModal();
+                openModal(card);
+            }
+        }
+
+        window.openRecommendationModalForCard = openRecommendationModalForCard;
+        window.closeRecommendationModal = closeRecommendationModal;
+        window.viewSimilarLook = viewSimilarLook;
+
+        let activeBuildData = null; // Stash currently loaded build result
+
+        function openBuildModalForCard(inspirationId) {
+            const modal = document.getElementById('build-preview-modal');
+            const contentWrap = document.getElementById('build-preview-content');
+            const emptyWrap = document.getElementById('build-empty-state');
+            const titleEl = document.getElementById('build-preview-title');
+            
+            // Set Look Title
+            const card = allCuratedCards.find(c => c.id === inspirationId);
+            if (card) {
+                titleEl.textContent = `Build: ${card.title}`;
+            }
+
+            fetch('/api/inspiration/build', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email: session.email,
+                    inspirationId: inspirationId
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.noWardrobe) {
+                    // Empty closet
+                    contentWrap.classList.add('hidden');
+                    emptyWrap.classList.remove('hidden');
+                    document.getElementById('build-empty-message').textContent = data.message;
+                    modal.classList.add('open');
+                    document.body.style.overflow = 'hidden';
+                    return;
+                }
+
+                if (data.success) {
+                    activeBuildData = {
+                        inspirationId,
+                        score: data.score,
+                        confidence: data.confidence,
+                        outfit: data.outfit,
+                        missing: data.missing,
+                        explanation: data.explanation,
+                        cardTitle: card ? card.title : "Inspiration Look",
+                        cardImage: card ? card.image : "",
+                        cardNotes: card ? card.notes : ""
+                    };
+
+                    contentWrap.classList.remove('hidden');
+                    emptyWrap.classList.add('hidden');
+
+                    // Score value & progress bar
+                    document.getElementById('build-score-value').textContent = data.score;
+                    const progressBar = document.getElementById('build-progress-bar');
+                    progressBar.style.width = data.score + '%';
+
+                    if (data.score >= 90) {
+                        progressBar.className = 'bg-gradient-to-r from-emerald-400 to-green-500 h-full rounded-full transition-all duration-500';
+                    } else if (data.score >= 70) {
+                        progressBar.className = 'bg-gradient-to-r from-blue-400 to-indigo-500 h-full rounded-full transition-all duration-500';
+                    } else if (data.score >= 50) {
+                        progressBar.className = 'bg-gradient-to-r from-amber-400 to-orange-500 h-full rounded-full transition-all duration-500';
+                    } else {
+                        progressBar.className = 'bg-gradient-to-r from-red-400 to-rose-600 h-full rounded-full transition-all duration-500';
+                    }
+
+                    // Confidence badge
+                    const badge = document.getElementById('build-confidence-badge');
+                    if (data.confidence === "High") {
+                        badge.className = 'font-label text-[9px] px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 font-bold';
+                        badge.textContent = '🟢 High Confidence';
+                    } else if (data.confidence === "Medium") {
+                        badge.className = 'font-label text-[9px] px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 font-bold';
+                        badge.textContent = '🟡 Medium Confidence';
+                    } else {
+                        badge.className = 'font-label text-[9px] px-2.5 py-1 rounded-full bg-red-100 text-red-800 font-bold';
+                        badge.textContent = '🔴 Low Confidence';
+                    }
+
+                    // Stylist report explanation
+                    document.getElementById('build-explanation-text').textContent = data.explanation;
+
+                    // Dressed items
+                    const ownedEl = document.getElementById('build-owned-list');
+                    ownedEl.innerHTML = '';
+                    if (data.outfit.length === 0) {
+                        ownedEl.innerHTML = '<p class="text-muted italic text-[11px] py-1 px-2.5">No closet pieces match.</p>';
+                    } else {
+                        data.outfit.forEach(item => {
+                            const badgeColor = item.matchType === 'Exact Match' 
+                                ? 'bg-emerald-100 text-emerald-800 border-emerald-200' 
+                                : 'bg-amber-100 text-amber-800 border-amber-200';
+                            ownedEl.innerHTML += `
+                                <div class="flex items-center gap-2 py-1 px-2.5 bg-emerald-50/30 rounded-lg border border-emerald-100/20">
+                                    <span class="text-emerald-500 font-bold">✓</span>
+                                    <span>${item.name}</span>
+                                    <span class="text-[7.5px] uppercase tracking-wider px-1.5 py-0.5 rounded border font-semibold ml-auto ${badgeColor}">${item.matchType}</span>
+                                </div>
+                            `;
+                        });
+                    }
+
+                    // Missing items
+                    const missingEl = document.getElementById('build-missing-list');
+                    missingEl.innerHTML = '';
+                    if (data.missing.length === 0) {
+                        missingEl.innerHTML = '<p class="text-muted italic text-[11px] py-1 px-2.5">None! You own the complete outfit.</p>';
+                    } else {
+                        data.missing.forEach(item => {
+                            missingEl.innerHTML += `
+                                <div class="flex items-center gap-2 py-1 px-2.5 bg-red-50/30 rounded-lg border border-red-100/20">
+                                    <span class="text-red-500 font-bold">✗</span>
+                                    <span class="line-through text-muted">${item.color} ${item.category}</span>
+                                    <span class="text-[8px] text-muted ml-auto font-mono">Suggested: ${item.majorCategory}</span>
+                                </div>
+                            `;
+                        });
+                    }
+
+                    modal.classList.add('open');
+                    document.getElementById('build-preview-inner').classList.remove('scale-95', 'translate-y-4');
+                    document.body.style.overflow = 'hidden';
+                } else {
+                    showToast(data.message || 'Failed to generate outfit build preview.');
+                }
+            })
+            .catch(err => {
+                console.error("Build preview error:", err);
+                showToast("Network error executing outfit builder.");
+            });
+        }
+
+        function closeBuildModal() {
+            const modal = document.getElementById('build-preview-modal');
+            modal.classList.remove('open');
+            modal.querySelector('#build-preview-inner').classList.add('scale-95', 'translate-y-4');
+            if (!document.getElementById('match-modal').classList.contains('open') && !document.getElementById('insp-modal').classList.contains('open')) {
+                document.body.style.overflow = '';
+            }
+            activeBuildData = null;
+        }
+
+        // Hook Build Modal events
+        document.getElementById('build-preview-close-btn').addEventListener('click', closeBuildModal);
+        document.getElementById('build-preview-backdrop').addEventListener('click', closeBuildModal);
+        document.getElementById('build-empty-close-btn').addEventListener('click', closeBuildModal);
+
+        // Open in Studio Save Build History & Redirect
+        document.getElementById('build-open-studio-btn').addEventListener('click', async () => {
+            if (!activeBuildData) return;
+
+            const saveBtn = document.getElementById('build-open-studio-btn');
+            const originalText = saveBtn.innerHTML;
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<span class="spinner mr-1"></span> Preparing Studio...';
+
+            try {
+                // Save build history to JSON database
+                const saveRes = await fetch('/api/inspiration/build/save', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: session.email,
+                        inspirationId: activeBuildData.inspirationId,
+                        score: activeBuildData.score,
+                        outfit: activeBuildData.outfit,
+                        missing: activeBuildData.missing
+                    })
+                });
+                const saveData = await saveRes.json();
+                
+                if (saveData.success) {
+                    // Inject buildId and save draft to localStorage
+                    const draftPayload = {
+                        inspirationId: activeBuildData.inspirationId,
+                        buildId: saveData.buildId,
+                        cardTitle: activeBuildData.cardTitle,
+                        cardImage: activeBuildData.cardImage || "",
+                        cardNotes: activeBuildData.cardNotes || "",
+                        score: activeBuildData.score,
+                        confidence: activeBuildData.confidence,
+                        explanation: activeBuildData.explanation,
+                        outfit: activeBuildData.outfit,
+                        missing: activeBuildData.missing,
+                        generatedAt: new Date().toISOString()
+                    };
+
+                    localStorage.setItem('buildLookDraft', JSON.stringify(draftPayload));
+                    
+                    // Redirect to studio
+                    window.location.href = 'studio.html';
+                } else {
+                    showToast("Failed to record build session. Try again.");
+                    saveBtn.disabled = false;
+                    saveBtn.innerHTML = originalText;
+                }
+            } catch (err) {
+                console.error("Save build error:", err);
+                showToast("Network error. Couldn't save build history.");
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = originalText;
+            }
+        });
+
+        // ─── Init ──────────────────────────────────────────────────────────
+        async function init() {
+            try {
+                // Fetch all cards for local lookup/rendering when viewing moodboards
+                const res = await fetch('/api/inspiration');
+                const result = await res.json();
+                if (result.success) {
+                    allCuratedCards = result.data || [];
+                }
+            } catch (err) {
+                console.error("Failed to preload curated cards:", err);
+            }
+            
+            // Fetch user's moodboards
+            await fetchMoodboards();
+
+            updateFilterUI();
+            await refreshFeed();
+        }
+
+        init();
+    })();
+    </script>
+</body>
+</html>

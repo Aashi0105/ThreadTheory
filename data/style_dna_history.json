@@ -1,0 +1,97 @@
+[
+  {
+    "email": "demo@threadtheory.io",
+    "timestamp": "2026-06-24T15:36:05.817Z",
+    "topAesthetics": {
+      "Dark Academia": 10,
+      "Minimalism": 8,
+      "Streetwear": 8,
+      "Grunge": 8,
+      "Old Money": 8,
+      "Clean Girl": 8,
+      "Gorpcore": 7,
+      "Coquette": 7,
+      "Eclectic Grandpa": 7,
+      "Techwear": 7,
+      "Boho Chic": 7,
+      "Whimsigoth": 7,
+      "Indie Sleaze": 7,
+      "Cottagecore": 1
+    },
+    "topColors": [
+      "Navy",
+      "Gray",
+      "White"
+    ],
+    "confidenceScore": 100
+  },
+  {
+    "email": "demo@threadtheory.io",
+    "timestamp": "2026-07-06T07:48:17.709Z",
+    "topAesthetics": {
+      "Whimsigoth": 8,
+      "Clean Girl": 9,
+      "Y2K": 8,
+      "Coquette": 8,
+      "Boho Chic": 8,
+      "Indie Sleaze": 8,
+      "Minimalism": 7,
+      "Dark Academia": 7,
+      "Cottagecore": 7,
+      "Grunge": 7,
+      "Old Money": 7,
+      "Streetwear": 6,
+      "Gorpcore": 6,
+      "Eclectic Grandpa": 2,
+      "Techwear": 2
+    },
+    "topColors": [
+      "White",
+      "Gray",
+      "Beige"
+    ],
+    "confidenceScore": 76
+  },
+  {
+    "email": "demo@threadtheory.io",
+    "timestamp": "2026-07-24T18:54:37.953Z",
+    "topAesthetics": {
+      "Minimalism": 4,
+      "Dark Academia": 8,
+      "Cottagecore": 8,
+      "Streetwear": 8,
+      "Gorpcore": 8,
+      "Grunge": 8,
+      "Coquette": 8,
+      "Old Money": 8,
+      "Techwear": 8,
+      "Boho Chic": 8,
+      "Whimsigoth": 8,
+      "Indie Sleaze": 8,
+      "Clean Girl": 8
+    },
+    "topColors": [
+      "White",
+      "Gray"
+    ],
+    "confidenceScore": 26
+  },
+  {
+    "email": "demo@threadtheory.io",
+    "timestamp": "2026-09-17T19:47:41.607Z",
+    "topAesthetics": {
+      "Y2K": 16,
+      "Cottagecore": 14,
+      "Coquette": 14,
+      "Boho Chic": 14,
+      "Whimsigoth": 14,
+      "Indie Sleaze": 14,
+      "Clean Girl": 14
+    },
+    "topColors": [
+      "White",
+      "Gray"
+    ],
+    "confidenceScore": 8
+  }
+]

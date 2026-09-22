@@ -1,0 +1,1383 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>ThreadTheory | My Style Notebook</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Bodoni Moda (high-contrast editorial serif) + Cormorant Garamond + Caveat (handwriting) + Jost (light tracking) -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;0,6..96,600;0,6..96,700;0,6..96,900;1,6..96,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Caveat:wght@400;700&family=Jost:wght@200;300;400;500&display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        :root {
+            --bg-base: #FFF0F2;
+            --bg-surface: #FFFFFF;
+            --border-color: #EAE6DF;
+            --text-main: #1A1817;
+            --text-muted: #8E8A85;
+            --accent-rose: #EC4899;
+            --accent-rose-light: #FDF2F8;
+            --accent-lavender: #8B5CF6;
+            --accent-lavender-light: #F5F3FF;
+            --accent-sage: #10B981;
+            --accent-sage-light: #ECFDF5;
+            --accent-amber: #F59E0B;
+            --accent-amber-light: #FEF3C7;
+            --accent-red: #E60023;
+            --bg-inactive: #F3ECE3;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            background-image: repeating-linear-gradient(90deg, #F7D4D9 0px, #F7D4D9 25px, #FFF0F2 25px, #FFF0F2 50px);
+            color: var(--text-main);
+            font-family: 'Jost', sans-serif;
+            letter-spacing: 0em;
+            padding: 30px 15px;
+        }
+
+        /* === TYPOGRAPHY SYSTEM (Bodoni Moda / Cormorant / Jost) === */
+        .font-display {
+            font-family: 'Bodoni Moda', serif;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .font-display-light {
+            font-family: 'Bodoni Moda', serif;
+            font-weight: 400;
+            font-style: italic;
+        }
+
+        .font-editorial {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 500;
+        }
+
+        .font-label {
+            font-family: 'Jost', sans-serif;
+            font-weight: 300;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            font-size: 0.65rem;
+        }
+
+        .font-handwriting {
+            font-family: 'Caveat', cursive;
+        }
+
+        /* Bodoni brand headline – like "PEONY LONDON" style */
+        .brand-headline {
+            font-family: 'Bodoni Moda', serif;
+            font-weight: 900;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+        }
+
+        .brand-sub {
+            font-family: 'Jost', sans-serif;
+            font-weight: 200;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            font-size: 0.55rem;
+        }
+
+        .grid-paper {
+            background-color: #ffffff;
+            background-image: linear-gradient(0deg, #F2F5F8 1px, transparent 1px), linear-gradient(90deg, #F2F5F8 1px, transparent 1px);
+            background-size: 16px 16px;
+        }
+
+        .gingham-tape {
+            background-color: #EF4444;
+            background-image: linear-gradient(90deg, rgba(255, 255, 255, .5) 50%, transparent 50%), linear-gradient(rgba(255, 255, 255, .5) 50%, transparent 50%);
+            background-size: 10px 10px;
+        }
+
+        .gingham-tape-pink {
+            background-color: #FBCFE8;
+            background-image: linear-gradient(90deg, rgba(255, 255, 255, .5) 50%, transparent 50%), linear-gradient(rgba(255, 255, 255, .5) 50%, transparent 50%);
+            background-size: 10px 10px;
+        }
+
+        .gingham-tape-lavender {
+            background-color: #DDD6FE;
+            background-image: linear-gradient(90deg, rgba(255, 255, 255, .5) 50%, transparent 50%), linear-gradient(rgba(255, 255, 255, .5) 50%, transparent 50%);
+            background-size: 10px 10px;
+        }
+
+        .polaroid-card {
+            background: #ffffff;
+            padding: 8px 8px 20px 8px;
+            box-shadow: 0 4px 10px rgba(236, 72, 153, 0.08);
+            border: 1px solid rgba(236, 72, 153, 0.15);
+        }
+
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 2px;
+        }
+
+        /* Category ticket micro-animation */
+        .category-ticket {
+            transition: transform 0.18s ease, box-shadow 0.18s ease;
+        }
+
+        .category-ticket:hover {
+            transform: translateY(-2px) scale(1.01);
+            box-shadow: 0 6px 18px rgba(236, 72, 153, 0.12);
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 1.1em;
+            height: 1.1em;
+            border: 2px solid currentColor;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            vertical-align: text-bottom;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        base: "#FAF8F5",
+                        surface: "#FFFFFF",
+                        border: "#EAE6DF",
+                        main: "#1A1817",
+                        muted: "#8E8A85",
+                        roseAccent: "#EC4899",
+                        roseAccentLight: "#FDF2F8",
+                        violetAccent: "#8B5CF6",
+                        violetAccentLight: "#F5F3FF",
+                        emeraldAccent: "#10B981",
+                        emeraldAccentLight: "#ECFDF5",
+                        amberAccent: "#F59E0B",
+                        amberAccentLight: "#FEF3C7",
+                        pinterestRed: "#E60023",
+                        inactive: "#F3ECE3"
+                    },
+                    fontFamily: {
+                        serif: ["Bodoni Moda", "serif"],
+                        editorial: ["Cormorant Garamond", "serif"],
+                        sans: ["Jost", "sans-serif"],
+                        handwriting: ["Caveat", "cursive"]
+                    }
+                }
+            }
+        };
+    </script>
+</head>
+
+<body class="bg-base text-main font-sans antialiased min-h-screen flex flex-col items-center justify-center p-4">
+
+    <!-- Mobile/Tablet Scrapbook Navigation Tape Bar -->
+    <div class="flex md:hidden flex-wrap justify-center gap-2 mb-4 max-w-md w-full px-2 shrink-0">
+        <a href="index.html" class="px-3 py-1.5 bg-roseAccent text-white font-label text-[9px] tracking-widest rounded-md shadow-md active:scale-95 transition-all rotate-[-1deg] font-bold">
+            🌸 Dashboard
+        </a>
+        <a href="calendar.html" class="px-3 py-1.5 bg-violetAccentLight/85 border border-violetAccent/20 text-violetAccent font-label text-[9px] tracking-widest rounded-md shadow-sm active:scale-95 transition-all rotate-[1deg] opacity-90 hover:opacity-100">
+            📅 Planner
+        </a>
+        <a href="studio.html" class="px-3 py-1.5 bg-emeraldAccentLight/85 border border-emeraldAccent/20 text-emeraldAccent font-label text-[9px] tracking-widest rounded-md shadow-sm active:scale-95 transition-all rotate-[-0.5deg] opacity-90 hover:opacity-100">
+            🎨 Studio
+        </a>
+        <a href="closet.html" class="px-3 py-1.5 bg-amberAccentLight/85 border border-amberAccent/20 text-amberAccent font-label text-[9px] tracking-widest rounded-md shadow-sm active:scale-95 transition-all rotate-[1.5deg] opacity-90 hover:opacity-100">
+            👗 Closet
+        </a>
+        <a href="inspiration.html" class="px-3 py-1.5 bg-teal-50 border border-teal-200/50 text-teal-600 font-label text-[9px] tracking-widest rounded-md shadow-sm active:scale-95 transition-all rotate-[-1deg] opacity-90 hover:opacity-100">
+            ✨ Inspiration
+        </a>
+        <a href="style-dna.html" class="px-3 py-1.5 bg-indigo-50 border border-indigo-200/50 text-indigo-600 font-label text-[9px] tracking-widest rounded-md shadow-sm active:scale-95 transition-all rotate-[2deg] opacity-90 hover:opacity-100">
+            🧬 DNA
+        </a>
+        <a href="my-looks.html" class="px-3 py-1.5 bg-pink-50 border border-pink-200/50 text-pink-600 font-label text-[9px] tracking-widest rounded-md shadow-sm active:scale-95 transition-all rotate-[-1.5deg] opacity-90 hover:opacity-100">
+            ❤️ Looks
+        </a>
+    </div>
+
+    <!-- Double-Page Spiral Binder Notebook Wrapper -->
+    <div
+        class="relative w-full max-w-[1050px] bg-white rounded-3xl border-4 border-roseAccent/20 shadow-2xl flex flex-col md:flex-row overflow-visible z-10 my-4 min-h-[680px]">
+
+        <!-- Notebook Left Page (Wardrobe Drawings + Bratz photo) -->
+        <div
+            class="flex-1 p-6 grid-paper rounded-t-3xl md:rounded-r-none md:rounded-l-3xl relative flex flex-col justify-between gap-3 border-b md:border-b-0 md:border-r border-border/60">
+
+            <!-- Top brand tag and navigation -->
+            <div class="flex justify-between items-start">
+                <div class="relative">
+                    <!-- PEONY/ORCHID style brand mark -->
+                    <span class="brand-headline text-xl text-pinterestRed tracking-widest">ThreadTheory</span>
+                    <p class="brand-sub text-roseAccent mt-0.5">Workspace &nbsp;/&nbsp; Style Diary</p>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <div
+                        class="hidden sm:flex items-center gap-1.5 bg-roseAccentLight rounded-full border border-roseAccent/20 px-2.5 py-1">
+                        <a class="font-label text-[9px] text-roseAccent" href="index.html">Dashboard</a>
+                        <span class="text-[9px] text-roseAccent/40">•</span>
+                        <a class="font-label text-[9px] text-muted hover:text-roseAccent transition-colors"
+                            href="calendar.html">Planner</a>
+                        <span class="text-[9px] text-roseAccent/40">•</span>
+                        <a class="font-label text-[9px] text-muted hover:text-roseAccent transition-colors"
+                            href="my-looks.html">❤️ Looks</a>
+                    </div>
+                    <!-- Logout button -->
+                    <button id="logout-btn" title="Sign out"
+                        class="flex items-center gap-1 font-label text-[8px] text-muted hover:text-[#E60023] transition-colors px-2 py-1 rounded-full border border-border hover:border-[#E60023]/30 hover:bg-red-50">
+                        <span class="material-symbols-outlined" style="font-size:12px">logout</span>
+                        <span>Sign out</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Scrollable content area -->
+            <div class="flex-1 overflow-y-auto pr-1 flex flex-col gap-4 mt-2 max-h-[460px]" id="left-page-scrollable">
+                
+                <!-- Welcome note -->
+                <div class="relative mt-1 shrink-0">
+                    <div class="absolute -top-3 left-[15%] w-12 h-3 gingham-tape rotate-[-2deg] opacity-85 z-10"></div>
+                    <div class="bg-white p-3 rounded-lg border border-border shadow-sm flex items-center justify-between">
+                        <div>
+                            <h2 class="font-display text-xl text-main leading-tight">Welcome back, <span
+                                    id="user-firstname">Aashi</span> 🌷</h2>
+                            <p class="font-handwriting text-sm text-roseAccent mt-0.5 font-bold">your style universe awaits
+                                ✨</p>
+                        </div>
+                        <!-- 3D Avatar Profile status badge -->
+                        <div id="user-avatar-badge"
+                            class="hidden flex items-center gap-2 bg-roseAccentLight border border-roseAccent/15 rounded-full px-2.5 py-1 shrink-0">
+                            <div class="w-6 h-6 rounded-full overflow-hidden border border-roseAccent bg-base">
+                                <img id="user-avatar-img" class="w-full h-full object-cover" src="" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SCRAPBOOK PLACEHOLDERS: Shown when closet is empty -->
+                <div id="scrapbook-placeholders" class="flex flex-col items-center justify-center my-3 shrink-0">
+                    <!-- Centered Large Scrapbook-style Featured Polaroid -->
+                    <div class="relative w-full max-w-[280px]">
+                        <div class="absolute -top-2.5 left-[35%] w-20 h-4 gingham-tape-pink rotate-[1.5deg] opacity-95 z-10"></div>
+                        <div class="polaroid-card rotate-[1.2deg] flex flex-col gap-1.5 shadow-md">
+                            <img alt="Fashion Inspiration Moodboard"
+                                class="w-full h-[180px] object-cover rounded-sm border border-border"
+                                src="/@fs/C:/Users/Aashi/.gemini/antigravity-ide/brain/8a51b963-f609-405d-8d52-56f1cf1e0f30/media__1781175868068.jpg" />
+                            <p class="font-handwriting text-[11px] text-center text-roseAccent font-bold mt-1">✨ Fashion Moodboard</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Empty State Banner -->
+                <div id="analytics-empty-state" class="flex flex-col items-center justify-center border border-dashed border-border rounded-xl p-6 text-center my-1 bg-white shrink-0 shadow-sm">
+                    <span class="material-symbols-outlined text-3xl text-roseAccent mb-1">lock</span>
+                    <h4 class="font-display text-xs text-main font-bold">Wardrobe Analytics Locked</h4>
+                    <p class="font-handwriting text-xs text-roseAccent mt-1 font-bold">"Start building your wardrobe to unlock analytics."</p>
+                </div>
+
+                <!-- Dynamic Wardrobe Snapshot: Shown when wardrobe has items -->
+                <div id="wardrobe-snapshot" class="hidden flex flex-col gap-2 my-2 shrink-0">
+                    <div class="flex justify-between items-end border-b border-border/60 pb-1">
+                        <p class="font-label text-[8px] text-roseAccent font-bold tracking-wider">Recent Uploads</p>
+                        <span class="font-handwriting text-[10px] text-muted font-bold">new additions 🎀</span>
+                    </div>
+                    <div class="grid grid-cols-4 gap-2 pt-1 pb-1" id="snapshot-grid">
+                        <!-- Latest 3-4 items dynamically rendered as Polaroids -->
+                    </div>
+                </div>
+
+                <!-- Wardrobe Intelligence Center Dashboard: Shown when wardrobe has items -->
+                <div id="analytics-dashboard" class="hidden flex flex-col gap-3">
+                    
+                    <!-- Analytics Cards Grid -->
+                    <div class="grid grid-cols-2 gap-2 shrink-0">
+                        <!-- Total Items -->
+                        <div class="bg-white p-2 border border-border rounded-lg shadow-sm flex items-center justify-between">
+                            <div>
+                                <p class="font-label text-[8px] text-muted">Total Items</p>
+                                <h4 class="font-display text-sm text-main font-bold mt-0.5" id="stats-total-items">0</h4>
+                            </div>
+                            <span class="text-lg">👚</span>
+                        </div>
+                        <!-- Categories Used -->
+                        <div class="bg-white p-2 border border-border rounded-lg shadow-sm flex items-center justify-between">
+                            <div>
+                                <p class="font-label text-[8px] text-muted">Categories Used</p>
+                                <h4 class="font-display text-sm text-main font-bold mt-0.5" id="stats-categories-used">0 / 7</h4>
+                            </div>
+                            <span class="text-lg">🏷️</span>
+                        </div>
+                        <!-- Planned Outfits -->
+                        <div class="bg-white p-2 border border-border rounded-lg shadow-sm flex items-center justify-between">
+                            <div>
+                                <p class="font-label text-[8px] text-muted">Planned Outfits</p>
+                                <h4 class="font-display text-sm text-main font-bold mt-0.5" id="stats-planned-outfits">0</h4>
+                            </div>
+                            <span class="text-lg">🗓️</span>
+                        </div>
+                        <!-- Recommendation Requests -->
+                        <div class="bg-white p-2 border border-border rounded-lg shadow-sm flex items-center justify-between">
+                            <div>
+                                <p class="font-label text-[8px] text-muted">Rec Requests</p>
+                                <h4 class="font-display text-sm text-main font-bold mt-0.5" id="stats-recommendation-requests">0</h4>
+                            </div>
+                            <span class="text-lg">✨</span>
+                        </div>
+                    </div>
+
+                    <!-- Category Distribution Horizontal Chart -->
+                    <div class="bg-white p-3 rounded-lg border border-border shadow-sm flex flex-col gap-2 shrink-0">
+                        <p class="font-label text-[8px] text-roseAccent font-bold tracking-wider">Category Distribution</p>
+                        <div class="space-y-2" id="category-chart-container">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Season Breakdown & Color Palette side-by-side -->
+                    <div class="grid grid-cols-2 gap-2 shrink-0">
+                        <!-- Season Distribution -->
+                        <div class="bg-white p-2.5 rounded-lg border border-border shadow-sm flex flex-col gap-2">
+                            <p class="font-label text-[8px] text-violetAccent font-bold tracking-wider">Season Distribution</p>
+                            <div class="space-y-2 text-[9px]" id="season-list-container">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+                        <!-- Color Analytics -->
+                        <div class="bg-white p-2.5 rounded-lg border border-border shadow-sm flex flex-col gap-2">
+                            <p class="font-label text-[8px] text-amberAccent font-bold tracking-wider">Dominant Palette</p>
+                            <div class="space-y-2 text-[9px]" id="color-list-container">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Wardrobe Health -->
+                    <div class="bg-white p-3 rounded-lg border border-border shadow-sm flex flex-col gap-2 shrink-0 relative overflow-hidden">
+                        <div class="absolute -top-1.5 left-4 w-8 h-2 gingham-tape-lavender rotate-[1deg]"></div>
+                        <div class="flex justify-between items-center pb-1.5 border-b border-border/60">
+                            <p class="font-label text-[8px] text-emeraldAccent font-bold tracking-wider">Wardrobe Health</p>
+                            <span id="health-badge" class="font-label text-[8px] px-2 py-0.5 rounded font-bold bg-emeraldAccentLight text-emeraldAccent border border-emeraldAccent/15">Excellent</span>
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <p class="font-handwriting text-xs text-main font-bold" id="health-status-title">Assessing closet balance...</p>
+                            <ul class="text-[9px] text-muted space-y-0.5 list-disc pl-3" id="health-suggestions-list">
+                                <!-- Dynamic suggestions -->
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Upload Action -->
+            <div class="pt-3 border-t border-border flex gap-3">
+                <button id="add-piece-btn"
+                    class="flex-1 bg-pinterestRed hover:bg-pinterestRed/90 text-white font-label py-2 rounded-md text-[9px] transition-all active:scale-[0.98] flex items-center justify-center gap-1.5 shadow-sm tracking-widest">
+                    <span class="material-symbols-outlined text-sm">photo_camera</span>
+                    <span>Upload Closet Asset</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Notebook Spiral Spine -->
+        <div
+            class="hidden md:flex w-8 md:w-10 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-300 relative border-l border-r border-border/80 flex-col justify-around py-6 z-20 shrink-0">
+            <!-- 3D binder rings -->
+            <div class="relative w-full h-2">
+                <div
+                    class="absolute left-1/2 transform -translate-x-1/2 -top-1 w-6 h-3.5 bg-gradient-to-r from-gray-300 via-gray-100 to-gray-400 rounded-full border border-gray-400 shadow-sm z-30">
+                </div>
+                <div class="absolute left-[calc(50%-13px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div>
+                <div class="absolute left-[calc(50%+5px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div>
+            </div>
+            <div class="relative w-full h-2">
+                <div
+                    class="absolute left-1/2 transform -translate-x-1/2 -top-1 w-6 h-3.5 bg-gradient-to-r from-gray-300 via-gray-100 to-gray-400 rounded-full border border-gray-400 shadow-sm z-30">
+                </div>
+                <div class="absolute left-[calc(50%-13px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div>
+                <div class="absolute left-[calc(50%+5px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div>
+            </div>
+            <div class="relative w-full h-2">
+                <div
+                    class="absolute left-1/2 transform -translate-x-1/2 -top-1 w-6 h-3.5 bg-gradient-to-r from-gray-300 via-gray-100 to-gray-400 rounded-full border border-gray-400 shadow-sm z-30">
+                </div>
+                <div class="absolute left-[calc(50%-13px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div>
+                <div class="absolute left-[calc(50%+5px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div>
+            </div>
+            <div class="relative w-full h-2">
+                <div
+                    class="absolute left-1/2 transform -translate-x-1/2 -top-1 w-6 h-3.5 bg-gradient-to-r from-gray-300 via-gray-100 to-gray-400 rounded-full border border-gray-400 shadow-sm z-30">
+                </div>
+                <div class="absolute left-[calc(50%-13px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div>
+                <div class="absolute left-[calc(50%+5px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div>
+            </div>
+            <div class="relative w-full h-2">
+                <div
+                    class="absolute left-1/2 transform -translate-x-1/2 -top-1 w-6 h-3.5 bg-gradient-to-r from-gray-300 via-gray-100 to-gray-400 rounded-full border border-gray-400 shadow-sm z-30">
+                </div>
+                <div class="absolute left-[calc(50%-13px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div>
+                <div class="absolute left-[calc(50%+5px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div>
+            </div>
+            <div class="relative w-full h-2">
+                <div
+                    class="absolute left-1/2 transform -translate-x-1/2 -top-1 w-6 h-3.5 bg-gradient-to-r from-gray-300 via-gray-100 to-gray-400 rounded-full border border-gray-400 shadow-sm z-30">
+                </div>
+                <div class="absolute left-[calc(50%-13px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div>
+                <div class="absolute left-[calc(50%+5px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div>
+            </div>
+            <div class="relative w-full h-2">
+                <div
+                    class="absolute left-1/2 transform -translate-x-1/2 -top-1 w-6 h-3.5 bg-gradient-to-r from-gray-300 via-gray-100 to-gray-400 rounded-full border border-gray-400 shadow-sm z-30">
+                </div>
+                <div class="absolute left-[calc(50%-13px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div>
+                <div class="absolute left-[calc(50%+5px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div>
+            </div>
+            <div class="relative w-full h-2">
+                <div
+                    class="absolute left-1/2 transform -translate-x-1/2 -top-1 w-6 h-3.5 bg-gradient-to-r from-gray-300 via-gray-100 to-gray-400 rounded-full border border-gray-400 shadow-sm z-30">
+                </div>
+                <div class="absolute left-[calc(50%-13px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div>
+                <div class="absolute left-[calc(50%+5px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div>
+            </div>
+        </div>
+
+        <!-- Notebook Right Page (Closet Counts) -->
+        <div class="flex-1 p-6 grid-paper rounded-b-3xl md:rounded-l-none md:rounded-r-3xl relative flex flex-col justify-between gap-4 overflow-visible">
+
+            <!-- Colored Binder Tabs on Right border -->
+            <div class="hidden md:flex absolute right-[-38px] top-8 flex-col gap-2 z-30 select-none">
+                <a class="bg-roseAccent text-white font-sans text-[10px] font-extrabold tracking-widest pl-4 pr-5 py-2.5 rounded-r-xl cursor-pointer hover:translate-x-1 transition-all shadow-[4px_2px_8px_rgba(0,0,0,0.15)] border-y border-r border-white/20 flex items-center gap-1 z-10"
+                    href="index.html">🌸 DASH</a>
+                <a class="bg-violetAccent/70 text-white/90 font-sans text-[9px] font-bold tracking-wider pl-3 pr-4 py-2 rounded-r-lg cursor-pointer hover:translate-x-1.5 hover:bg-violetAccent hover:text-white transition-all shadow-[2px_1px_4px_rgba(0,0,0,0.08)] border-y border-r border-white/10"
+                    href="calendar.html">📅 CAL</a>
+                <a class="bg-emeraldAccent/70 text-white/90 font-sans text-[9px] font-bold tracking-wider pl-3 pr-4 py-2 rounded-r-lg cursor-pointer hover:translate-x-1.5 hover:bg-emeraldAccent hover:text-white transition-all shadow-[2px_1px_4px_rgba(0,0,0,0.08)] border-y border-r border-white/10"
+                    href="studio.html">🎨 STUD</a>
+                <a class="bg-amberAccent/70 text-white/90 font-sans text-[9px] font-bold tracking-wider pl-3 pr-4 py-2 rounded-r-lg cursor-pointer hover:translate-x-1.5 hover:bg-amberAccent hover:text-white transition-all shadow-[2px_1px_4px_rgba(0,0,0,0.08)] border-y border-r border-white/10"
+                    href="closet.html">👗 CLOS</a>
+                <a class="bg-teal-500/70 text-white/90 font-sans text-[9px] font-bold tracking-wider pl-3 pr-4 py-2 rounded-r-lg cursor-pointer hover:translate-x-1.5 hover:bg-teal-500 hover:text-white transition-all shadow-[2px_1px_4px_rgba(0,0,0,0.08)] border-y border-r border-white/10"
+                    href="inspiration.html">✨ INSP</a>
+                <a class="bg-indigo-500/70 text-white/90 font-sans text-[9px] font-bold tracking-wider pl-3 pr-4 py-2 rounded-r-lg cursor-pointer hover:translate-x-1.5 hover:bg-indigo-500 hover:text-white transition-all shadow-[2px_1px_4px_rgba(0,0,0,0.08)] border-y border-r border-white/10"
+                    href="style-dna.html">🧬 DNA</a>
+                <a class="bg-pink-500/70 text-white/90 font-sans text-[9px] font-bold tracking-wider pl-3 pr-4 py-2 rounded-r-lg cursor-pointer hover:translate-x-1.5 hover:bg-pink-500 hover:text-white transition-all shadow-[2px_1px_4px_rgba(0,0,0,0.08)] border-y border-r border-white/10"
+                    href="my-looks.html">❤️ LOOKS</a>
+            </div>
+
+            <!-- Page Header -->
+            <div class="flex justify-between items-end pb-2 border-b border-border">
+                <div class="relative">
+                    <p class="font-label text-roseAccent">Closet Inventory</p>
+                    <h3 class="font-display text-2xl text-main leading-tight mt-1">My Wardrobe 👗</h3>
+                </div>
+                <span class="font-handwriting text-xs text-roseAccent font-bold">Total: <span id="count-total">0</span>
+                    items</span>
+            </div>
+
+            <!-- Category Counts -->
+            <div class="flex-1 flex flex-col justify-center gap-3 py-1">
+
+                <!-- Tops -->
+                <div
+                    class="category-ticket relative p-3 bg-white rounded-lg border border-border shadow-sm flex items-center justify-between">
+                    <div class="absolute -top-1.5 left-4 w-8 h-2 gingham-tape-pink rotate-[-1deg]"></div>
+                    <div class="flex items-center gap-3">
+                        <span class="text-2xl">👚</span>
+                        <div>
+                            <h5 class="font-display text-xs text-main leading-tight">Tops &amp; Blouses</h5>
+                            <p class="font-label text-[8px] text-muted mt-0.5">Knits · tees · shirts · cardigans</p>
+                        </div>
+                    </div>
+                    <span class="font-handwriting text-xl font-bold text-roseAccent mr-2"><span id="count-tops">0</span>
+                        items</span>
+                </div>
+
+                <!-- Bottoms -->
+                <div
+                    class="category-ticket relative p-3 bg-white rounded-lg border border-border shadow-sm flex items-center justify-between">
+                    <div class="absolute -top-1.5 left-4 w-8 h-2 gingham-tape-pink rotate-[2deg]"></div>
+                    <div class="flex items-center gap-3">
+                        <span class="text-2xl">👖</span>
+                        <div>
+                            <h5 class="font-display text-xs text-main leading-tight">Bottoms</h5>
+                            <p class="font-label text-[8px] text-muted mt-0.5">Jeans · trousers · skirts · shorts</p>
+                        </div>
+                    </div>
+                    <span class="font-handwriting text-xl font-bold text-violetAccent mr-2"><span
+                            id="count-bottoms">0</span> items</span>
+                </div>
+
+                <!-- Dresses -->
+                <div
+                    class="category-ticket relative p-3 bg-white rounded-lg border border-border shadow-sm flex items-center justify-between">
+                    <div class="absolute -top-1.5 left-4 w-8 h-2 gingham-tape-lavender rotate-[-2deg]"></div>
+                    <div class="flex items-center gap-3">
+                        <span class="text-2xl">👗</span>
+                        <div>
+                            <h5 class="font-display text-xs text-main leading-tight">Dresses</h5>
+                            <p class="font-label text-[8px] text-muted mt-0.5">Slip · midi · gowns · jumpsuits</p>
+                        </div>
+                    </div>
+                    <span class="font-handwriting text-xl font-bold text-roseAccent mr-2"><span
+                            id="count-dresses">0</span> items</span>
+                </div>
+
+                <!-- Footwear -->
+                <div
+                    class="category-ticket relative p-3 bg-white rounded-lg border border-border shadow-sm flex items-center justify-between">
+                    <div class="absolute -top-1.5 left-4 w-8 h-2 gingham-tape-pink rotate-[1deg]"></div>
+                    <div class="flex items-center gap-3">
+                        <span class="text-2xl">👟</span>
+                        <div>
+                            <h5 class="font-display text-xs text-main leading-tight">Footwear</h5>
+                            <p class="font-label text-[8px] text-muted mt-0.5">Sneakers · boots · loafers · flats</p>
+                        </div>
+                    </div>
+                    <span class="font-handwriting text-xl font-bold text-amberAccent mr-2"><span
+                            id="count-footwear">0</span> items</span>
+                </div>
+
+                <!-- Accessories -->
+                <div
+                    class="category-ticket relative p-3 bg-white rounded-lg border border-border shadow-sm flex items-center justify-between">
+                    <div class="absolute -top-1.5 left-4 w-8 h-2 gingham-tape-lavender rotate-[-1deg]"></div>
+                    <div class="flex items-center gap-3">
+                        <span class="text-2xl">👜</span>
+                        <div>
+                            <h5 class="font-display text-xs text-main leading-tight">Accessories</h5>
+                            <p class="font-label text-[8px] text-muted mt-0.5">Bags · belts · hats · jewellery</p>
+                        </div>
+                    </div>
+                    <span class="font-handwriting text-xl font-bold text-emeraldAccent mr-2"><span
+                            id="count-accessories">0</span> items</span>
+                </div>
+            </div>
+
+            <!-- Page actions -->
+            <div class="pt-3 border-t border-border flex gap-3">
+                <a class="flex-1 bg-roseAccentLight hover:bg-roseAccentLight/80 text-roseAccent font-label py-2 rounded-md text-[9px] border border-roseAccent/15 text-center shadow-sm tracking-widest transition-colors"
+                    href="calendar.html">Open Planner 🗓️</a>
+                <a class="flex-1 bg-violetAccentLight hover:bg-violetAccentLight/80 text-violetAccent font-label py-2 rounded-md text-[9px] border border-violetAccent/15 text-center shadow-sm tracking-widest transition-colors"
+                    href="studio.html">Canvas Studio 🎨</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Asset Upload Modal -->
+    <div id="add-piece-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-main/40 backdrop-blur-sm" id="modal-backdrop"></div>
+        <div
+            class="relative w-full max-w-md p-5 rounded-xl bg-surface border border-border shadow-xl flex flex-col gap-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center pb-2 border-b border-border">
+                <div>
+                    <h3 class="font-display text-lg text-main">Upload Asset</h3>
+                    <p class="font-label text-[8px] text-muted mt-0.5">Scan item to generate palette & compatibility</p>
+                </div>
+                <button id="close-modal-btn"
+                    class="material-symbols-outlined text-muted hover:text-roseAccent p-1 transition-colors">close</button>
+            </div>
+
+            <div id="drop-zone"
+                class="border border-dashed border-border rounded-lg p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-base/30 transition-all group relative overflow-hidden min-h-[120px]">
+                <div id="upload-placeholder" class="flex flex-col items-center justify-center">
+                    <span
+                        class="material-symbols-outlined text-2xl text-muted group-hover:scale-105 transition-transform mb-1">photo_camera</span>
+                    <p class="font-display text-xs text-main">Upload wardrobe asset photo</p>
+                    <p class="font-label text-[8px] text-muted mt-0.5">Drag & drop or click to browse</p>
+                </div>
+                <div id="polaroid-wrapper"
+                    class="hidden relative p-1 bg-surface border border-border rounded shadow-sm max-w-[100px] mx-auto">
+                    <img id="image-preview" class="w-full aspect-[3/4] object-cover rounded-sm" alt="Preview" />
+                    <p class="font-label text-[8px] text-center text-muted mt-1 truncate"
+                        id="polaroid-handwritten-label">Asset</p>
+                </div>
+                <input type="file" id="file-input" class="hidden" accept="image/*" />
+            </div>
+
+            <div id="progress-container" class="hidden space-y-2 border border-border rounded-lg p-3 bg-base/40">
+                <div class="flex justify-between">
+                    <span id="progress-status" class="font-label text-[9px] text-main">Scanning asset...</span>
+                    <span id="progress-percent" class="font-label text-[9px] text-muted">0%</span>
+                </div>
+                <div class="h-1 bg-border rounded-full overflow-hidden">
+                    <div id="progress-bar" class="h-full w-0 bg-emeraldAccent transition-all duration-300"></div>
+                </div>
+                <div class="font-label text-[8px] space-y-0.5 text-muted" id="analysis-steps">
+                    <div id="step-1" class="flex items-center gap-1"><span class="text-emeraldAccent font-bold">✓</span>
+                        Extracting color swatches...</div>
+                    <div id="step-2" class="flex items-center gap-1 opacity-40"><span>○</span> Identifying taxonomy &
+                        season...</div>
+                    <div id="step-3" class="flex items-center gap-1 opacity-40"><span>○</span> Evaluating synergy
+                        match...</div>
+                </div>
+            </div>
+
+            <div id="extracted-palette-container" class="hidden space-y-1.5">
+                <label class="font-label text-[8px] text-muted">Auto-Extracted Swatches</label>
+                <div id="extracted-palette-list" class="flex gap-2"></div>
+            </div>
+
+            <form id="add-piece-form" class="space-y-4">
+                <div class="space-y-1">
+                    <label class="font-label text-[8px] text-muted">Asset Name</label>
+                    <input type="text" id="item-name" required
+                        class="w-full bg-base/40 border border-border rounded px-3 py-1.5 text-xs text-main focus:outline-none focus:border-muted transition-all placeholder-muted font-sans"
+                        placeholder="e.g. Slim Denim Jacket" />
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-1">
+                        <label class="font-label text-[8px] text-muted">Category</label>
+                        <select id="item-category" required
+                            class="w-full bg-surface border border-border rounded px-2.5 py-1.5 text-xs text-main focus:outline-none focus:border-muted transition-all font-sans">
+                            <option value="">Choose category...</option>
+                            <option value="Tops & Blouses">Tops &amp; Blouses</option>
+                            <option value="Knitwear">Knitwear</option>
+                            <option value="Outerwear">Outerwear</option>
+                            <option value="Bottoms">Bottoms</option>
+                            <option value="Dresses">Dresses</option>
+                            <option value="Footwear">Footwear</option>
+                            <option value="Accessories">Accessories</option>
+                        </select>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="font-label text-[8px] text-muted">Subcategory</label>
+                        <select id="item-subcategory" required
+                            class="w-full bg-surface border border-border rounded px-2.5 py-1.5 text-xs text-main focus:outline-none focus:border-muted transition-all font-sans">
+                            <option value="">Choose category first...</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-1">
+                        <label class="font-label text-[8px] text-muted">Season</label>
+                        <select id="item-season" required
+                            class="w-full bg-surface border border-border rounded px-2.5 py-1.5 text-xs text-main focus:outline-none focus:border-muted transition-all font-sans">
+                            <option value="Spring">Spring</option>
+                            <option value="Summer">Summer</option>
+                            <option value="Autumn">Autumn</option>
+                            <option value="Winter">Winter</option>
+                        </select>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="font-label text-[8px] text-muted">Occasion</label>
+                        <select id="item-occasion" required
+                            class="w-full bg-surface border border-border rounded px-2.5 py-1.5 text-xs text-main focus:outline-none focus:border-muted transition-all font-sans">
+                            <option value="Casual">Casual</option>
+                            <option value="Formal">Formal</option>
+                            <option value="Sports">Sports</option>
+                            <option value="Party">Party</option>
+                            <option value="Travel">Travel</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-2 pt-2 border-t border-border">
+                    <button type="submit" id="upload-submit-btn"
+                        class="w-full py-2 bg-pinterestRed hover:bg-pinterestRed/90 text-white font-label text-[9px] rounded shadow-sm transition-all tracking-widest">
+                        Save to board
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const modal = document.getElementById('add-piece-modal');
+        const addPieceBtn = document.getElementById('add-piece-btn');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const modalBackdrop = document.getElementById('modal-backdrop');
+
+        function openModal() { modal.classList.remove('hidden'); }
+        function closeModal() { modal.classList.add('hidden'); resetForm(); }
+
+        if (addPieceBtn) addPieceBtn.addEventListener('click', openModal);
+        if (closeModalBtn) closeModalBtn.addEventListener('click', closeModal);
+        if (modalBackdrop) modalBackdrop.addEventListener('click', closeModal);
+
+        const taxonomyData = {
+            "Tops & Blouses": ["T-Shirt", "Shirt", "Blouse", "Tank Top", "Crop Top"],
+            "Knitwear": ["Sweater", "Cardigan", "Hoodie"],
+            "Outerwear": ["Blazer", "Coat", "Jacket", "Trench Coat"],
+            "Bottoms": ["Jeans", "Trousers", "Shorts", "Skirt"],
+            "Dresses": ["Mini Dress", "Midi Dress", "Maxi Dress", "Gown"],
+            "Footwear": ["Sneakers", "Boots", "Heels", "Flats", "Sandals"],
+            "Accessories": ["Belt", "Hat", "Sunglasses", "Jewellery"]
+        };
+
+        const catSelect = document.getElementById('item-category');
+        const subcatSelect = document.getElementById('item-subcategory');
+
+        if (catSelect && subcatSelect) {
+            catSelect.addEventListener('change', () => {
+                const selectedCat = catSelect.value;
+                subcatSelect.innerHTML = '';
+                
+                if (selectedCat && taxonomyData[selectedCat]) {
+                    taxonomyData[selectedCat].forEach(sub => {
+                        const opt = document.createElement('option');
+                        opt.value = sub;
+                        opt.textContent = sub;
+                        subcatSelect.appendChild(opt);
+                    });
+                } else {
+                    const opt = document.createElement('option');
+                    opt.value = '';
+                    opt.textContent = 'Choose category first...';
+                    subcatSelect.appendChild(opt);
+                }
+            });
+        }
+
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const progressContainer = document.getElementById('progress-container');
+        const progressBar = document.getElementById('progress-bar');
+        const progressPercent = document.getElementById('progress-percent');
+        const progressStatus = document.getElementById('progress-status');
+        const uploadPlaceholder = document.getElementById('upload-placeholder');
+        const polaroidWrapper = document.getElementById('polaroid-wrapper');
+        const imagePreview = document.getElementById('image-preview');
+        const polaroidHandwrittenLabel = document.getElementById('polaroid-handwritten-label');
+        const step1 = document.getElementById('step-1');
+        const step2 = document.getElementById('step-2');
+        const step3 = document.getElementById('step-3');
+
+        dropZone.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                displayLocalImage(file);
+                simulateUpload(file.name);
+            }
+        });
+
+        function displayLocalImage(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                imagePreview.src = e.target.result;
+                polaroidWrapper.classList.remove('hidden');
+                uploadPlaceholder.classList.add('hidden');
+                polaroidHandwrittenLabel.textContent = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
+            }
+            reader.readAsDataURL(file);
+        }
+
+        function simulateUpload(fileName) {
+            progressContainer.classList.remove('hidden');
+            let progress = 0;
+            progressBar.style.width = '0%';
+            progressPercent.textContent = '0%';
+            progressStatus.textContent = 'Scanning asset colors...';
+            step1.className = "flex items-center gap-1 font-semibold text-main";
+            step2.className = "flex items-center gap-1 opacity-40";
+            step3.className = "flex items-center gap-1 opacity-40";
+            const interval = setInterval(() => {
+                progress += 10;
+                progressBar.style.width = progress + '%';
+                progressPercent.textContent = progress + '%';
+                if (progress === 40) {
+                    progressStatus.textContent = 'Extracting palette...';
+                    step1.innerHTML = `<span class="text-emeraldAccent font-bold">✓</span> Color swatches extracted`;
+                    step2.className = "flex items-center gap-1 font-semibold text-main";
+                }
+                if (progress === 70) {
+                    progressStatus.textContent = 'Identifying category and season...';
+                    step2.innerHTML = `<span class="text-emeraldAccent font-bold">✓</span> Taxonomy classified`;
+                    step3.className = "flex items-center gap-1 font-semibold text-main";
+                }
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    progressStatus.textContent = 'Analysis complete';
+                    step3.innerHTML = `<span class="text-emeraldAccent font-bold">✓</span> Synergy matched`;
+                    triggerAutofill();
+                }
+            }, 150);
+        }
+
+        function simulateUpload(fileName) {
+            progressContainer.classList.remove('hidden');
+            let progress = 0;
+            progressBar.style.width = '0%';
+            progressPercent.textContent = '0%';
+            progressStatus.textContent = 'Parsing uploaded photo...';
+            step1.className = "flex items-center gap-1 font-semibold text-main";
+            step2.className = "flex items-center gap-1 opacity-40";
+            step3.className = "flex items-center gap-1 opacity-40";
+            const interval = setInterval(() => {
+                progress += 10;
+                progressBar.style.width = progress + '%';
+                progressPercent.textContent = progress + '%';
+                if (progress === 40) {
+                    progressStatus.textContent = 'Uploading file...';
+                    step1.innerHTML = `<span class="text-emeraldAccent font-bold">✓</span> Photo parsed`;
+                    step2.className = "flex items-center gap-1 font-semibold text-main";
+                }
+                if (progress === 70) {
+                    progressStatus.textContent = 'Awaiting metadata tagging...';
+                    step2.innerHTML = `<span class="text-emeraldAccent font-bold">✓</span> File uploaded`;
+                    step3.className = "flex items-center gap-1 font-semibold text-main";
+                }
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    progressStatus.textContent = 'Awaiting tagging';
+                    step3.innerHTML = `<span class="text-emeraldAccent font-bold">✓</span> Ready for manual tagging`;
+                }
+            }, 100);
+        }
+
+        // ─── Error Banner Utility ──────────────────────────────────────────
+        function showErrorBanner(id, message, color = 'red') {
+            const colorMap = {
+                red:    { bg: 'rgba(220,38,38,0.95)', border: '#dc2626' },
+                orange: { bg: 'rgba(234,88,12,0.92)', border: '#ea580c' },
+                blue:   { bg: 'rgba(37,99,235,0.92)',  border: '#2563eb' }
+            };
+            const c = colorMap[color] || colorMap.red;
+            const existing = document.getElementById(`error-banner-${id}`);
+            if (existing) existing.remove();
+
+            const banner = document.createElement('div');
+            banner.id = `error-banner-${id}`;
+            banner.style.cssText = `position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:9999;background:${c.bg};border:2px solid ${c.border};color:#fff;font-family:monospace;font-size:12px;font-weight:bold;padding:10px 20px;border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,0.3);max-width:90vw;text-align:center;cursor:pointer;`;
+            banner.textContent = message;
+            banner.title = 'Click to dismiss';
+            banner.addEventListener('click', () => banner.remove());
+            document.body.appendChild(banner);
+            console.error(`[ERROR-BANNER] ${message}`);
+            setTimeout(() => { if (banner.parentNode) banner.remove(); }, 8000);
+        }
+
+        function resetForm() {
+            document.getElementById('add-piece-form').reset();
+            progressContainer.classList.add('hidden');
+            progressBar.style.width = '0%';
+            progressPercent.textContent = '0%';
+            polaroidWrapper.classList.add('hidden');
+            imagePreview.src = '';
+            uploadPlaceholder.classList.remove('hidden');
+            step1.innerHTML = `<span>○</span> Extracting color swatches...`;
+            step2.innerHTML = `<span>○</span> Identifying taxonomy & season...`;
+            step3.innerHTML = `<span>○</span> Evaluating synergy match...`;
+            if (subcatSelect) {
+                subcatSelect.innerHTML = '<option value="">Choose category first...</option>';
+            }
+        }
+
+        document.getElementById('add-piece-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const session = getSession();
+            if (!session) return;
+
+            const category = document.getElementById('item-category').value;
+            const subcategory = document.getElementById('item-subcategory').value;
+            const season = document.getElementById('item-season').value;
+            const occasion = document.getElementById('item-occasion').value;
+            const name = document.getElementById('item-name').value.trim() || 'Unnamed piece';
+            const file = fileInput.files[0];
+
+            const formData = new FormData();
+            formData.append('name', name);
+            formData.append('category', category);
+            formData.append('subcategory', subcategory);
+            formData.append('season', season);
+            formData.append('occasion', occasion);
+            formData.append('owner', session.email);
+            if (file) formData.append('image', file);
+
+            // Disable submit action and show loader
+            const submitBtn = document.getElementById('upload-submit-btn');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner mr-1"></span> Saving...';
+
+            // Show progress indicator
+            progressContainer.classList.remove('hidden');
+            let progress = 0;
+            progressBar.style.width = '0%';
+            progressPercent.textContent = '0%';
+            progressStatus.textContent = 'Saving asset to backend...';
+
+            try {
+                const response = await fetch('/api/wardrobe/add', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+                
+                // Restore button
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+
+                if (data.success) {
+                    progressBar.style.width = '100%';
+                    progressPercent.textContent = '100%';
+                    progressStatus.textContent = 'Saved!';
+                    setTimeout(async () => {
+                        await updateWardrobeCounts();
+                        closeModal();
+                        showErrorBanner('upload-success', `"${name}" added successfully to your wardrobe! 🌸`, 'blue');
+                    }, 500);
+                } else {
+                    showErrorBanner('upload-fail', "Failed to save asset. Please try again.", 'red');
+                }
+            } catch (err) {
+                console.error(err);
+                // Restore button
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+                showErrorBanner('upload-fail', "Error saving asset to backend.", 'red');
+            }
+        });
+
+        // ═══ SESSION & PERSONALISATION ═══════════════════════════════════════
+        function getSession() {
+            try { return JSON.parse(localStorage.getItem('tt_session') || 'null'); } catch { return null; }
+        }
+
+        // Client-side Color Classifier mapping hex codes to user-friendly names
+        function getColorName(hex) {
+            if (!hex) return 'White';
+            // Normalize hex
+            let cleanHex = hex.replace('#', '').trim().toLowerCase();
+            if (cleanHex.length === 3) {
+                cleanHex = cleanHex[0] + cleanHex[0] + cleanHex[1] + cleanHex[1] + cleanHex[2] + cleanHex[2];
+            }
+            if (cleanHex.length !== 6) {
+                return cleanHex.charAt(0).toUpperCase() + cleanHex.slice(1);
+            }
+            const r = parseInt(cleanHex.substring(0, 2), 16);
+            const g = parseInt(cleanHex.substring(2, 4), 16);
+            const b = parseInt(cleanHex.substring(4, 6), 16);
+            
+            // Standard palette colors for nearest-match distance calculation
+            const baseColors = [
+                { name: 'Black', r: 0, g: 0, b: 0 },
+                { name: 'White', r: 255, g: 255, b: 255 },
+                { name: 'Gray', r: 128, g: 128, b: 128 },
+                { name: 'Light Gray', r: 211, g: 211, b: 211 },
+                { name: 'Dark Gray', r: 169, g: 169, b: 169 },
+                { name: 'Red', r: 220, g: 38, b: 38 },
+                { name: 'Blue', r: 37, g: 99, b: 235 },
+                { name: 'Green', r: 22, g: 163, b: 74 },
+                { name: 'Yellow', r: 234, g: 179, b: 8 },
+                { name: 'Orange', r: 249, g: 115, b: 22 },
+                { name: 'Purple', r: 147, g: 51, b: 234 },
+                { name: 'Pink', r: 236, g: 72, b: 153 },
+                { name: 'Brown', r: 120, g: 53, b: 4 },
+                { name: 'Beige', r: 245, g: 245, b: 220 },
+                { name: 'Teal', r: 13, g: 148, b: 136 },
+                { name: 'Navy', r: 30, g: 58, b: 138 },
+                { name: 'Cream', r: 255, g: 253, b: 208 },
+                { name: 'Charcoal', r: 54, g: 69, b: 79 },
+                { name: 'Off-White', r: 250, g: 249, b: 246 },
+                { name: 'Olive', r: 128, g: 128, b: 0 }
+            ];
+            
+            let minDistance = Infinity;
+            let bestName = 'Custom Color';
+            
+            for (const color of baseColors) {
+                const dist = Math.sqrt(
+                    Math.pow(r - color.r, 2) +
+                    Math.pow(g - color.g, 2) +
+                    Math.pow(b - color.b, 2)
+                );
+                if (dist < minDistance) {
+                    minDistance = dist;
+                    bestName = color.name;
+                }
+            }
+            
+            return bestName;
+        }
+
+        async function updateWardrobeCounts() {
+            const session = getSession();
+            if (!session) return;
+            
+            let items = [];
+            try {
+                const response = await fetch(`/api/wardrobe?email=${encodeURIComponent(session.email)}`);
+                const data = await response.json();
+                if (data.success) {
+                    items = data.wardrobe;
+                }
+            } catch (err) {
+                console.error("Error loading wardrobe items:", err);
+            }
+
+            let statsData = { totalPlannedOutfits: 0, dominantColors: [] };
+            try {
+                const response = await fetch(`/api/wardrobe/stats?email=${encodeURIComponent(session.email)}`);
+                const data = await response.json();
+                if (data && data.totalItems !== undefined) {
+                    statsData = data;
+                }
+            } catch (err) {
+                console.error("Error loading wardrobe stats:", err);
+            }
+
+            const totalItems = items.length;
+            const placeholders = document.getElementById('scrapbook-placeholders');
+            const emptyState = document.getElementById('analytics-empty-state');
+            const snapshot = document.getElementById('wardrobe-snapshot');
+            const dashboard = document.getElementById('analytics-dashboard');
+
+            // Toggle Layout based on empty state
+            if (totalItems === 0) {
+                if (placeholders) placeholders.classList.remove('hidden');
+                if (emptyState) emptyState.classList.remove('hidden');
+                if (snapshot) snapshot.classList.add('hidden');
+                if (dashboard) dashboard.classList.add('hidden');
+                
+                // Set Right Page counts to 0
+                ['#count-tops', '#count-bottoms', '#count-footwear', '#count-accessories', '#count-dresses'].forEach(sel => {
+                    const el = document.querySelector(sel);
+                    if (el) el.textContent = 0;
+                });
+                const totalEl = document.querySelector('#count-total');
+                if (totalEl) totalEl.textContent = 0;
+                
+                return;
+            }
+
+            // Populated State
+            if (placeholders) placeholders.classList.remove('hidden'); // KEEP VISIBLE
+            if (emptyState) emptyState.classList.add('hidden');
+            if (snapshot) snapshot.classList.remove('hidden');
+            if (dashboard) dashboard.classList.remove('hidden');
+
+            // 1. Right Page counts (fixing the bugs with correct category names)
+            const topsCount = items.filter(i => {
+                const cat = (i.category || '').toLowerCase();
+                return cat === 'tops & blouses' || cat === 'knitwear' || cat === 'tops';
+            }).length;
+            
+            const bottomsCount = items.filter(i => {
+                const cat = (i.category || '').toLowerCase();
+                return cat === 'bottoms' || cat === 'pants';
+            }).length;
+            
+            const footwearCount = items.filter(i => {
+                const cat = (i.category || '').toLowerCase();
+                return cat === 'footwear' || cat === 'shoes';
+            }).length;
+            
+            const accessoriesCount = items.filter(i => {
+                const cat = (i.category || '').toLowerCase();
+                return cat === 'accessories';
+            }).length;
+            
+            const dressesCount = items.filter(i => {
+                const cat = (i.category || '').toLowerCase();
+                return cat === 'dresses' || cat === 'outerwear';
+            }).length;
+            
+            const countMap = {
+                '#count-tops': topsCount,
+                '#count-bottoms': bottomsCount,
+                '#count-footwear': footwearCount,
+                '#count-accessories': accessoriesCount,
+                '#count-dresses': dressesCount
+            };
+            
+            Object.entries(countMap).forEach(([sel, count]) => {
+                const el = document.querySelector(sel);
+                if (el) el.textContent = count;
+            });
+            
+            const totalEl = document.querySelector('#count-total');
+            if (totalEl) totalEl.textContent = totalItems;
+
+            // 2. Render Dynamic Polaroid Snapshot (latest 3-4 items)
+            const latestItems = [...items].reverse().slice(0, 4);
+            const snapshotGrid = document.getElementById('snapshot-grid');
+            if (snapshotGrid) {
+                snapshotGrid.innerHTML = '';
+                const rotClasses = ['rotate-[-1.5deg]', 'rotate-[1.2deg]', 'rotate-[1.8deg]', 'rotate-[-1deg]'];
+                const tapeClasses = ['gingham-tape', 'gingham-tape-pink', 'gingham-tape-lavender'];
+                const tapeRots = ['rotate-[-2deg]', 'rotate-[1.5deg]', 'rotate-[2.5deg]', 'rotate-[-1.8deg]'];
+                
+                latestItems.forEach((item, idx) => {
+                    const rotClass = rotClasses[idx % rotClasses.length];
+                    const tapeClass = tapeClasses[idx % tapeClasses.length];
+                    const tapeRot = tapeRots[idx % tapeRots.length];
+                    const src = item.processedImagePath || item.originalImagePath || item.img || '';
+                    
+                    const polaroid = document.createElement('div');
+                    polaroid.className = "relative";
+                    polaroid.innerHTML = `
+                        <div class="absolute -top-1 left-[25%] w-8 h-2 ${tapeClass} ${tapeRot} opacity-80 z-10"></div>
+                        <div class="polaroid-card h-full ${rotClass} flex flex-col gap-0.5 transition-transform hover:scale-[1.03] duration-200" style="padding: 4px 4px 8px 4px;">
+                            <div class="w-full h-[55px] rounded-sm border border-border bg-white flex items-center justify-center overflow-hidden">
+                                <img src="${src}" class="w-full h-full object-contain select-none" alt="${item.name || 'Garment'}" />
+                            </div>
+                            <p class="font-handwriting text-[8px] text-center text-roseAccent font-bold truncate px-0.5 mt-0.5">${item.name || 'Unnamed'}</p>
+                        </div>
+                    `;
+                    snapshotGrid.appendChild(polaroid);
+                });
+            }
+
+            // 3. Update Dashboard Cards
+            const categoryCounts = {
+                "Tops & Blouses": 0,
+                "Knitwear": 0,
+                "Outerwear": 0,
+                "Bottoms": 0,
+                "Dresses": 0,
+                "Footwear": 0,
+                "Accessories": 0
+            };
+            items.forEach(item => {
+                if (categoryCounts[item.category] !== undefined) {
+                    categoryCounts[item.category]++;
+                }
+            });
+            
+            const categoriesUsed = Object.values(categoryCounts).filter(c => c > 0).length;
+            const recCount = localStorage.getItem('recommendation_requests_count') || '0';
+            
+            document.getElementById('stats-total-items').textContent = totalItems;
+            document.getElementById('stats-categories-used').textContent = `${categoriesUsed} / 7`;
+            document.getElementById('stats-planned-outfits').textContent = statsData.totalPlannedOutfits || 0;
+            document.getElementById('stats-recommendation-requests').textContent = recCount;
+
+            // 4. Category Distribution
+            const chartContainer = document.getElementById('category-chart-container');
+            if (chartContainer) {
+                chartContainer.innerHTML = '';
+                const maxCount = Math.max(...Object.values(categoryCounts), 1);
+                
+                const categoryColors = {
+                    "Tops & Blouses": "bg-roseAccent",
+                    "Knitwear": "bg-violetAccent",
+                    "Outerwear": "bg-emeraldAccent",
+                    "Bottoms": "bg-amberAccent",
+                    "Dresses": "bg-pink-500",
+                    "Footwear": "bg-indigo-500",
+                    "Accessories": "bg-teal-500"
+                };
+
+                Object.entries(categoryCounts).forEach(([cat, count]) => {
+                    const pct = (count / maxCount) * 100;
+                    const colorClass = categoryColors[cat] || "bg-roseAccent";
+                    
+                    const row = document.createElement('div');
+                    row.className = "space-y-0.5";
+                    row.innerHTML = `
+                        <div class="flex justify-between text-[9px] font-bold">
+                            <span class="text-main">${cat}</span>
+                            <span class="text-muted font-handwriting text-xs">${count} ${count === 1 ? 'item' : 'items'}</span>
+                        </div>
+                        <div class="h-2 w-full bg-border rounded-full overflow-hidden border border-border/10 shadow-inner">
+                            <div class="h-full ${colorClass} rounded-full transition-all duration-500" style="width: ${pct}%"></div>
+                        </div>
+                    `;
+                    chartContainer.appendChild(row);
+                });
+            }
+
+            // 5. Season Distribution
+            const seasonCounts = {
+                "Summer": 0,
+                "Winter": 0,
+                "Spring": 0,
+                "Autumn": 0
+            };
+            items.forEach(item => {
+                if (item.season && seasonCounts[item.season] !== undefined) {
+                    seasonCounts[item.season]++;
+                }
+            });
+            const seasonContainer = document.getElementById('season-list-container');
+            if (seasonContainer) {
+                seasonContainer.innerHTML = '';
+                Object.entries(seasonCounts).forEach(([season, count]) => {
+                    const pct = ((count / totalItems) * 100).toFixed(0);
+                    
+                    const row = document.createElement('div');
+                    row.className = "flex justify-between items-center border-b border-border/30 pb-1 last:border-0 last:pb-0";
+                    row.innerHTML = `
+                        <span class="font-semibold text-main">${season}</span>
+                        <span class="text-muted font-handwriting text-[10px] font-bold">${count} (${pct}%)</span>
+                    `;
+                    seasonContainer.appendChild(row);
+                });
+            }
+
+            // 6. Color Analytics
+            const colorsContainer = document.getElementById('color-list-container');
+            if (colorsContainer) {
+                colorsContainer.innerHTML = '';
+                const domColors = statsData.dominantColors || [];
+                if (domColors.length === 0) {
+                    colorsContainer.innerHTML = `<p class="text-muted font-handwriting text-[10px] py-2 text-center">No colors detected</p>`;
+                } else {
+                    domColors.forEach(c => {
+                        const hex = c.hex || '#ffffff';
+                        const pct = c.percentage !== undefined ? c.percentage.toFixed(0) : '0';
+                        const name = getColorName(hex);
+                        
+                        const row = document.createElement('div');
+                        row.className = "flex items-center justify-between border-b border-border/30 pb-1 last:border-0 last:pb-0";
+                        row.innerHTML = `
+                            <div class="flex items-center gap-1.5 min-w-0">
+                                <span class="w-3.5 h-3.5 rounded-full border border-border shrink-0 shadow-sm" style="background-color: ${hex}"></span>
+                                <span class="font-semibold text-main truncate">${name}</span>
+                            </div>
+                            <span class="text-muted font-handwriting text-[10px] font-bold shrink-0">${pct}%</span>
+                        `;
+                        colorsContainer.appendChild(row);
+                    });
+                }
+            }
+
+            // 7. Wardrobe Health
+            const missingCategories = Object.keys(categoryCounts).filter(cat => categoryCounts[cat] === 0);
+            const lackFootwear = categoryCounts["Footwear"] < 2;
+            const lackOuterwear = categoryCounts["Outerwear"] < 2;
+            const lackDresses = categoryCounts["Dresses"] < 2;
+
+            let totalIssues = missingCategories.length;
+            if (lackFootwear) totalIssues++;
+            if (lackOuterwear) totalIssues++;
+            if (lackDresses) totalIssues++;
+
+            let rating = "Excellent";
+            let badgeClass = "bg-emeraldAccentLight text-emeraldAccent border-emeraldAccent/15";
+            let statusTitle = "Perfectly Balanced Closet! 🌟";
+            
+            if (totalIssues > 0) {
+                const hasZeroEssential = categoryCounts["Footwear"] === 0 || categoryCounts["Outerwear"] === 0 || categoryCounts["Dresses"] === 0;
+                if (missingCategories.length >= 3 || hasZeroEssential) {
+                    rating = "Needs Growth";
+                    badgeClass = "bg-roseAccentLight text-roseAccent border-roseAccent/15";
+                    statusTitle = "Needs Wardrobe Growth 🪴";
+                } else {
+                    rating = "Good";
+                    badgeClass = "bg-violetAccentLight text-violetAccent border-violetAccent/15";
+                    statusTitle = "Good Style Balance 👍";
+                }
+            }
+
+            const healthBadge = document.getElementById('health-badge');
+            const healthTitle = document.getElementById('health-status-title');
+            const healthList = document.getElementById('health-suggestions-list');
+
+            if (healthBadge) {
+                healthBadge.textContent = rating;
+                healthBadge.className = `font-label text-[8px] px-2 py-0.5 rounded font-bold border ${badgeClass}`;
+            }
+            if (healthTitle) {
+                healthTitle.textContent = statusTitle;
+            }
+            if (healthList) {
+                healthList.innerHTML = '';
+                const suggestions = [];
+                
+                if (missingCategories.length > 0) {
+                    suggestions.push(`Missing: ${missingCategories.join(', ')}`);
+                }
+                if (lackFootwear) {
+                    suggestions.push(categoryCounts["Footwear"] === 0 ? "Add Footwear to complete looks." : "Add more Footwear for versatility.");
+                }
+                if (lackOuterwear) {
+                    suggestions.push(categoryCounts["Outerwear"] === 0 ? "Add Outerwear for layering options." : "Add more Outerwear garments.");
+                }
+                if (lackDresses) {
+                    suggestions.push(categoryCounts["Dresses"] === 0 ? "Add Dresses for easy styling." : "Add more Dress coordinates.");
+                }
+                
+                if (suggestions.length === 0) {
+                    suggestions.push("All categories are populated with solid variety.");
+                }
+                
+                suggestions.forEach(s => {
+                    const li = document.createElement('li');
+                    li.textContent = s;
+                    healthList.appendChild(li);
+                });
+            }
+        }
+
+        async function fetchProfile(email) {
+            try {
+                const response = await fetch(`/api/profile?email=${encodeURIComponent(email)}`);
+                const data = await response.json();
+                if (data.success) {
+                    return data.profile;
+                }
+            } catch (err) {
+                console.error("Error fetching profile:", err);
+            }
+            return null;
+        }
+
+        (async function initSession() {
+            const session = getSession();
+
+            // Session guard — redirect to login if not signed in
+            if (!session) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // Fetch profile dynamically from backend
+            const profile = await fetchProfile(session.email);
+
+            // Personalise greeting
+            const displayName = profile ? profile.name : (session.name || 'You');
+            const firstName = displayName.split(' ')[0];
+            const firstNameEl = document.getElementById('user-firstname');
+            if (firstNameEl) firstNameEl.textContent = firstName;
+
+            // Load 3D Avatar Profile status badge
+            if (profile && profile.photo) {
+                const badgeEl = document.getElementById('user-avatar-badge');
+                const imgEl = document.getElementById('user-avatar-img');
+                if (badgeEl && imgEl) {
+                    badgeEl.classList.remove('hidden');
+                    imgEl.src = profile.photo;
+                    imgEl.parentElement.classList.remove('hidden');
+                }
+            }
+
+            // Wardrobe counts
+            updateWardrobeCounts();
+
+            // Logout
+            document.getElementById('logout-btn').addEventListener('click', () => {
+                if (confirm('Sign out of ThreadTheory?')) {
+                    localStorage.removeItem('tt_session');
+                    window.location.href = 'login.html';
+                }
+            });
+        })();
+    </script>
+</body>
+
+</html>

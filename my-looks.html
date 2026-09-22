@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>ThreadTheory | My Looks Library</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        base: '#FFF0F2',
+                        main: '#1A1817',
+                        muted: '#8E8A85',
+                        border: '#EAE6DF',
+                        roseAccent: '#EC4899',
+                        roseAccentLight: '#FDF2F8',
+                        violetAccent: '#8B5CF6',
+                        violetAccentLight: '#F5F3FF',
+                        emeraldAccent: '#10B981',
+                        emeraldAccentLight: '#ECFDF5',
+                        amberAccent: '#F59E0B',
+                        amberAccentLight: '#FEF3C7',
+                        pinterestRed: '#E60023',
+                        inactive: '#F3ECE3',
+                    },
+                    fontFamily: {
+                        serif: ["Bodoni Moda", "serif"],
+                        serif-editorial: ["Cormorant Garamond", "serif"],
+                        sans: ["Jost", "sans-serif"],
+                        handwriting: ["Caveat", "cursive"]
+                    }
+                }
+            }
+        };
+    </script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;0,6..96,600;0,6..96,700;0,6..96,900;1,6..96,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Caveat:wght@400;700&family=Jost:wght@200;300;400;500&display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        body {
+            background-color: var(--tw-color-base);
+            background-image: repeating-linear-gradient(90deg, #F7D4D9 0px, #F7D4D9 25px, #FFF0F2 25px, #FFF0F2 50px);
+            font-family: 'Jost', sans-serif;
+        }
+
+        .font-display {
+            font-family: 'Bodoni Moda', serif;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .font-serif-editorial {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 500;
+        }
+
+        .font-label {
+            font-family: 'Jost', sans-serif;
+            font-weight: 300;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            font-size: 0.65rem;
+        }
+
+        .font-handwriting {
+            font-family: 'Caveat', cursive;
+        }
+
+        .brand-headline {
+            font-family: 'Bodoni Moda', serif;
+            font-weight: 900;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+        }
+
+        .brand-sub {
+            font-family: 'Jost', sans-serif;
+            font-weight: 200;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            font-size: 0.55rem;
+        }
+
+        .grid-paper {
+            background-color: #ffffff;
+            background-image: linear-gradient(0deg, #F2F5F8 1px, transparent 1px), linear-gradient(90deg, #F2F5F8 1px, transparent 1px);
+            background-size: 16px 16px;
+        }
+
+        .gingham-tape {
+            background-color: #EF4444;
+            background-image: linear-gradient(90deg, rgba(255, 255, 255, .5) 50%, transparent 50%), linear-gradient(rgba(255, 255, 255, .5) 50%, transparent 50%);
+            background-size: 10px 10px;
+        }
+
+        .gingham-tape-pink {
+            background-color: #FBCFE8;
+            background-image: linear-gradient(90deg, rgba(255, 255, 255, .5) 50%, transparent 50%), linear-gradient(rgba(255, 255, 255, .5) 50%, transparent 50%);
+            background-size: 10px 10px;
+        }
+
+        .gingham-tape-lavender {
+            background-color: #DDD6FE;
+            background-image: linear-gradient(90deg, rgba(255, 255, 255, .5) 50%, transparent 50%), linear-gradient(rgba(255, 255, 255, .5) 50%, transparent 50%);
+            background-size: 10px 10px;
+        }
+
+        .polaroid-card {
+            background-color: #ffffff;
+            border: 1px solid #EAE6DF;
+            padding: 10px 10px 18px 10px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .polaroid-card:hover {
+            transform: scale(1.02) rotate(0deg) !important;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+            z-index: 20;
+        }
+    </style>
+</head>
+
+<body class="bg-base text-main font-sans antialiased min-h-screen flex flex-col items-center justify-center p-4">
+
+    <!-- Mobile/Tablet Scrapbook Navigation Tape Bar -->
+    <div class="flex md:hidden flex-wrap justify-center gap-2 mb-4 max-w-md w-full px-2 shrink-0">
+        <a href="index.html" class="px-3 py-1.5 bg-roseAccentLight/85 border border-roseAccent/20 text-roseAccent font-label text-[9px] tracking-widest rounded-md shadow-sm active:scale-95 transition-all rotate-[-1deg] opacity-90 hover:opacity-100">
+            🌸 Dashboard
+        </a>
+        <a href="calendar.html" class="px-3 py-1.5 bg-violetAccentLight/85 border border-violetAccent/20 text-violetAccent font-label text-[9px] tracking-widest rounded-md shadow-sm active:scale-95 transition-all rotate-[1deg] opacity-90 hover:opacity-100">
+            📅 Planner
+        </a>
+        <a href="studio.html" class="px-3 py-1.5 bg-emeraldAccentLight/85 border border-emeraldAccent/20 text-emeraldAccent font-label text-[9px] tracking-widest rounded-md shadow-sm active:scale-95 transition-all rotate-[-0.5deg] opacity-90 hover:opacity-100">
+            🎨 Studio
+        </a>
+        <a href="closet.html" class="px-3 py-1.5 bg-amberAccentLight/85 border border-amberAccent/20 text-amberAccent font-label text-[9px] tracking-widest rounded-md shadow-sm active:scale-95 transition-all rotate-[1.5deg] opacity-90 hover:opacity-100">
+            👗 Closet
+        </a>
+        <a href="inspiration.html" class="px-3 py-1.5 bg-teal-50 border border-teal-200/50 text-teal-600 font-label text-[9px] tracking-widest rounded-md shadow-sm active:scale-95 transition-all rotate-[-1deg] opacity-90 hover:opacity-100">
+            ✨ Inspiration
+        </a>
+        <a href="style-dna.html" class="px-3 py-1.5 bg-indigo-50 border border-indigo-200/50 text-indigo-600 font-label text-[9px] tracking-widest rounded-md shadow-sm active:scale-95 transition-all rotate-[2deg] opacity-90 hover:opacity-100">
+            🧬 DNA
+        </a>
+        <a href="my-looks.html" class="px-3 py-1.5 bg-pink-500 text-white font-label text-[9px] tracking-widest rounded-md shadow-md active:scale-95 transition-all rotate-[-1.5deg] font-bold">
+            ❤️ Looks
+        </a>
+    </div>
+
+    <!-- Double-Page Spiral Binder Notebook Wrapper -->
+    <div class="relative w-full max-w-[1050px] bg-white rounded-3xl border-4 border-roseAccent/20 shadow-2xl flex flex-col md:flex-row overflow-visible z-10 my-4 min-h-[680px]">
+
+        <!-- Notebook Left Page (Overview & Statistics) -->
+        <div class="flex-1 p-6 grid-paper rounded-t-3xl md:rounded-r-none md:rounded-l-3xl relative flex flex-col justify-between gap-3 border-b md:border-b-0 md:border-r border-border/60">
+
+            <!-- Top brand tag and navigation -->
+            <div class="flex justify-between items-start">
+                <div class="relative">
+                    <span class="brand-headline text-xl text-pinterestRed tracking-widest">ThreadTheory</span>
+                    <p class="brand-sub text-roseAccent mt-0.5">Notebook Library &nbsp;/&nbsp; My Looks</p>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <div class="hidden sm:flex items-center gap-1.5 bg-roseAccentLight rounded-full border border-roseAccent/20 px-2.5 py-1">
+                        <a class="font-label text-[9px] text-muted hover:text-roseAccent transition-colors" href="index.html">Dashboard</a>
+                        <span class="text-[9px] text-roseAccent/40">•</span>
+                        <a class="font-label text-[9px] text-muted hover:text-roseAccent transition-colors" href="studio.html">Studio</a>
+                        <span class="text-[9px] text-roseAccent/40">•</span>
+                        <a class="font-label text-[9px] text-roseAccent font-bold" href="my-looks.html">❤️ Looks</a>
+                    </div>
+                    <!-- Logout button -->
+                    <button id="logout-btn" title="Sign out"
+                        class="flex items-center gap-1 font-label text-[8px] text-muted hover:text-[#E60023] transition-colors px-2 py-1 rounded-full border border-border hover:border-[#E60023]/30 hover:bg-red-50">
+                        <span class="material-symbols-outlined" style="font-size:12px">logout</span>
+                        <span>Sign out</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Left Page Content -->
+            <div class="flex-grow flex flex-col gap-4 mt-2 max-h-[460px] overflow-y-auto pr-1">
+                <!-- Welcome note -->
+                <div class="relative mt-1 shrink-0">
+                    <div class="absolute -top-3 left-[15%] w-12 h-3 gingham-tape rotate-[-2deg] opacity-85 z-10"></div>
+                    <div class="bg-white p-4 rounded-lg border border-border shadow-sm flex items-center justify-between">
+                        <div>
+                            <h2 class="font-display text-xl text-main leading-tight">My Styling Library 🎀</h2>
+                            <p class="font-handwriting text-sm text-roseAccent mt-0.5 font-bold">your curated look collections</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats summary card -->
+                <div class="relative shrink-0 mt-2">
+                    <div class="absolute -top-3 right-[15%] w-16 h-3.5 gingham-tape-lavender rotate-[1deg] opacity-90 z-10"></div>
+                    <div class="bg-white p-4 rounded-xl border border-border shadow-sm flex flex-col gap-3">
+                        <h4 class="font-label text-[9px] text-muted border-b border-border pb-1">Library Overview</h4>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="bg-base/30 rounded-lg p-2.5 text-center border border-border/40">
+                                <p class="text-[8px] uppercase tracking-wider text-muted font-bold">Total Looks</p>
+                                <h3 class="font-display text-2xl text-main font-bold mt-0.5" id="stats-total-looks">0</h3>
+                            </div>
+                            <div class="bg-base/30 rounded-lg p-2.5 text-center border border-border/40">
+                                <p class="text-[8px] uppercase tracking-wider text-muted font-bold">Top Synergy</p>
+                                <h3 class="font-display text-2xl text-roseAccent font-bold mt-0.5" id="stats-top-synergy">--%</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Instructions card -->
+                <div class="bg-amberAccentLight/30 border border-amberAccent/10 rounded-xl p-4 relative shrink-0">
+                    <div class="absolute -top-1.5 right-4 w-8 h-2 bg-roseAccentLight gingham-tape-pink rotate-[-2deg] opacity-95"></div>
+                    <h5 class="text-[8px] uppercase tracking-wider text-amber-800 font-bold font-mono">Styling Tips</h5>
+                    <p class="text-xs text-amber-950 font-handwriting font-bold leading-relaxed mt-1">
+                        Use the Canvas Studio to design and evaluate synergy. When you're happy with the outfit match score, click "Save Look" to store it in this notebook. You can plan it on your calendar or edit it anytime! 🌸
+                    </p>
+                </div>
+            </div>
+
+            <!-- Page actions -->
+            <div class="pt-3 border-t border-border flex gap-3">
+                <a class="flex-grow bg-roseAccentLight hover:bg-roseAccentLight/80 text-roseAccent font-label py-2.5 rounded-md text-[9px] border border-roseAccent/15 text-center shadow-sm tracking-widest transition-colors font-bold"
+                    href="studio.html">Create New Look 🎨</a>
+            </div>
+        </div>
+
+        <!-- Notebook Spiral Spine -->
+        <div class="hidden md:flex w-8 md:w-10 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-300 relative border-l border-r border-border/80 flex-col justify-around py-6 z-20 shrink-0">
+            <!-- Binder rings -->
+            <div class="relative w-full h-2">
+                <div class="absolute left-1/2 transform -translate-x-1/2 -top-1 w-6 h-3.5 bg-gradient-to-r from-gray-300 via-gray-100 to-gray-400 rounded-full border border-gray-400 shadow-sm z-30"></div>
+                <div class="absolute left-[calc(50%-13px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div>
+                <div class="absolute left-[calc(50%+5px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div>
+            </div>
+            <div class="relative w-full h-2">
+                <div class="absolute left-1/2 transform -translate-x-1/2 -top-1 w-6 h-3.5 bg-gradient-to-r from-gray-300 via-gray-100 to-gray-400 rounded-full border border-gray-400 shadow-sm z-30"></div>
+                <div class="absolute left-[calc(50%-13px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div>
+                <div class="absolute left-[calc(50%+5px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div>
+            </div>
+            <div class="relative w-full h-2">
+                <div class="absolute left-1/2 transform -translate-x-1/2 -top-1 w-6 h-3.5 bg-gradient-to-r from-gray-300 via-gray-100 to-gray-400 rounded-full border border-gray-400 shadow-sm z-30"></div>
+                <div class="absolute left-[calc(50%-13px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div>
+                <div class="absolute left-[calc(50%+5px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div>
+            </div>
+            <div class="relative w-full h-2">
+                <div class="absolute left-1/2 transform -translate-x-1/2 -top-1 w-6 h-3.5 bg-gradient-to-r from-gray-300 via-gray-100 to-gray-400 rounded-full border border-gray-400 shadow-sm z-30"></div>
+                <div class="absolute left-[calc(50%-13px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div>
+                <div class="absolute left-[calc(50%+5px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div>
+            </div>
+            <div class="relative w-full h-2">
+                <div class="absolute left-1/2 transform -translate-x-1/2 -top-1 w-6 h-3.5 bg-gradient-to-r from-gray-300 via-gray-100 to-gray-400 rounded-full border border-gray-400 shadow-sm z-30"></div>
+                <div class="absolute left-[calc(50%-13px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div>
+                <div class="absolute left-[calc(50%+5px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div>
+            </div>
+            <div class="relative w-full h-2">
+                <div class="absolute left-1/2 transform -translate-x-1/2 -top-1 w-6 h-3.5 bg-gradient-to-r from-gray-300 via-gray-100 to-gray-400 rounded-full border border-gray-400 shadow-sm z-30"></div>
+                <div class="absolute left-[calc(50%-13px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div>
+                <div class="absolute left-[calc(50%+5px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div>
+            </div>
+            <div class="relative w-full h-2">
+                <div class="absolute left-1/2 transform -translate-x-1/2 -top-1 w-6 h-3.5 bg-gradient-to-r from-gray-300 via-gray-100 to-gray-400 rounded-full border border-gray-400 shadow-sm z-30"></div>
+                <div class="absolute left-[calc(50%-13px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div>
+                <div class="absolute left-[calc(50%+5px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div>
+            </div>
+        </div>
+
+        <!-- Notebook Right Page (Grid Gallery of Looks) -->
+        <div class="flex-grow md:w-[60%] p-6 grid-paper rounded-b-3xl md:rounded-l-none md:rounded-r-3xl relative flex flex-col justify-between gap-4 overflow-visible min-h-[500px]">
+
+            <!-- Colored Binder Tabs on Right border -->
+            <div class="hidden md:flex absolute right-[-38px] top-8 flex-col gap-2 z-30 select-none">
+                <a class="bg-rose-400/70 text-white/90 font-sans text-[9px] font-bold tracking-wider pl-3 pr-4 py-2 rounded-r-lg cursor-pointer hover:translate-x-1.5 hover:bg-rose-400 hover:text-white transition-all shadow-[2px_1px_4px_rgba(0,0,0,0.08)] border-y border-r border-white/10"
+                    href="index.html">🌸 DASH</a>
+                <a class="bg-violetAccent/70 text-white/90 font-sans text-[9px] font-bold tracking-wider pl-3 pr-4 py-2 rounded-r-lg cursor-pointer hover:translate-x-1.5 hover:bg-violetAccent hover:text-white transition-all shadow-[2px_1px_4px_rgba(0,0,0,0.08)] border-y border-r border-white/10"
+                    href="calendar.html">📅 CAL</a>
+                <a class="bg-emeraldAccent/70 text-white/90 font-sans text-[9px] font-bold tracking-wider pl-3 pr-4 py-2 rounded-r-lg cursor-pointer hover:translate-x-1.5 hover:bg-emeraldAccent hover:text-white transition-all shadow-[2px_1px_4px_rgba(0,0,0,0.08)] border-y border-r border-white/10"
+                    href="studio.html">🎨 STUD</a>
+                <a class="bg-amberAccent/70 text-white/90 font-sans text-[9px] font-bold tracking-wider pl-3 pr-4 py-2 rounded-r-lg cursor-pointer hover:translate-x-1.5 hover:bg-amberAccent hover:text-white transition-all shadow-[2px_1px_4px_rgba(0,0,0,0.08)] border-y border-r border-white/10"
+                    href="closet.html">👗 CLOS</a>
+                <a class="bg-teal-500/70 text-white/90 font-sans text-[9px] font-bold tracking-wider pl-3 pr-4 py-2 rounded-r-lg cursor-pointer hover:translate-x-1.5 hover:bg-teal-500 hover:text-white transition-all shadow-[2px_1px_4px_rgba(0,0,0,0.08)] border-y border-r border-white/10"
+                    href="inspiration.html">✨ INSP</a>
+                <a class="bg-indigo-500/70 text-white/90 font-sans text-[9px] font-bold tracking-wider pl-3 pr-4 py-2 rounded-r-lg cursor-pointer hover:translate-x-1.5 hover:bg-indigo-500 hover:text-white transition-all shadow-[2px_1px_4px_rgba(0,0,0,0.08)] border-y border-r border-white/10"
+                    href="style-dna.html">🧬 DNA</a>
+                <a class="bg-pink-500 text-white font-sans text-[10px] font-extrabold tracking-widest pl-4 pr-5 py-2.5 rounded-r-xl cursor-pointer hover:translate-x-1 transition-all shadow-[4px_2px_8px_rgba(0,0,0,0.15)] border-y border-r border-white/20 flex items-center gap-1 z-10"
+                    href="my-looks.html">❤️ LOOKS</a>
+            </div>
+
+            <!-- Page Title and Search -->
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-border/60 pb-3">
+                <div>
+                    <h3 class="font-serif-editorial text-2xl font-bold text-main">Saved Looks Gallery</h3>
+                    <p class="text-[9.5px] uppercase tracking-wider text-roseAccent font-mono mt-0.5">Scrapbook Lookbook Collection</p>
+                </div>
+                <div class="relative w-full sm:w-48 shrink-0">
+                    <input type="text" id="look-search" placeholder="Search looks..."
+                        class="w-full bg-base/30 border border-border/80 rounded-full px-3.5 py-1 text-xs text-main focus:outline-none focus:border-roseAccent/40 font-sans placeholder-muted" />
+                </div>
+            </div>
+
+            <!-- Looks Grid Container -->
+            <div class="flex-grow overflow-y-auto pr-1 max-h-[460px]">
+                <!-- Empty State -->
+                <div id="looks-empty-state" class="hidden flex flex-col items-center justify-center border border-dashed border-border rounded-xl p-12 text-center my-6 bg-white shadow-sm">
+                    <span class="text-4xl mb-2">❤️</span>
+                    <h4 class="font-display text-sm text-main font-bold">No saved looks yet</h4>
+                    <p class="font-handwriting text-sm text-roseAccent mt-1 font-bold">Create outfits in Studio and save your favorites.</p>
+                </div>
+
+                <!-- Grid of Polaroids -->
+                <div id="looks-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-6 p-1">
+                    <!-- Dynamically populated look cards -->
+                </div>
+            </div>
+
+            <!-- Footer indicator -->
+            <div class="flex justify-between items-center text-[9px] text-muted border-t border-border/60 pt-2 font-mono">
+                <span>ThreadTheory Curation Hub</span>
+                <span>Page 11</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 👀 Look Detail Modal Overlay -->
+    <div id="view-look-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-main/40 backdrop-blur-sm" onclick="closeViewModal()"></div>
+        <div class="relative w-full max-w-md p-5 rounded-2xl bg-white border-2 border-roseAccent/25 shadow-2xl flex flex-col gap-4 max-h-[90vh] overflow-y-auto rotate-[-0.5deg]">
+            <!-- Pin Tape Decor -->
+            <div class="absolute -top-3 left-[40%] w-20 h-5 gingham-tape rotate-[1deg] opacity-95 pointer-events-none"></div>
+            
+            <!-- Header -->
+            <div class="flex justify-between items-center pb-2 border-b border-border">
+                <div class="min-w-0 flex-1">
+                    <h3 id="view-look-title" class="font-serif-editorial text-lg font-bold text-main leading-tight truncate">Look Details</h3>
+                    <p id="view-look-subtitle" class="text-[9px] uppercase tracking-wider text-roseAccent font-mono mt-0.5">Saved Outfit</p>
+                </div>
+                <button onclick="closeViewModal()" class="material-symbols-outlined text-muted hover:text-roseAccent p-1 transition-colors">close</button>
+            </div>
+
+            <!-- Content -->
+            <div class="flex flex-col gap-4">
+                <!-- Polaroid Frame Image -->
+                <div class="polaroid-card rotate-[1deg] bg-white border border-border/80 shadow-sm p-2 flex flex-col items-center">
+                    <img id="view-look-img" src="" class="w-full aspect-[4/3] object-cover rounded-sm border border-border/20 shadow-inner bg-base" alt="Look Outfit" />
+                    <div id="view-look-harmony-badge" class="font-handwriting text-xs text-roseAccent font-bold mt-2">Synergy Match</div>
+                </div>
+
+                <!-- Specs -->
+                <div class="flex flex-wrap gap-2 text-[9px] font-sans font-bold">
+                    <span id="view-look-aesthetic-tag" class="bg-roseAccentLight text-roseAccent px-2.5 py-1 rounded border border-roseAccent/10">Aesthetic</span>
+                    <span id="view-look-occasion-tag" class="bg-violetAccentLight text-violetAccent px-2.5 py-1 rounded border border-violetAccent/10">Occasion</span>
+                    <span id="view-look-score-tag" class="bg-emeraldAccentLight text-emeraldAccent px-2.5 py-1 rounded border border-emeraldAccent/10">Score</span>
+                </div>
+
+                <!-- Stylist Explanation -->
+                <div class="p-3 bg-amberAccentLight/30 border border-amberAccent/10 rounded-xl relative">
+                    <div class="absolute -top-1.5 right-4 w-8 h-2 bg-roseAccentLight gingham-tape-pink rotate-[-2deg] opacity-95"></div>
+                    <h5 class="text-[8px] uppercase tracking-wider text-amber-800 font-bold font-mono">Curation Notes</h5>
+                    <p id="view-look-notes" class="text-xs text-amber-950 font-handwriting font-bold leading-relaxed mt-1">No notes available.</p>
+                </div>
+
+                <!-- Resolved Garments List -->
+                <div>
+                    <h5 class="text-[9px] uppercase tracking-wider text-muted font-bold font-mono border-b border-border pb-1 mb-2">Garment Pieces</h5>
+                    <div id="view-look-items-list" class="grid grid-cols-2 gap-2">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🗓 Plan on Calendar Modal Overlay -->
+    <div id="plan-date-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-main/40 backdrop-blur-sm" onclick="closePlanDateModal()"></div>
+        <div class="relative w-full max-w-sm p-5 rounded-2xl bg-white border border-border shadow-2xl flex flex-col gap-4">
+            <!-- Pin Tape Decor -->
+            <div class="absolute -top-3 left-[35%] w-24 h-4 gingham-tape-pink rotate-[-2deg] opacity-95 pointer-events-none"></div>
+            
+            <div class="flex justify-between items-center pb-2 border-b border-border">
+                <div>
+                    <h3 class="font-serif-editorial text-lg font-bold text-main">🗓 Schedule Outfit</h3>
+                    <p class="text-[10px] text-muted font-mono">Plan this saved look on calendar</p>
+                </div>
+                <button onclick="closePlanDateModal()" class="material-symbols-outlined text-muted hover:text-roseAccent p-1 transition-colors">close</button>
+            </div>
+
+            <form id="plan-date-form" class="space-y-4">
+                <input type="hidden" id="plan-date-look-id" />
+                <div class="space-y-1">
+                    <label class="text-[9px] font-bold uppercase tracking-wider text-muted font-sans">Choose Date</label>
+                    <input type="date" id="plan-date-input" required
+                        class="w-full bg-base/40 border border-border rounded px-3 py-1.5 text-xs text-main focus:outline-none focus:border-muted transition-all font-sans" />
+                </div>
+
+                <div class="flex flex-col gap-2 pt-2 border-t border-border">
+                    <button type="submit"
+                        class="w-full py-2.5 bg-roseAccent hover:bg-roseAccent/95 text-white font-bold text-[10px] uppercase tracking-widest rounded-lg shadow transition-all">
+                        Schedule Look 🗓️
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Error/Notification Toast Utility -->
+    <script>
+        function showErrorBanner(id, message, color = 'red') {
+            const colorMap = {
+                red:    { bg: 'rgba(220,38,38,0.95)', border: '#dc2626' },
+                orange: { bg: 'rgba(234,88,12,0.92)', border: '#ea580c' },
+                blue:   { bg: 'rgba(37,99,235,0.92)',  border: '#2563eb' }
+            };
+            const c = colorMap[color] || colorMap.red;
+            const existing = document.getElementById(`error-banner-${id}`);
+            if (existing) existing.remove();
+
+            const banner = document.createElement('div');
+            banner.id = `error-banner-${id}`;
+            banner.style.cssText = `position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:9999;background:${c.bg};border:2px solid ${c.border};color:#fff;font-family:monospace;font-size:12px;font-weight:bold;padding:10px 20px;border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,0.3);max-width:90vw;text-align:center;cursor:pointer;`;
+            banner.textContent = message;
+            banner.addEventListener('click', () => banner.remove());
+            document.body.appendChild(banner);
+            setTimeout(() => { if (banner.parentNode) banner.remove(); }, 6000);
+        }
+    </script>
+
+    <!-- Client logic -->
+    <script>
+        let currentUser = null;
+        let allClosetItems = [];
+        let savedLooksList = [];
+
+        function getSession() {
+            try { return JSON.parse(localStorage.getItem('tt_session') || 'null'); } catch { return null; }
+        }
+
+        async function fetchProfile(email) {
+            try {
+                const response = await fetch(`/api/profile?email=${encodeURIComponent(email)}`);
+                const data = await response.json();
+                if (data.success) return data.profile;
+            } catch (err) {
+                console.error("Error fetching profile:", err);
+            }
+            return null;
+        }
+
+        (async function initSessionGuard() {
+            const session = getSession();
+            if (!session) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            currentUser = await fetchProfile(session.email);
+            
+            // Wire logout
+            const logoutBtn = document.getElementById('logout-btn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', () => {
+                    if (confirm('Sign out of ThreadTheory?')) {
+                        localStorage.removeItem('tt_session');
+                        window.location.href = 'login.html';
+                    }
+                });
+            }
+
+            // Load data
+            await loadWardrobeAndLooks();
+
+            // Check if openLook is requested in URL query params
+            const urlParams = new URLSearchParams(window.location.search);
+            const openLookId = urlParams.get('openLook');
+            if (openLookId) {
+                const look = savedLooksList.find(l => l.id === openLookId);
+                if (look) {
+                    openViewModal(openLookId);
+                } else {
+                    showErrorBanner('look-not-found', '❌ Saved Look not found. It may have been deleted.', 'red');
+                }
+            }
+        })();
+
+        async function loadWardrobeAndLooks() {
+            const session = getSession();
+            const email = (currentUser && currentUser.email) || (session && session.email) || '';
+            if (!email) return;
+
+            try {
+                // Fetch wardrobe first
+                const wRes = await fetch(`/api/wardrobe?email=${encodeURIComponent(email)}`);
+                const wData = await wRes.json();
+                if (wData.success) {
+                    allClosetItems = wData.wardrobe;
+                }
+
+                // Fetch saved looks
+                const lRes = await fetch(`/api/saved-looks?email=${encodeURIComponent(email)}`);
+                const lData = await lRes.json();
+                if (lData.success) {
+                    savedLooksList = lData.looks;
+                    renderLooks(savedLooksList);
+                    updateStats();
+                }
+            } catch (err) {
+                console.error("Error loading library data:", err);
+                showErrorBanner('load-error', '❌ Error fetching saved looks data.', 'red');
+            }
+        }
+
+        function updateStats() {
+            document.getElementById('stats-total-looks').textContent = savedLooksList.length;
+            
+            if (savedLooksList.length > 0) {
+                const maxScore = Math.max(...savedLooksList.map(l => l.score || 0));
+                document.getElementById('stats-top-synergy').textContent = `${maxScore}%`;
+            } else {
+                document.getElementById('stats-top-synergy').textContent = '--%';
+            }
+        }
+
+        function renderLooks(looks) {
+            const grid = document.getElementById('looks-grid');
+            const emptyState = document.getElementById('looks-empty-state');
+            grid.innerHTML = '';
+
+            if (looks.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            emptyState.classList.add('hidden');
+
+            looks.forEach((look, idx) => {
+                const card = document.createElement('div');
+                // Alternating slight rotations for scrapbook effect
+                const rot = ((idx % 3) * 1.5 - 1).toFixed(1);
+                card.className = 'polaroid-card flex flex-col justify-between gap-3 h-full';
+                card.style.transform = `rotate(${rot}deg)`;
+
+                // Resolve image (look thumbnail or first active garment image)
+                let previewImg = look.img;
+                if (!previewImg) {
+                    const firstItem = Object.values(look.outfit).find(id => id);
+                    const resolved = allClosetItems.find(i => i.id === firstItem);
+                    previewImg = resolved ? resolved.img : 'https://lh3.googleusercontent.com/aida-public/AB6AXuDhN1Ub5yjpZzzu6veo98VCqcdz5dyn5pFmaqE8HmDVhvIg0DSX8mXuR90mCVS1wPPdi4pzGQ0Z7dPcJBgydawD4r0Ef2dmtpNsM1kPkKtNx5NANFjeOj7a1d8I3H5svbDaSXBFoNwa_wtJdQnh8Ne_M4ReeImq55R7gxpUo0kRI6c6sgz_qJgBG-BlUR3SK8r-Bl3cNxnOVD-8NPzahhZ6bMhTxvROfxjM32-P-CJYrvpNfWv7648deare9n7YYt_04WI1WLIoHzg';
+                }
+
+                // Date string
+                const dateStr = look.createdAt ? new Date(look.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A';
+
+                card.innerHTML = `
+                    <div class="relative flex-grow flex flex-col gap-2 cursor-pointer" onclick="openViewModal('${look.id}')">
+                        <div class="absolute -top-3 left-[30%] w-16 h-3.5 bg-roseAccentLight/60 gingham-tape-pink rotate-[-1deg] opacity-90 z-10 pointer-events-none"></div>
+                        <img src="${previewImg}" class="w-full aspect-[4/3] object-cover rounded shadow-inner bg-base" alt="${look.title}" />
+                        
+                        <div class="mt-1 px-1">
+                            <h4 class="font-serif-editorial text-[13px] font-bold text-main leading-tight truncate hover:text-roseAccent" title="${look.title}">${look.title}</h4>
+                            <div class="flex flex-wrap gap-1 mt-1.5 text-[7px] font-bold uppercase tracking-wider font-mono">
+                                ${look.aesthetic ? `<span class="bg-roseAccentLight text-roseAccent px-1.5 py-0.5 rounded border border-roseAccent/10">${look.aesthetic}</span>` : ''}
+                                ${look.occasion ? `<span class="bg-violetAccentLight text-violetAccent px-1.5 py-0.5 rounded border border-violetAccent/10">${look.occasion}</span>` : ''}
+                                <span class="bg-emeraldAccentLight text-emeraldAccent px-1.5 py-0.5 rounded border border-emeraldAccent/10">${look.score}% Match</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Actions Panel -->
+                    <div class="border-t border-border/60 pt-2 flex flex-col gap-2">
+                        <div class="flex justify-between items-center text-[8.5px] text-muted font-mono">
+                            <span>Saved: ${dateStr}</span>
+                        </div>
+                        <div class="grid grid-cols-3 gap-1 pt-1 border-t border-dashed border-border/40">
+                            <button onclick="openInStudio('${look.id}')" title="Edit in Studio Canvas"
+                                class="py-1 bg-emeraldAccentLight hover:bg-emeraldAccentLight/80 text-emeraldAccent font-label text-[7.5px] font-bold rounded flex items-center justify-center gap-0.5 transition-colors border border-emeraldAccent/15">
+                                <span class="material-symbols-outlined text-[10px]">edit</span>
+                                <span>Studio</span>
+                            </button>
+                            <button onclick="openPlanDateModal('${look.id}')" title="Schedule on Planner"
+                                class="py-1 bg-violetAccentLight hover:bg-violetAccentLight/80 text-violetAccent font-label text-[7.5px] font-bold rounded flex items-center justify-center gap-0.5 transition-colors border border-violetAccent/15">
+                                <span class="material-symbols-outlined text-[10px]">calendar_month</span>
+                                <span>Plan</span>
+                            </button>
+                            <button onclick="deleteLook('${look.id}')" title="Delete Look"
+                                class="py-1 bg-pinterestRed/5 hover:bg-pinterestRed/10 text-pinterestRed font-label text-[7.5px] font-bold rounded flex items-center justify-center gap-0.5 transition-colors border border-pinterestRed/10">
+                                <span class="material-symbols-outlined text-[10px]">delete</span>
+                                <span>Delete</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+                grid.appendChild(card);
+            });
+        }
+
+        // Search feature
+        document.getElementById('look-search').addEventListener('input', (e) => {
+            const q = e.target.value.toLowerCase().trim();
+            const filtered = savedLooksList.filter(l => 
+                l.title.toLowerCase().includes(q) || 
+                (l.aesthetic && l.aesthetic.toLowerCase().includes(q)) ||
+                (l.occasion && l.occasion.toLowerCase().includes(q)) ||
+                (l.note && l.note.toLowerCase().includes(q))
+            );
+            renderLooks(filtered);
+        });
+
+        // 👁 Look Detail View Modal logic
+        function openViewModal(lookId) {
+            const look = savedLooksList.find(l => l.id === lookId);
+            if (!look) return;
+
+            document.getElementById('view-look-title').textContent = look.title;
+            document.getElementById('view-look-notes').textContent = look.note || 'No stylist notes available.';
+            document.getElementById('view-look-harmony-badge').textContent = `Synergy Match: ${look.score}%`;
+            
+            // Thumbnail
+            let previewImg = look.img;
+            if (!previewImg) {
+                const firstItem = Object.values(look.outfit).find(id => id);
+                const resolved = allClosetItems.find(i => i.id === firstItem);
+                previewImg = resolved ? resolved.img : 'https://lh3.googleusercontent.com/aida-public/AB6AXuDhN1Ub5yjpZzzu6veo98VCqcdz5dyn5pFmaqE8HmDVhvIg0DSX8mXuR90mCVS1wPPdi4pzGQ0Z7dPcJBgydawD4r0Ef2dmtpNsM1kPkKtNx5NANFjeOj7a1d8I3H5svbDaSXBFoNwa_wtJdQnh8Ne_M4ReeImq55R7gxpUo0kRI6c6sgz_qJgBG-BlUR3SK8r-Bl3cNxnOVD-8NPzahhZ6bMhTxvROfxjM32-P-CJYrvpNfWv7648deare9n7YYt_04WI1WLIoHzg';
+            }
+            document.getElementById('view-look-img').src = previewImg;
+
+            // Badges
+            document.getElementById('view-look-aesthetic-tag').textContent = look.aesthetic ? `🎨 ${look.aesthetic}` : '🎨 Custom';
+            document.getElementById('view-look-occasion-tag').textContent = look.occasion ? `📍 ${look.occasion}` : '📍 Custom';
+            document.getElementById('view-look-score-tag').textContent = `✨ ${look.score}% Match`;
+
+            // List of resolved outfit pieces
+            const itemsListContainer = document.getElementById('view-look-items-list');
+            itemsListContainer.innerHTML = '';
+
+            const categories = ['Outerwear', 'Tops', 'Pants', 'Shoes'];
+            let hasItems = false;
+
+            categories.forEach(cat => {
+                const itemId = look.outfit[cat.toLowerCase() === 'pants' ? 'pants' : (cat.toLowerCase() === 'tops' ? 'tops' : cat.toLowerCase())];
+                if (itemId) {
+                    const item = allClosetItems.find(i => i.id === itemId);
+                    if (item) {
+                        hasItems = true;
+                        const row = document.createElement('div');
+                        row.className = 'flex items-center gap-2 p-1.5 bg-base/20 hover:bg-roseAccentLight/40 border border-border/60 hover:border-roseAccent/20 rounded cursor-pointer transition-all group';
+                        row.innerHTML = `
+                            <img src="${item.img}" class="w-6 h-8 object-cover rounded border border-border/40 shrink-0" />
+                            <div class="min-w-0 flex-grow">
+                                <h6 class="text-[9px] font-bold text-main truncate group-hover:text-roseAccent">${item.name}</h6>
+                                <span class="text-[7px] uppercase tracking-wider text-roseAccent font-semibold font-mono">${cat}</span>
+                            </div>
+                            <span class="material-symbols-outlined text-muted text-xs opacity-0 group-hover:opacity-100 transition-opacity">arrow_forward</span>
+                        `;
+                        row.addEventListener('click', () => {
+                            window.location.href = `closet.html?openGarment=${item.id}&openedFrom=${encodeURIComponent(look.title)}`;
+                        });
+                        itemsListContainer.appendChild(row);
+                    }
+                }
+            });
+
+            if (!hasItems) {
+                itemsListContainer.innerHTML = '<p class="text-[9px] text-muted italic">All items in this look have been deleted from your Closet Drawer.</p>';
+            }
+
+            document.getElementById('view-look-modal').classList.remove('hidden');
+        }
+
+        function closeViewModal() {
+            document.getElementById('view-look-modal').classList.add('hidden');
+        }
+
+        // ✏️ Open in Studio controller logic
+        function openInStudio(lookId) {
+            const look = savedLooksList.find(l => l.id === lookId);
+            if (!look) return;
+
+            // Setup draft structure in localStorage
+            const draft = {
+                isFromSavedLook: true,
+                savedLookId: look.id,
+                cardTitle: look.title,
+                cardNotes: look.note,
+                cardImage: look.img,
+                score: look.score,
+                aesthetic: look.aesthetic,
+                occasion: look.occasion,
+                outfit: [
+                    { category: "Outerwear", wardrobeItemId: look.outfit.outerwear },
+                    { category: "Tops", wardrobeItemId: look.outfit.tops },
+                    { category: "Pants", wardrobeItemId: look.outfit.pants },
+                    { category: "Shoes", wardrobeItemId: look.outfit.shoes }
+                ].filter(i => i.wardrobeItemId)
+            };
+
+            localStorage.setItem('buildLookDraft', JSON.stringify(draft));
+            window.location.href = 'studio.html';
+        }
+
+        // 🗓 Plan Date Modal logic
+        function openPlanDateModal(lookId) {
+            document.getElementById('plan-date-look-id').value = lookId;
+            
+            // Set today as default date
+            const today = new Date();
+            const tzoffset = today.getTimezoneOffset() * 60000;
+            const localISOTime = (new Date(today - tzoffset)).toISOString().slice(0, 10);
+            document.getElementById('plan-date-input').value = localISOTime;
+
+            document.getElementById('plan-date-modal').classList.remove('hidden');
+        }
+
+        function closePlanDateModal() {
+            document.getElementById('plan-date-modal').classList.add('hidden');
+        }
+
+        document.getElementById('plan-date-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const lookId = document.getElementById('plan-date-look-id').value;
+            const dateVal = document.getElementById('plan-date-input').value;
+            if (!lookId || !dateVal) return;
+
+            const look = savedLooksList.find(l => l.id === lookId);
+            if (!look) return;
+
+            const dayPart = dateVal.split('-')[2].replace(/^0/, '');
+
+            // Compose planner parameters
+            const payload = {
+                email: look.owner,
+                date: dateVal,
+                day: dayPart,
+                name: look.title,
+                desc: `Saved Look: ${look.aesthetic || ''} ${look.occasion || ''}`,
+                img: look.img,
+                rating: look.score,
+                note: `[date:${dateVal}] Saved Curation: ${look.note || ''}`,
+                outfit: {
+                    outerwear: look.outfit.outerwear || null,
+                    tops: look.outfit.tops || null,
+                    pants: look.outfit.pants || null,
+                    shoes: look.outfit.shoes || null
+                },
+                savedLookId: look.id
+            };
+
+            try {
+                const response = await fetch('/api/planner/save', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await response.json();
+                if (data.success) {
+                    closePlanDateModal();
+                    showErrorBanner('plan-success', `🗓️ Look planned successfully for ${dateVal}! 🌸`, 'blue');
+                } else {
+                    showErrorBanner('plan-fail', '❌ Failed to schedule outfit on planner.', 'red');
+                }
+            } catch (err) {
+                console.error("Error scheduling outfit:", err);
+                showErrorBanner('plan-error', '❌ Error scheduling look to planner.', 'red');
+            }
+        });
+
+        // 🗑 Delete Look controller logic
+        async function deleteLook(lookId) {
+            const look = savedLooksList.find(l => l.id === lookId);
+            if (!look) return;
+
+            if (confirm(`Are you sure you want to permanently delete "${look.title}" from your library?`)) {
+                const session = getSession();
+                const email = (currentUser && currentUser.email) || (session && session.email) || '';
+                if (!email) return;
+
+                try {
+                    const response = await fetch(`/api/saved-looks/${lookId}?email=${encodeURIComponent(email)}`, {
+                        method: 'DELETE'
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        showErrorBanner('delete-success', '✨ Look deleted successfully from your Library! ❤️', 'blue');
+                        await loadWardrobeAndLooks();
+                    } else {
+                        showErrorBanner('delete-fail', '❌ Failed to delete look: ' + (data.message || 'Unknown error'), 'red');
+                    }
+                } catch (err) {
+                    console.error("Error deleting look:", err);
+                    showErrorBanner('delete-error', '❌ Error deleting look.', 'red');
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>

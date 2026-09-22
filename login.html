@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ThreadTheory | Sign In</title>
+    <meta name="description" content="Sign in to ThreadTheory — your personal style diary and digital wardrobe." />
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,700;0,6..96,900;1,6..96,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,400&family=Caveat:wght@400;700&family=Jost:wght@200;300;400;500&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <style>
+        :root {
+            --rose: #EC4899;
+            --rose-light: #FDF2F8;
+            --rose-dark: #BE185D;
+            --red: #E60023;
+            --text: #1A1817;
+            --muted: #8E8A85;
+            --border: #EAE6DF;
+            --green: #10B981;
+            --amber: #F59E0B;
+            --err: #EF4444;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Jost', sans-serif;
+            min-height: 100vh;
+            background-color: #FFF0F2;
+            background-image: repeating-linear-gradient(90deg, #F7D4D9 0px, #F7D4D9 25px, #FFF0F2 25px, #FFF0F2 50px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px 16px;
+        }
+
+        .grid-paper {
+            background-color: #ffffff;
+            background-image: linear-gradient(0deg, #F2F5F8 1px, transparent 1px), linear-gradient(90deg, #F2F5F8 1px, transparent 1px);
+            background-size: 16px 16px;
+        }
+
+        .brand {
+            font-family: 'Bodoni Moda', serif;
+            font-weight: 900;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+        }
+
+        .brand-sub {
+            font-family: 'Jost', sans-serif;
+            font-weight: 200;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            font-size: 0.55rem;
+        }
+
+        .font-display {
+            font-family: 'Bodoni Moda', serif;
+            font-weight: 700;
+        }
+
+        .font-hand {
+            font-family: 'Caveat', cursive;
+        }
+
+        .font-label {
+            font-family: 'Jost', sans-serif;
+            font-weight: 300;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            font-size: 0.65rem;
+        }
+
+        .gingham {
+            background-color: #FBCFE8;
+            background-image: linear-gradient(90deg, rgba(255, 255, 255, .5) 50%, transparent 50%), linear-gradient(rgba(255, 255, 255, .5) 50%, transparent 50%);
+            background-size: 8px 8px;
+        }
+
+        .field-wrap {
+            position: relative;
+        }
+
+        .field-wrap input {
+            width: 100%;
+            background: #FAFAF9;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 40px 10px 12px;
+            font-family: 'Jost', sans-serif;
+            font-size: 13px;
+            color: var(--text);
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .field-wrap input:focus {
+            border-color: var(--rose);
+            box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.08);
+        }
+
+        .field-wrap input.error {
+            border-color: var(--err);
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.08);
+        }
+
+        .field-wrap input.success {
+            border-color: var(--green);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.08);
+        }
+
+        .field-icon {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 16px;
+            color: var(--muted);
+            cursor: pointer;
+            user-select: none;
+            transition: color 0.2s;
+        }
+
+        .field-icon:hover {
+            color: var(--rose);
+        }
+
+        .status-icon {
+            position: absolute;
+            right: 36px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 14px;
+            pointer-events: none;
+        }
+
+        .field-msg {
+            font-size: 10px;
+            font-family: 'Jost', sans-serif;
+            font-weight: 300;
+            letter-spacing: 0.05em;
+            margin-top: 3px;
+            min-height: 14px;
+            transition: all 0.2s;
+        }
+
+        .field-msg.err {
+            color: var(--err);
+        }
+
+        .field-msg.ok {
+            color: var(--green);
+        }
+
+        .field-msg.hint {
+            color: var(--muted);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 11px;
+            background: #E60023;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Jost', sans-serif;
+            font-weight: 500;
+            font-size: 12px;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+            box-shadow: 0 2px 8px rgba(230, 0, 35, 0.2);
+        }
+
+        .btn-primary:hover {
+            background: #C0001E;
+            box-shadow: 0 4px 14px rgba(230, 0, 35, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: scale(0.99);
+        }
+
+        .btn-primary:disabled {
+            background: #D1D5DB;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        .btn-social {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 9px;
+            background: white;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            font-family: 'Jost', sans-serif;
+            font-size: 11px;
+            font-weight: 400;
+            color: var(--text);
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        .btn-social:hover {
+            border-color: var(--rose);
+            background: var(--rose-light);
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .divider span {
+            font-family: 'Jost', sans-serif;
+            font-size: 10px;
+            font-weight: 300;
+            letter-spacing: 0.1em;
+            color: var(--muted);
+            white-space: nowrap;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(26, 24, 23, 0.45);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            padding: 16px;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        /* Shake animation for form error */
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0)
+            }
+
+            20% {
+                transform: translateX(-6px)
+            }
+
+            40% {
+                transform: translateX(6px)
+            }
+
+            60% {
+                transform: translateX(-4px)
+            }
+
+            80% {
+                transform: translateX(4px)
+            }
+        }
+
+        .shake {
+            animation: shake 0.35s ease;
+        }
+
+        /* Spinner */
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            display: inline-block;
+        }
+    </style>
+    <script>tailwind.config = { theme: { extend: { colors: { rose: '#EC4899', roseLight: '#FDF2F8', red: '#E60023', muted: '#8E8A85', border: '#EAE6DF', main: '#1A1817' } } } };</script>
+</head>
+
+<body>
+
+    <!-- Card -->
+    <div class="w-full max-w-[420px]">
+
+        <!-- Brand Header -->
+        <div class="text-center mb-6">
+            <div class="relative inline-block">
+                <div class="absolute -top-2 left-[20%] w-14 h-2.5 gingham rotate-[-2deg] opacity-80"></div>
+                <a href="index.html" class="brand text-2xl text-[#E60023]">ThreadTheory</a>
+            </div>
+            <p class="brand-sub text-[#EC4899] mt-1">Style Diary &nbsp;•&nbsp; Digital Wardrobe</p>
+            <p class="font-hand text-sm text-[#EC4899] mt-1 font-bold">welcome back! ✨</p>
+        </div>
+
+        <!-- Registration success banner (shown when redirected from signup) -->
+        <div id="reg-banner"
+            class="hidden mb-4 bg-green-50 border border-green-200 rounded-xl p-3 flex items-center gap-2.5">
+            <span class="text-green-500 text-lg">✓</span>
+            <div>
+                <p class="font-label text-[9px] text-green-700">Account created successfully!</p>
+                <p class="font-label text-[8px] text-green-600">Sign in with your new credentials below 🌸</p>
+            </div>
+        </div>
+        <div class="grid-paper rounded-2xl border-2 border-[#EAE6DF] shadow-xl p-7 relative overflow-hidden">
+            <!-- Decorative tape -->
+            <div class="absolute top-3 right-5 w-10 h-2 gingham rotate-[3deg] opacity-60"></div>
+
+            <h1 class="font-display text-xl text-[#1A1817] mb-1">Sign in</h1>
+            <p class="font-label text-[9px] text-[#8E8A85] mb-6">Enter your credentials to access your wardrobe</p>
+
+            <form id="login-form" novalidate autocomplete="on" class="space-y-4">
+
+                <!-- Email -->
+                <div>
+                    <label class="font-label text-[8px] text-[#8E8A85] block mb-1.5" for="login-email">Email
+                        Address</label>
+                    <div class="field-wrap">
+                        <input type="email" id="login-email" name="email" placeholder="aashi@example.com"
+                            autocomplete="email" />
+                        <span class="status-icon" id="email-status-icon"></span>
+                        <span class="material-symbols-outlined field-icon"
+                            style="right:10px; pointer-events:none; font-size:15px;">mail</span>
+                    </div>
+                    <p class="field-msg hint" id="email-msg"></p>
+                </div>
+
+                <!-- Password -->
+                <div>
+                    <div class="flex justify-between items-center mb-1.5">
+                        <label class="font-label text-[8px] text-[#8E8A85]" for="login-password">Password</label>
+                        <button type="button" id="forgot-btn"
+                            class="font-label text-[8px] text-[#EC4899] hover:text-[#BE185D] transition-colors">Forgot
+                            password?</button>
+                    </div>
+                    <div class="field-wrap">
+                        <input type="password" id="login-password" name="password" placeholder="Enter your password"
+                            autocomplete="current-password" />
+                        <span class="material-symbols-outlined field-icon" id="toggle-pw"
+                            onclick="togglePassword('login-password','toggle-pw')"
+                            title="Show/hide password">visibility</span>
+                    </div>
+                    <p class="field-msg hint" id="pw-msg"></p>
+                </div>
+
+                <!-- Remember me -->
+                <div class="flex items-center gap-2 mt-1">
+                    <input type="checkbox" id="remember-me" name="remember"
+                        class="w-3.5 h-3.5 rounded accent-[#E60023] cursor-pointer" />
+                    <label for="remember-me" class="font-label text-[9px] text-[#8E8A85] cursor-pointer">Remember me for
+                        30 days</label>
+                </div>
+
+                <!-- General error -->
+                <div id="form-error"
+                    class="hidden bg-red-50 border border-red-200 rounded-lg p-3 flex items-start gap-2">
+                    <span class="material-symbols-outlined text-red-400 text-sm mt-0.5">error</span>
+                    <p class="font-label text-[9px] text-red-600" id="form-error-msg">Invalid email or password. Please
+                        try again.</p>
+                </div>
+
+                <!-- Submit -->
+                <button type="submit" id="login-btn" class="btn-primary mt-2">
+                    <span id="login-btn-text">Sign In</span>
+                </button>
+
+            </form>
+
+            <!-- Divider -->
+            <div class="divider my-5"><span>or continue with</span></div>
+
+            <!-- Social -->
+            <div class="grid grid-cols-2 gap-2.5">
+                <button class="btn-social" onclick="socialLogin('Google')">
+                    <svg width="14" height="14" viewBox="0 0 24 24">
+                        <path fill="#4285F4"
+                            d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                        <path fill="#34A853"
+                            d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                        <path fill="#FBBC05"
+                            d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" />
+                        <path fill="#EA4335"
+                            d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                    </svg>
+                    Google
+                </button>
+                <button class="btn-social" onclick="socialLogin('Apple')">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="#000">
+                        <path
+                            d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
+                    </svg>
+                    Apple
+                </button>
+            </div>
+
+            <p class="text-center mt-5 font-label text-[9px] text-[#8E8A85]">
+                Don't have an account?
+                <a href="signup.html" class="text-[#EC4899] hover:text-[#BE185D] transition-colors ml-1">Create one
+                    →</a>
+            </p>
+        </div>
+
+        <p class="text-center mt-4 font-label text-[8px] text-[#8E8A85]">
+            By signing in you agree to our
+            <span class="text-[#EC4899] cursor-pointer hover:underline">Terms of Service</span> &
+            <span class="text-[#EC4899] cursor-pointer hover:underline">Privacy Policy</span>
+        </p>
+    </div>
+
+    <!-- Forgot Password Modal -->
+    <div class="modal-overlay" id="forgot-modal">
+        <div class="grid-paper w-full max-w-sm rounded-2xl border-2 border-[#EAE6DF] shadow-2xl p-6">
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <h2 class="font-display text-lg text-[#1A1817]">Reset Password</h2>
+                    <p class="font-label text-[8px] text-[#8E8A85] mt-0.5">We'll send a reset link to your email</p>
+                </div>
+                <button onclick="closeForgot()"
+                    class="material-symbols-outlined text-[#8E8A85] hover:text-[#EC4899] transition-colors text-lg">close</button>
+            </div>
+
+            <div id="forgot-form-wrap">
+                <div>
+                    <label class="font-label text-[8px] text-[#8E8A85] block mb-1.5">Email Address</label>
+                    <div class="field-wrap">
+                        <input type="email" id="forgot-email" placeholder="aashi@example.com" autocomplete="email" />
+                        <span class="material-symbols-outlined field-icon"
+                            style="right:10px; pointer-events:none; font-size:15px;">mail</span>
+                    </div>
+                    <p class="field-msg hint" id="forgot-email-msg"></p>
+                </div>
+                <button onclick="sendReset()" class="btn-primary mt-4" id="reset-btn">Send Reset Link</button>
+            </div>
+
+            <div id="forgot-success" class="hidden text-center py-4">
+                <div class="text-3xl mb-2">📬</div>
+                <p class="font-display text-base text-[#1A1817]">Check your inbox!</p>
+                <p class="font-label text-[9px] text-[#8E8A85] mt-1">We've sent a reset link to <strong
+                        id="reset-sent-to" class="text-[#EC4899]"></strong></p>
+                <button onclick="closeForgot()" class="btn-primary mt-4 text-[9px]">Back to Sign In</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ─── session check helper ──────────────────────────────────
+
+        // ─── Pre-fill from signup redirect ────────────────────────────
+        (function prefillFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            const email = params.get('email');
+            const registered = params.get('registered');
+            if (email) {
+                document.getElementById('login-email').value = decodeURIComponent(email);
+                // Trigger success styling
+                document.getElementById('login-email').classList.add('success');
+            }
+            if (registered === '1') {
+                document.getElementById('reg-banner').classList.remove('hidden');
+            }
+        })();
+        const emailRE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+        function validateEmail(val) {
+            if (!val) return { ok: false, msg: 'Email is required' };
+            if (!emailRE.test(val)) return { ok: false, msg: 'Enter a valid email address (e.g. name@domain.com)' };
+            return { ok: true, msg: '✓ Looks good!' };
+        }
+
+        function validatePassword(val) {
+            if (!val) return { ok: false, msg: 'Password is required' };
+            if (val.length < 6) return { ok: false, msg: 'Password must be at least 6 characters' };
+            return { ok: true, msg: '' };
+        }
+
+        // ─── Live field feedback ──────────────────────────────────────
+        const emailInput = document.getElementById('login-email');
+        const emailMsg = document.getElementById('email-msg');
+        const pwInput = document.getElementById('login-password');
+        const pwMsg = document.getElementById('pw-msg');
+
+        emailInput.addEventListener('blur', () => {
+            const v = validateEmail(emailInput.value.trim());
+            setFieldState(emailInput, emailMsg, v);
+        });
+
+        emailInput.addEventListener('input', () => {
+            if (emailInput.classList.contains('error')) {
+                const v = validateEmail(emailInput.value.trim());
+                setFieldState(emailInput, emailMsg, v);
+            }
+        });
+
+        pwInput.addEventListener('blur', () => {
+            const v = validatePassword(pwInput.value);
+            setFieldState(pwInput, pwMsg, v);
+        });
+
+        pwInput.addEventListener('input', () => {
+            if (pwInput.classList.contains('error')) {
+                const v = validatePassword(pwInput.value);
+                setFieldState(pwInput, pwMsg, v);
+            }
+        });
+
+        function setFieldState(input, msgEl, { ok, msg }) {
+            input.classList.remove('error', 'success');
+            msgEl.className = 'field-msg';
+            if (!input.value) { msgEl.textContent = ''; return; }
+            if (ok) {
+                input.classList.add('success');
+                msgEl.classList.add('ok');
+            } else {
+                input.classList.add('error');
+                msgEl.classList.add('err');
+            }
+            msgEl.textContent = msg;
+        }
+
+        // ─── Show / Hide password ─────────────────────────────────────
+        function togglePassword(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.textContent = 'visibility_off';
+            } else {
+                input.type = 'password';
+                icon.textContent = 'visibility';
+            }
+        }
+
+        // ─── Form submit ──────────────────────────────────────────────
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const email = emailInput.value.trim();
+            const password = pwInput.value;
+
+            const ev = validateEmail(email);
+            const pv = validatePassword(password);
+
+            setFieldState(emailInput, emailMsg, ev);
+            setFieldState(pwInput, pwMsg, pv);
+
+            document.getElementById('form-error').classList.add('hidden');
+
+            if (!ev.ok || !pv.ok) {
+                document.getElementById('login-form').classList.add('shake');
+                setTimeout(() => document.getElementById('login-form').classList.remove('shake'), 400);
+                return;
+            }
+
+            // Start backend request
+            const btn = document.getElementById('login-btn');
+            const btnText = document.getElementById('login-btn-text');
+            btn.disabled = true;
+            btnText.innerHTML = '<span class="spinner"></span>';
+
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Save session
+                    localStorage.setItem('tt_session', JSON.stringify({
+                        email: data.user.email,
+                        name: data.user.name,
+                        username: data.user.username,
+                        avatarSize: data.user.avatarSize,
+                        skinTone: data.user.skinTone,
+                        avatarPhoto: data.user.avatarPhoto || ""
+                    }));
+                    btnText.innerHTML = `✓ Welcome back, ${data.user.name.split(' ')[0]}!`;
+                    btn.style.background = '#10B981';
+                    setTimeout(() => { window.location.href = 'index.html'; }, 900);
+                } else {
+                    btn.disabled = false;
+                    btnText.textContent = 'Sign In';
+                    const errBox = document.getElementById('form-error');
+                    const errMsg = document.getElementById('form-error-msg');
+                    errMsg.textContent = data.message || 'Incorrect email or password.';
+                    errBox.classList.remove('hidden');
+                    document.getElementById('login-form').classList.add('shake');
+                    setTimeout(() => document.getElementById('login-form').classList.remove('shake'), 400);
+                    emailInput.classList.remove('success'); emailInput.classList.add('error');
+                    pwInput.classList.remove('success'); pwInput.classList.add('error');
+                }
+            } catch (err) {
+                console.error(err);
+                btn.disabled = false;
+                btnText.textContent = 'Sign In';
+                const errBox = document.getElementById('form-error');
+                const errMsg = document.getElementById('form-error-msg');
+                errMsg.textContent = 'Connection error. Please try again.';
+                errBox.classList.remove('hidden');
+                document.getElementById('login-form').classList.add('shake');
+                setTimeout(() => document.getElementById('login-form').classList.remove('shake'), 400);
+            }
+        });
+
+        // ─── Social Login (demo) ──────────────────────────────────────
+        function socialLogin(provider) {
+            alert(`${provider} sign-in coming soon! 🌸\nPlease sign up first via the Create Account page, then sign in with your credentials.`);
+        }
+
+        // ─── Forgot Password modal ────────────────────────────────────
+        document.getElementById('forgot-btn').addEventListener('click', () => {
+            document.getElementById('forgot-modal').classList.add('open');
+            document.getElementById('forgot-success').classList.add('hidden');
+            document.getElementById('forgot-form-wrap').classList.remove('hidden');
+            const loginEmail = emailInput.value.trim();
+            if (loginEmail) document.getElementById('forgot-email').value = loginEmail;
+        });
+
+        function closeForgot() {
+            document.getElementById('forgot-modal').classList.remove('open');
+        }
+
+        document.getElementById('forgot-modal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) closeForgot();
+        });
+
+        function sendReset() {
+            const email = document.getElementById('forgot-email').value.trim();
+            const msgEl = document.getElementById('forgot-email-msg');
+            const v = validateEmail(email);
+            if (!v.ok) {
+                document.getElementById('forgot-email').classList.add('error');
+                msgEl.className = 'field-msg err';
+                msgEl.textContent = v.msg;
+                return;
+            }
+            const btn = document.getElementById('reset-btn');
+            btn.textContent = 'Sending...';
+            btn.disabled = true;
+            setTimeout(() => {
+                document.getElementById('forgot-form-wrap').classList.add('hidden');
+                document.getElementById('forgot-success').classList.remove('hidden');
+                document.getElementById('reset-sent-to').textContent = email;
+            }, 1200);
+        }
+    </script>
+</body>
+
+</html>

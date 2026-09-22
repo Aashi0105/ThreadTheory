@@ -1,0 +1,20 @@
+[
+  {
+    "email": "demo@threadtheory.io",
+    "name": "Demo User",
+    "username": "demouser",
+    "password": "a1b2c3d4e5f6789012345678abcdef01:3168c06eb968997025ec609b2c0709fff4c620b4599a1b1c43fcaa39d5ab7903a12992a96bf503253c718a7e281b563a25709bc6c2493e969ac115f07b285c09",
+    "skinTone": "fair",
+    "size": "M",
+    "avatarPhoto": ""
+  },
+  {
+    "email": "aashi@example.com",
+    "name": "Aashi",
+    "username": "aashi01",
+    "password": "a1b2c3d4e5f6789012345678abcdef01:3168c06eb968997025ec609b2c0709fff4c620b4599a1b1c43fcaa39d5ab7903a12992a96bf503253c718a7e281b563a25709bc6c2493e969ac115f07b285c09",
+    "skinTone": "fair",
+    "size": "M",
+    "avatarPhoto": ""
+  }
+]

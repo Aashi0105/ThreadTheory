@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>ThreadTheory | My Wardrobe Library</title>
+    <meta name="description" content="Browse, filter, and manage your digital wardrobe library on ThreadTheory." />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;0,6..96,600;0,6..96,700;0,6..96,900;1,6..96,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Caveat:wght@400;700&family=Jost:wght@200;300;400;500&display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        :root {
+            --bg-base: #FFF0F2;
+            --bg-surface: #FFFFFF;
+            --border-color: #EAE6DF;
+            --text-main: #1A1817;
+            --text-muted: #8E8A85;
+            --accent-rose: #EC4899;
+            --accent-rose-light: #FDF2F8;
+            --accent-lavender: #8B5CF6;
+            --accent-lavender-light: #F5F3FF;
+            --accent-sage: #10B981;
+            --accent-sage-light: #ECFDF5;
+            --accent-amber: #F59E0B;
+            --accent-amber-light: #FEF3C7;
+            --accent-red: #E60023;
+            --bg-inactive: #F3ECE3;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            background-image: repeating-linear-gradient(90deg, #F7D4D9 0px, #F7D4D9 25px, #FFF0F2 25px, #FFF0F2 50px);
+            color: var(--text-main);
+            font-family: 'Jost', sans-serif;
+            letter-spacing: 0em;
+            padding: 30px 15px;
+        }
+
+        .font-display { font-family: 'Bodoni Moda', serif; font-weight: 700; letter-spacing: -0.02em; }
+        .font-display-light { font-family: 'Bodoni Moda', serif; font-weight: 400; font-style: italic; }
+        .font-editorial { font-family: 'Cormorant Garamond', serif; font-weight: 500; }
+        .font-label { font-family: 'Jost', sans-serif; font-weight: 300; letter-spacing: 0.15em; text-transform: uppercase; font-size: 0.65rem; }
+        .font-handwriting { font-family: 'Caveat', cursive; }
+        .brand-headline { font-family: 'Bodoni Moda', serif; font-weight: 900; letter-spacing: 0.02em; text-transform: uppercase; }
+        .brand-sub { font-family: 'Jost', sans-serif; font-weight: 200; letter-spacing: 0.3em; text-transform: uppercase; font-size: 0.55rem; }
+
+        .grid-paper {
+            background-color: #ffffff;
+            background-image: linear-gradient(0deg, #F2F5F8 1px, transparent 1px), linear-gradient(90deg, #F2F5F8 1px, transparent 1px);
+            background-size: 16px 16px;
+        }
+
+        .gingham-tape {
+            background-color: #EF4444;
+            background-image: linear-gradient(90deg, rgba(255,255,255,.5) 50%, transparent 50%), linear-gradient(rgba(255,255,255,.5) 50%, transparent 50%);
+            background-size: 10px 10px;
+        }
+        .gingham-tape-pink {
+            background-color: #FBCFE8;
+            background-image: linear-gradient(90deg, rgba(255,255,255,.5) 50%, transparent 50%), linear-gradient(rgba(255,255,255,.5) 50%, transparent 50%);
+            background-size: 10px 10px;
+        }
+        .gingham-tape-lavender {
+            background-color: #DDD6FE;
+            background-image: linear-gradient(90deg, rgba(255,255,255,.5) 50%, transparent 50%), linear-gradient(rgba(255,255,255,.5) 50%, transparent 50%);
+            background-size: 10px 10px;
+        }
+        .gingham-tape-amber {
+            background-color: #FDE68A;
+            background-image: linear-gradient(90deg, rgba(255,255,255,.5) 50%, transparent 50%), linear-gradient(rgba(255,255,255,.5) 50%, transparent 50%);
+            background-size: 10px 10px;
+        }
+
+        .polaroid-card {
+            background: #ffffff;
+            padding: 7px 7px 22px 7px;
+            box-shadow: 0 4px 14px rgba(236, 72, 153, 0.09), 0 1px 3px rgba(0,0,0,0.07);
+            border: 1px solid rgba(236, 72, 153, 0.12);
+            transition: transform 0.22s cubic-bezier(.34,1.56,.64,1), box-shadow 0.22s ease;
+            cursor: pointer;
+        }
+        .polaroid-card:hover {
+            transform: translateY(-4px) scale(1.03) rotate(0deg) !important;
+            box-shadow: 0 12px 32px rgba(236, 72, 153, 0.18), 0 3px 8px rgba(0,0,0,0.10);
+        }
+        .polaroid-card img {
+            width: 100%;
+            aspect-ratio: 3 / 4;
+            object-fit: cover;
+            border-radius: 2px;
+            display: block;
+        }
+
+        .category-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 10px 3px 8px;
+            border-radius: 999px;
+            font-family: 'Jost', sans-serif;
+            font-weight: 300;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            font-size: 0.6rem;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: all 0.15s ease;
+            white-space: nowrap;
+        }
+        .category-pill.active {
+            font-weight: 500;
+        }
+
+        .filter-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-family: 'Jost', sans-serif;
+            font-weight: 300;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            font-size: 0.6rem;
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+            background: white;
+            color: var(--text-muted);
+            transition: all 0.15s ease;
+            white-space: nowrap;
+        }
+        .filter-chip.active, .filter-chip:hover {
+            border-color: var(--accent-rose);
+            background: var(--accent-rose-light);
+            color: var(--accent-rose);
+        }
+        .filter-chip.active {
+            font-weight: 500;
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .sidebar-item:hover {
+            background: var(--accent-rose-light);
+        }
+        .sidebar-item.active {
+            background: var(--accent-rose-light);
+            font-weight: 500;
+        }
+        .sidebar-item.active .sidebar-count {
+            background: var(--accent-rose);
+            color: white;
+        }
+        .sidebar-count {
+            margin-left: auto;
+            min-width: 22px;
+            text-align: center;
+            padding: 1px 6px;
+            border-radius: 999px;
+            font-family: 'Caveat', cursive;
+            font-size: 0.8rem;
+            font-weight: 700;
+            background: var(--bg-inactive);
+            color: var(--text-muted);
+            transition: all 0.15s ease;
+        }
+
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 2px; }
+
+        .spinner {
+            display: inline-block;
+            width: 1.1em; height: 1.1em;
+            border: 2px solid currentColor;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            vertical-align: text-bottom;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Error / Success banner */
+        #error-banner {
+            position: fixed;
+            top: 18px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-80px);
+            z-index: 9999;
+            padding: 10px 22px;
+            border-radius: 12px;
+            font-family: 'Jost', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 400;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.13);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.35s cubic-bezier(.34,1.56,.64,1);
+            pointer-events: none;
+        }
+        #error-banner.show { transform: translateX(-50%) translateY(0); pointer-events: auto; }
+        #error-banner.type-error { background: #FEF2F2; border: 1px solid #FECACA; color: #B91C1C; }
+        #error-banner.type-success { background: #ECFDF5; border: 1px solid #6EE7B7; color: #065F46; }
+        #error-banner.type-info { background: #EFF6FF; border: 1px solid #BFDBFE; color: #1D4ED8; }
+
+        /* Item detail drawer */
+        #item-drawer {
+            position: fixed;
+            top: 0; right: -480px;
+            width: min(480px, 100vw);
+            height: 100vh;
+            background: white;
+            box-shadow: -8px 0 40px rgba(236,72,153,0.12);
+            z-index: 1000;
+            transition: right 0.35s cubic-bezier(.34,1.56,.64,1);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        #item-drawer.open { right: 0; }
+        #drawer-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.2);
+            z-index: 999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        #drawer-overlay.show { opacity: 1; pointer-events: auto; }
+
+        .tag-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-family: 'Jost', sans-serif;
+            font-size: 0.6rem;
+            font-weight: 400;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        /* Empty state */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 48px 24px;
+            text-align: center;
+            gap: 10px;
+        }
+
+        /* Grid animation */
+        .garment-card-wrapper {
+            animation: cardIn 0.3s ease both;
+        }
+        @keyframes cardIn {
+            from { opacity: 0; transform: translateY(10px) scale(0.97); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .garment-card-wrapper:nth-child(1) { animation-delay: 0.03s; }
+        .garment-card-wrapper:nth-child(2) { animation-delay: 0.06s; }
+        .garment-card-wrapper:nth-child(3) { animation-delay: 0.09s; }
+        .garment-card-wrapper:nth-child(4) { animation-delay: 0.12s; }
+        .garment-card-wrapper:nth-child(5) { animation-delay: 0.15s; }
+        .garment-card-wrapper:nth-child(6) { animation-delay: 0.18s; }
+        .garment-card-wrapper:nth-child(7) { animation-delay: 0.21s; }
+        .garment-card-wrapper:nth-child(8) { animation-delay: 0.24s; }
+
+        /* Search highlight */
+        .search-active input {
+            border-color: var(--accent-rose) !important;
+        }
+
+        /* Stats card hover */
+        .stat-card {
+            transition: transform 0.18s ease, box-shadow 0.18s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(236,72,153,0.13);
+        }
+    </style>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        base: "#FAF8F5",
+                        surface: "#FFFFFF",
+                        border: "#EAE6DF",
+                        main: "#1A1817",
+                        muted: "#8E8A85",
+                        roseAccent: "#EC4899",
+                        roseAccentLight: "#FDF2F8",
+                        violetAccent: "#8B5CF6",
+                        violetAccentLight: "#F5F3FF",
+                        emeraldAccent: "#10B981",
+                        emeraldAccentLight: "#ECFDF5",
+                        amberAccent: "#F59E0B",
+                        amberAccentLight: "#FEF3C7",
+                        pinterestRed: "#E60023",
+                        inactive: "#F3ECE3"
+                    },
+                    fontFamily: {
+                        serif: ["Bodoni Moda", "serif"],
+                        editorial: ["Cormorant Garamond", "serif"],
+                        sans: ["Jost", "sans-serif"],
+                        handwriting: ["Caveat", "cursive"]
+                    }
+                }
+            }
+        };
+    </script>
+</head>
+
+<body class="bg-base text-main font-sans antialiased min-h-screen flex flex-col items-center justify-center p-4">
+
+    <!-- Mobile/Tablet Scrapbook Navigation Tape Bar -->
+    <div class="flex md:hidden flex-wrap justify-center gap-2 mb-4 max-w-md w-full px-2 shrink-0">
+        <a href="index.html" class="px-3 py-1.5 bg-roseAccentLight/85 border border-roseAccent/20 text-roseAccent font-label text-[9px] tracking-widest rounded-md shadow-sm active:scale-95 transition-all rotate-[-1deg] opacity-90 hover:opacity-100">
+            🌸 Dashboard
+        </a>
+        <a href="calendar.html" class="px-3 py-1.5 bg-violetAccentLight/85 border border-violetAccent/20 text-violetAccent font-label text-[9px] tracking-widest rounded-md shadow-sm active:scale-95 transition-all rotate-[1deg] opacity-90 hover:opacity-100">
+            📅 Planner
+        </a>
+        <a href="studio.html" class="px-3 py-1.5 bg-emeraldAccentLight/85 border border-emeraldAccent/20 text-emeraldAccent font-label text-[9px] tracking-widest rounded-md shadow-sm active:scale-95 transition-all rotate-[-0.5deg] opacity-90 hover:opacity-100">
+            🎨 Studio
+        </a>
+        <a href="closet.html" class="px-3 py-1.5 bg-amberAccent text-white font-label text-[9px] tracking-widest rounded-md shadow-md active:scale-95 transition-all rotate-[1.5deg] font-bold">
+            👗 Closet
+        </a>
+        <a href="inspiration.html" class="px-3 py-1.5 bg-teal-50 border border-teal-200/50 text-teal-600 font-label text-[9px] tracking-widest rounded-md shadow-sm active:scale-95 transition-all rotate-[-1deg] opacity-90 hover:opacity-100">
+            ✨ Inspiration
+        </a>
+        <a href="style-dna.html" class="px-3 py-1.5 bg-indigo-50 border border-indigo-200/50 text-indigo-600 font-label text-[9px] tracking-widest rounded-md shadow-sm active:scale-95 transition-all rotate-[2deg] opacity-90 hover:opacity-100">
+            🧬 DNA
+        </a>
+        <a href="my-looks.html" class="px-3 py-1.5 bg-pink-50 border border-pink-200/50 text-pink-600 font-label text-[9px] tracking-widest rounded-md shadow-sm active:scale-95 transition-all rotate-[-1.5deg] opacity-90 hover:opacity-100">
+            ❤️ Looks
+        </a>
+    </div>
+
+    <!-- Error Banner -->
+    <div id="error-banner" role="alert">
+        <span id="error-banner-icon">⚠️</span>
+        <span id="error-banner-msg"></span>
+    </div>
+
+    <!-- Drawer Overlay -->
+    <div id="drawer-overlay"></div>
+
+    <!-- Item Detail Drawer -->
+    <div id="item-drawer" role="dialog" aria-modal="true" aria-label="Garment details">
+        <div class="sticky top-0 z-10 bg-white border-b border-border flex flex-col px-5 py-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="font-label text-[9px] text-roseAccent">Garment Detail</p>
+                    <h3 class="font-display text-lg text-main leading-tight mt-0.5" id="drawer-name">—</h3>
+                </div>
+                <button id="drawer-close-btn" class="w-8 h-8 flex items-center justify-center rounded-full border border-border hover:border-roseAccent hover:bg-roseAccentLight transition-all" aria-label="Close">
+                    <span class="material-symbols-outlined text-muted" style="font-size:18px">close</span>
+                </button>
+            </div>
+            <!-- Opened From Context Banner -->
+            <div id="drawer-context-banner" class="hidden bg-pink-50 border border-pink-200/50 rounded-lg px-2.5 py-1.5 flex items-center gap-1.5 mt-2 text-[9.5px] text-pink-700 font-sans shadow-sm select-none">
+                <span class="text-xs">🎀</span>
+                <span>Opened from: <strong id="drawer-context-look-name">Look Name</strong></span>
+            </div>
+        </div>
+
+        <!-- Drawer Image -->
+        <div class="relative mx-5 mt-5">
+            <div class="absolute -top-2.5 left-[30%] w-16 h-3.5 gingham-tape-pink rotate-[1.5deg] opacity-90 z-10"></div>
+            <div class="polaroid-card !cursor-default !transform-none hover:!transform-none" style="rotate:1deg">
+                <img id="drawer-img" src="" alt="Garment" class="rounded-sm w-full" style="aspect-ratio:3/4;object-fit:cover" />
+                <p class="font-handwriting text-xs text-center text-roseAccent font-bold mt-2" id="drawer-caption">—</p>
+            </div>
+        </div>
+
+        <!-- Drawer Info -->
+        <div class="px-5 mt-5 flex flex-col gap-4 pb-8">
+            <!-- Category & Subcategory -->
+            <div class="grid grid-cols-2 gap-2">
+                <div class="bg-roseAccentLight rounded-lg p-3 border border-roseAccent/15">
+                    <p class="font-label text-[8px] text-roseAccent">Category</p>
+                    <p class="font-display text-sm text-main mt-1" id="drawer-category">—</p>
+                </div>
+                <div class="bg-violetAccentLight rounded-lg p-3 border border-violetAccent/15">
+                    <p class="font-label text-[8px] text-violetAccent">Subcategory</p>
+                    <p class="font-display text-sm text-main mt-1" id="drawer-subcategory">—</p>
+                </div>
+            </div>
+            <!-- Season & Occasion -->
+            <div class="grid grid-cols-2 gap-2">
+                <div class="bg-emeraldAccentLight rounded-lg p-3 border border-emeraldAccent/15">
+                    <p class="font-label text-[8px] text-emeraldAccent">Season</p>
+                    <p class="font-display text-sm text-main mt-1" id="drawer-season">—</p>
+                </div>
+                <div class="bg-amberAccentLight rounded-lg p-3 border border-amberAccent/15">
+                    <p class="font-label text-[8px] text-amberAccent">Occasion</p>
+                    <p class="font-display text-sm text-main mt-1" id="drawer-occasion">—</p>
+                </div>
+            </div>
+            <!-- Colors -->
+            <div class="bg-white rounded-lg p-3 border border-border shadow-sm">
+                <p class="font-label text-[8px] text-muted mb-2">Color Palette</p>
+                <div class="flex items-center gap-3" id="drawer-colors">
+                    <!-- Dynamic -->
+                </div>
+            </div>
+            <!-- Saved Looks Using This Garment -->
+            <div class="bg-white rounded-lg p-3 border border-border shadow-sm">
+                <p class="font-label text-[8px] text-muted mb-2" id="drawer-saved-looks-title">Used in Saved Looks</p>
+                <div class="flex flex-col gap-1.5" id="drawer-saved-looks">
+                    <!-- Dynamic -->
+                </div>
+            </div>
+            <!-- Tags -->
+            <div class="flex flex-wrap gap-1.5" id="drawer-tags">
+                <!-- Dynamic -->
+            </div>
+            <!-- Delete button -->
+            <button id="drawer-delete-btn"
+                class="mt-2 w-full flex items-center justify-center gap-2 py-2.5 rounded-lg border border-red-200 text-red-500 hover:bg-red-50 font-label text-[9px] tracking-widest transition-all">
+                <span class="material-symbols-outlined" style="font-size:15px">delete</span>
+                Remove from Wardrobe
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Notebook Wrapper — wider for library feel -->
+    <div class="relative w-full max-w-[1200px] bg-white rounded-3xl border-4 border-roseAccent/20 shadow-2xl flex flex-col md:flex-row overflow-visible z-10 my-4 min-h-[680px]">
+
+        <!-- ═══ LEFT SIDEBAR — Category navigation + Stats ═══ -->
+        <div class="w-full md:w-[220px] md:min-w-[220px] grid-paper rounded-t-3xl md:rounded-r-none md:rounded-l-3xl p-5 flex flex-col gap-4 border-b md:border-b-0 md:border-r border-border/60 shrink-0">
+
+            <!-- Brand Mark -->
+            <div>
+                <span class="brand-headline text-lg text-pinterestRed tracking-widest">ThreadTheory</span>
+                <p class="brand-sub text-roseAccent mt-0.5">Digital Wardrobe Library</p>
+            </div>
+
+            <div class="flex items-center gap-2 flex-wrap">
+                <div class="hidden sm:flex items-center gap-1.5 bg-roseAccentLight rounded-full border border-roseAccent/20 px-2.5 py-1">
+                    <a class="font-label text-[9px] text-muted hover:text-roseAccent transition-colors" href="index.html">Dashboard</a>
+                    <span class="text-[9px] text-roseAccent/40">•</span>
+                    <a class="font-label text-[9px] text-muted hover:text-roseAccent transition-colors" href="studio.html">Studio</a>
+                    <span class="text-[9px] text-roseAccent/40">•</span>
+                    <a class="font-label text-[9px] text-muted hover:text-roseAccent transition-colors" href="my-looks.html">❤️ Looks</a>
+                </div>
+                <button id="logout-btn" title="Sign out"
+                    class="flex items-center gap-1 font-label text-[8px] text-muted hover:text-[#E60023] transition-colors px-2 py-1 rounded-full border border-border hover:border-[#E60023]/30 hover:bg-red-50">
+                    <span class="material-symbols-outlined" style="font-size:11px">logout</span>
+                    <span>Out</span>
+                </button>
+            </div>
+
+            <!-- Divider -->
+            <div class="h-px bg-border"></div>
+
+            <!-- Wardrobe Stats -->
+            <div>
+                <p class="font-label text-[8px] text-roseAccent font-bold tracking-wider mb-2">Wardrobe Stats</p>
+                <div class="grid grid-cols-2 gap-1.5">
+                    <div class="stat-card bg-white rounded-lg p-2.5 border border-border shadow-sm text-center">
+                        <p class="font-handwriting text-xl font-bold text-roseAccent" id="stat-total">0</p>
+                        <p class="font-label text-[8px] text-muted">Total</p>
+                    </div>
+                    <div class="stat-card bg-white rounded-lg p-2.5 border border-border shadow-sm text-center">
+                        <p class="font-handwriting text-xl font-bold text-violetAccent" id="stat-categories">0</p>
+                        <p class="font-label text-[8px] text-muted">Categories</p>
+                    </div>
+                    <div class="stat-card bg-white rounded-lg p-2.5 border border-border shadow-sm text-center">
+                        <p class="font-handwriting text-xl font-bold text-emeraldAccent" id="stat-seasons">0</p>
+                        <p class="font-label text-[8px] text-muted">Seasons</p>
+                    </div>
+                    <div class="stat-card bg-white rounded-lg p-2.5 border border-border shadow-sm text-center">
+                        <p class="font-handwriting text-xl font-bold text-amberAccent" id="stat-occasions">0</p>
+                        <p class="font-label text-[8px] text-muted">Occasions</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Divider -->
+            <div class="h-px bg-border"></div>
+
+            <!-- Category Sidebar -->
+            <div class="flex flex-col gap-0.5">
+                <p class="font-label text-[8px] text-muted font-bold tracking-wider mb-1">Categories</p>
+
+                <div id="sidebar-all" class="sidebar-item active" role="button" tabindex="0" data-cat="">
+                    <span class="text-base">👗</span>
+                    <span class="font-label text-[10px] text-main">All Items</span>
+                    <span class="sidebar-count" id="sidebar-count-all">0</span>
+                </div>
+                <div id="sidebar-tops" class="sidebar-item" role="button" tabindex="0" data-cat="Tops &amp; Blouses">
+                    <span class="text-base">👚</span>
+                    <span class="font-label text-[10px] text-main">Tops &amp; Blouses</span>
+                    <span class="sidebar-count" id="sidebar-count-tops">0</span>
+                </div>
+                <div id="sidebar-bottoms" class="sidebar-item" role="button" tabindex="0" data-cat="Bottoms">
+                    <span class="text-base">👖</span>
+                    <span class="font-label text-[10px] text-main">Bottoms</span>
+                    <span class="sidebar-count" id="sidebar-count-bottoms">0</span>
+                </div>
+                <div id="sidebar-dresses" class="sidebar-item" role="button" tabindex="0" data-cat="Dresses">
+                    <span class="text-base">👘</span>
+                    <span class="font-label text-[10px] text-main">Dresses</span>
+                    <span class="sidebar-count" id="sidebar-count-dresses">0</span>
+                </div>
+                <div id="sidebar-outerwear" class="sidebar-item" role="button" tabindex="0" data-cat="Outerwear">
+                    <span class="text-base">🧥</span>
+                    <span class="font-label text-[10px] text-main">Outerwear</span>
+                    <span class="sidebar-count" id="sidebar-count-outerwear">0</span>
+                </div>
+                <div id="sidebar-footwear" class="sidebar-item" role="button" tabindex="0" data-cat="Footwear">
+                    <span class="text-base">👟</span>
+                    <span class="font-label text-[10px] text-main">Footwear</span>
+                    <span class="sidebar-count" id="sidebar-count-footwear">0</span>
+                </div>
+                <div id="sidebar-accessories" class="sidebar-item" role="button" tabindex="0" data-cat="Accessories">
+                    <span class="text-base">👜</span>
+                    <span class="font-label text-[10px] text-main">Accessories</span>
+                    <span class="sidebar-count" id="sidebar-count-accessories">0</span>
+                </div>
+                <div id="sidebar-activewear" class="sidebar-item" role="button" tabindex="0" data-cat="Activewear">
+                    <span class="text-base">🏃</span>
+                    <span class="font-label text-[10px] text-main">Activewear</span>
+                    <span class="sidebar-count" id="sidebar-count-activewear">0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notebook Spiral Spine -->
+        <div class="hidden md:flex w-8 md:w-10 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-300 relative border-l border-r border-border/80 flex-col justify-around py-6 z-20 shrink-0">
+            <!-- Binder rings (repeated) -->
+            <div class="relative w-full h-2">
+                <div class="absolute left-1/2 transform -translate-x-1/2 -top-1 w-6 h-3.5 bg-gradient-to-r from-gray-300 via-gray-100 to-gray-400 rounded-full border border-gray-400 shadow-sm z-30"></div>
+                <div class="absolute left-[calc(50%-13px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div>
+                <div class="absolute left-[calc(50%+5px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div>
+            </div>
+            <div class="relative w-full h-2">
+                <div class="absolute left-1/2 transform -translate-x-1/2 -top-1 w-6 h-3.5 bg-gradient-to-r from-gray-300 via-gray-100 to-gray-400 rounded-full border border-gray-400 shadow-sm z-30"></div>
+                <div class="absolute left-[calc(50%-13px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div>
+                <div class="absolute left-[calc(50%+5px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div>
+            </div>
+            <div class="relative w-full h-2">
+                <div class="absolute left-1/2 transform -translate-x-1/2 -top-1 w-6 h-3.5 bg-gradient-to-r from-gray-300 via-gray-100 to-gray-400 rounded-full border border-gray-400 shadow-sm z-30"></div>
+                <div class="absolute left-[calc(50%-13px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div>
+                <div class="absolute left-[calc(50%+5px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div>
+            </div>
+            <div class="relative w-full h-2">
+                <div class="absolute left-1/2 transform -translate-x-1/2 -top-1 w-6 h-3.5 bg-gradient-to-r from-gray-300 via-gray-100 to-gray-400 rounded-full border border-gray-400 shadow-sm z-30"></div>
+                <div class="absolute left-[calc(50%-13px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div>
+                <div class="absolute left-[calc(50%+5px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div>
+            </div>
+            <div class="relative w-full h-2">
+                <div class="absolute left-1/2 transform -translate-x-1/2 -top-1 w-6 h-3.5 bg-gradient-to-r from-gray-300 via-gray-100 to-gray-400 rounded-full border border-gray-400 shadow-sm z-30"></div>
+                <div class="absolute left-[calc(50%-13px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div>
+                <div class="absolute left-[calc(50%+5px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div>
+            </div>
+            <div class="relative w-full h-2">
+                <div class="absolute left-1/2 transform -translate-x-1/2 -top-1 w-6 h-3.5 bg-gradient-to-r from-gray-300 via-gray-100 to-gray-400 rounded-full border border-gray-400 shadow-sm z-30"></div>
+                <div class="absolute left-[calc(50%-13px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div>
+                <div class="absolute left-[calc(50%+5px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div>
+            </div>
+            <div class="relative w-full h-2">
+                <div class="absolute left-1/2 transform -translate-x-1/2 -top-1 w-6 h-3.5 bg-gradient-to-r from-gray-300 via-gray-100 to-gray-400 rounded-full border border-gray-400 shadow-sm z-30"></div>
+                <div class="absolute left-[calc(50%-13px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div>
+                <div class="absolute left-[calc(50%+5px)] -top-0.5 w-2 h-2 bg-neutral-900 rounded-full z-10"></div>
+            </div>
+        </div>
+
+        <!-- ═══ RIGHT MAIN PAGE — Gallery ═══ -->
+        <div class="flex-1 grid-paper rounded-b-3xl md:rounded-l-none md:rounded-r-3xl relative flex flex-col gap-0 overflow-visible">
+
+            <!-- Colored Binder Tabs on Right border -->
+            <div class="hidden md:flex absolute right-[-38px] top-8 flex-col gap-2 z-30 select-none">
+                <a class="bg-violetAccent/70 text-white/90 font-sans text-[9px] font-bold tracking-wider pl-3 pr-4 py-2 rounded-r-lg cursor-pointer hover:translate-x-1.5 hover:bg-violetAccent hover:text-white transition-all shadow-[2px_1px_4px_rgba(0,0,0,0.08)] border-y border-r border-white/10"
+                    href="index.html">🌸 DASH</a>
+                <a class="bg-violetAccent/70 text-white/90 font-sans text-[9px] font-bold tracking-wider pl-3 pr-4 py-2 rounded-r-lg cursor-pointer hover:translate-x-1.5 hover:bg-violetAccent hover:text-white transition-all shadow-[2px_1px_4px_rgba(0,0,0,0.08)] border-y border-r border-white/10"
+                    href="calendar.html">📅 CAL</a>
+                <a class="bg-emeraldAccent/70 text-white/90 font-sans text-[9px] font-bold tracking-wider pl-3 pr-4 py-2 rounded-r-lg cursor-pointer hover:translate-x-1.5 hover:bg-emeraldAccent hover:text-white transition-all shadow-[2px_1px_4px_rgba(0,0,0,0.08)] border-y border-r border-white/10"
+                    href="studio.html">🎨 STUD</a>
+                <a class="bg-amberAccent text-white font-sans text-[10px] font-extrabold tracking-widest pl-4 pr-5 py-2.5 rounded-r-xl cursor-pointer hover:translate-x-1 transition-all shadow-[4px_2px_8px_rgba(0,0,0,0.15)] border-y border-r border-white/20 flex items-center gap-1 z-10"
+                    href="closet.html">👗 CLOS</a>
+                <a class="bg-teal-500/70 text-white/90 font-sans text-[9px] font-bold tracking-wider pl-3 pr-4 py-2 rounded-r-lg cursor-pointer hover:translate-x-1.5 hover:bg-teal-500 hover:text-white transition-all shadow-[2px_1px_4px_rgba(0,0,0,0.08)] border-y border-r border-white/10"
+                    href="inspiration.html">✨ INSP</a>
+                <a class="bg-indigo-500/70 text-white/90 font-sans text-[9px] font-bold tracking-wider pl-3 pr-4 py-2 rounded-r-lg cursor-pointer hover:translate-x-1.5 hover:bg-indigo-500 hover:text-white transition-all shadow-[2px_1px_4px_rgba(0,0,0,0.08)] border-y border-r border-white/10"
+                    href="style-dna.html">🧬 DNA</a>
+                <a class="bg-pink-500/70 text-white/90 font-sans text-[9px] font-bold tracking-wider pl-3 pr-4 py-2 rounded-r-lg cursor-pointer hover:translate-x-1.5 hover:bg-pink-500 hover:text-white transition-all shadow-[2px_1px_4px_rgba(0,0,0,0.08)] border-y border-r border-white/10"
+                    href="my-looks.html">❤️ LOOKS</a>
+            </div>
+
+            <!-- Page Header -->
+            <div class="px-6 pt-5 pb-4 border-b border-border/60">
+                <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+                    <div class="relative">
+                        <div class="absolute -top-2 left-0 w-10 h-2.5 gingham-tape-pink rotate-[-1deg] opacity-90 z-10"></div>
+                        <p class="font-label text-roseAccent">Digital Library</p>
+                        <h1 class="font-display text-2xl text-main leading-tight mt-1">My Wardrobe 👗</h1>
+                        <p class="font-handwriting text-sm text-roseAccent mt-0.5 font-bold">every piece tells a story ✨</p>
+                        <!-- Dynamic wardrobe summary strip -->
+                        <div id="wardrobe-summary-strip" class="hidden mt-2 flex items-center gap-1.5 flex-wrap">
+                            <span class="font-label text-[9px] text-main font-bold" id="strip-total">0 Items</span>
+                            <span class="text-muted text-[9px]">•</span>
+                            <span class="font-label text-[9px] text-violetAccent" id="strip-categories">0 Categories</span>
+                            <span class="text-muted text-[9px]">•</span>
+                            <span class="font-label text-[9px] text-emeraldAccent" id="strip-season">—</span>
+                            <span class="text-muted text-[9px]">•</span>
+                            <span class="font-label text-[9px] text-amberAccent" id="strip-occasion">—</span>
+                        </div>
+                    </div>
+
+                    <!-- Search Bar -->
+                    <div class="relative flex-1 max-w-xs">
+                        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-muted" style="font-size:16px">search</span>
+                        <input
+                            id="search-input"
+                            type="text"
+                            placeholder="Search your closet…"
+                            autocomplete="off"
+                            class="w-full pl-9 pr-4 py-2 rounded-xl border border-border bg-white text-main font-sans text-xs focus:outline-none focus:border-roseAccent focus:ring-1 focus:ring-roseAccent/20 transition-all shadow-sm placeholder:text-muted"
+                        />
+                    </div>
+                </div>
+
+                <!-- Filter Chips Row -->
+                <div class="flex flex-wrap gap-2 mt-3 items-center">
+                    <span class="font-label text-[8px] text-muted mr-1">Filter:</span>
+                    <!-- Season chips -->
+                    <span class="font-label text-[8px] text-muted">Season</span>
+                    <button class="filter-chip" id="chip-season-all" data-season="">All</button>
+                    <button class="filter-chip" id="chip-season-spring" data-season="Spring">🌸 Spring</button>
+                    <button class="filter-chip" id="chip-season-summer" data-season="Summer">☀️ Summer</button>
+                    <button class="filter-chip" id="chip-season-fall" data-season="Fall">🍂 Fall</button>
+                    <button class="filter-chip" id="chip-season-winter" data-season="Winter">❄️ Winter</button>
+                    <button class="filter-chip" id="chip-season-allseason" data-season="All Season">🌍 All Season</button>
+                    <div class="w-px h-4 bg-border mx-1"></div>
+                    <!-- Occasion chips -->
+                    <span class="font-label text-[8px] text-muted">Occasion</span>
+                    <button class="filter-chip" id="chip-occ-all" data-occasion="">All</button>
+                    <button class="filter-chip" id="chip-occ-casual" data-occasion="Casual">Casual</button>
+                    <button class="filter-chip" id="chip-occ-formal" data-occasion="Formal">Formal</button>
+                    <button class="filter-chip" id="chip-occ-work" data-occasion="Work">Work</button>
+                    <button class="filter-chip" id="chip-occ-sports" data-occasion="Sports">Sports</button>
+                    <button class="filter-chip" id="chip-occ-party" data-occasion="Party">Party</button>
+                </div>
+
+                <!-- Active filter summary + item count -->
+                <div class="flex items-center justify-between mt-2.5">
+                    <div id="filter-summary" class="flex items-center gap-1.5 flex-wrap">
+                        <!-- Active filter tags rendered here -->
+                    </div>
+                    <p class="font-label text-[9px] text-muted whitespace-nowrap">
+                        <span id="results-count">0</span> items
+                    </p>
+                </div>
+            </div>
+
+            <!-- Gallery Area -->
+            <div class="flex-1 overflow-y-auto px-5 py-5 max-h-[calc(100vh-260px)]" style="min-height:400px">
+                <!-- Loading state -->
+                <div id="gallery-loading" class="flex items-center justify-center py-16 gap-3 text-muted">
+                    <span class="spinner" style="width:1.4em;height:1.4em;border-width:2.5px"></span>
+                    <span class="font-handwriting text-base font-bold text-roseAccent">Loading your wardrobe…</span>
+                </div>
+
+                <!-- Empty state: no wardrobe -->
+                <div id="gallery-empty-wardrobe" class="hidden empty-state">
+                    <div class="relative mb-2">
+                        <div class="absolute -top-3 left-[20%] w-16 h-3 gingham-tape-pink rotate-[-2deg] opacity-80 z-10"></div>
+                        <div class="polaroid-card !cursor-default rotate-[1deg] max-w-[120px]" style="pointer-events:none">
+                            <div class="w-full bg-roseAccentLight flex items-center justify-center text-5xl" style="aspect-ratio:3/4;border-radius:2px">👗</div>
+                            <p class="font-handwriting text-[10px] text-center text-roseAccent font-bold mt-1.5">my closet</p>
+                        </div>
+                    </div>
+                    <h3 class="font-display text-base text-main">Your wardrobe is empty</h3>
+                    <p class="font-handwriting text-sm text-muted font-bold">Upload your first garment to get started ✨</p>
+                    <a href="index.html" class="mt-2 inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-pinterestRed text-white font-label text-[9px] tracking-widest hover:bg-pinterestRed/90 transition-all shadow-sm">
+                        <span class="material-symbols-outlined" style="font-size:14px">photo_camera</span>
+                        Upload Closet Asset
+                    </a>
+                </div>
+
+                <!-- Empty state: no matches -->
+                <div id="gallery-empty-filter" class="hidden empty-state">
+                    <span class="text-4xl">🔍</span>
+                    <h3 class="font-display text-base text-main">No items match your filters</h3>
+                    <p class="font-handwriting text-sm text-muted font-bold">Try adjusting your search or filters</p>
+                    <button id="clear-filters-btn" class="mt-2 inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-roseAccent text-roseAccent font-label text-[9px] tracking-widest hover:bg-roseAccentLight transition-all">
+                        Clear All Filters
+                    </button>
+                </div>
+
+                <!-- Polaroid Gallery Grid -->
+                <div id="gallery-grid" class="hidden grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
+                    <!-- Cards rendered dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    (() => {
+        // ─── State ────────────────────────────────────────────────────────
+        let allItems = [];
+        let activeCategory = '';
+        let activeSeason    = '';
+        let activeOccasion  = '';
+        let searchQuery     = '';
+        let openItemId      = null;
+        let savedLooks      = [];
+        let currentOpenedFromContext = null;
+
+        // ─── Session ──────────────────────────────────────────────────────
+        const session = (() => {
+            try { return JSON.parse(localStorage.getItem('tt_session') || sessionStorage.getItem('threadtheory_user') || localStorage.getItem('threadtheory_user') || 'null'); } catch { return null; }
+        })();
+        if (!session?.email) {
+            window.location.href = 'login.html';
+            return;
+        }
+
+        // ─── Error banner ─────────────────────────────────────────────────
+        let bannerTimer = null;
+        function showBanner(msg, type = 'error') {
+            const el = document.getElementById('error-banner');
+            const iconEl = document.getElementById('error-banner-icon');
+            const msgEl  = document.getElementById('error-banner-msg');
+            el.className = `show type-${type}`;
+            iconEl.textContent = type === 'error' ? '⚠️' : type === 'success' ? '✅' : 'ℹ️';
+            msgEl.textContent = msg;
+            clearTimeout(bannerTimer);
+            bannerTimer = setTimeout(() => { el.classList.remove('show'); }, 3800);
+        }
+
+        // ─── Logout ────────────────────────────────────────────────────────
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            sessionStorage.removeItem('threadtheory_user');
+            localStorage.removeItem('threadtheory_user');
+            localStorage.removeItem('tt_session');
+            window.location.href = 'login.html';
+        });
+
+        async function fetchSavedLooks() {
+            try {
+                const res = await fetch(`/api/saved-looks?email=${encodeURIComponent(session.email)}`);
+                const data = await res.json();
+                if (data.success) {
+                    savedLooks = data.looks || [];
+                }
+            } catch (err) {
+                console.error("Error fetching saved looks:", err);
+            }
+        }
+
+        // ─── Fetch wardrobe ────────────────────────────────────────────────
+        async function fetchWardrobe() {
+            try {
+                await fetchSavedLooks();
+                const res = await fetch(`/api/wardrobe?email=${encodeURIComponent(session.email)}`);
+                const data = await res.json();
+                if (data.success) {
+                    allItems = data.wardrobe || [];
+                } else {
+                    showBanner('Could not load wardrobe.', 'error');
+                    allItems = [];
+                }
+            } catch {
+                showBanner('Connection error — could not load wardrobe.', 'error');
+                allItems = [];
+            }
+            document.getElementById('gallery-loading').classList.add('hidden');
+            updateSidebarCounts();
+            updateStats();
+            renderGallery();
+
+            // Auto-open garment if query param exists
+            const urlParams = new URLSearchParams(window.location.search);
+            const openGarmentId = urlParams.get('openGarment');
+            const openedFrom = urlParams.get('openedFrom');
+            if (openedFrom) {
+                currentOpenedFromContext = openedFrom;
+            }
+            if (openGarmentId) {
+                const targetItem = allItems.find(i => i.id === openGarmentId);
+                if (targetItem) {
+                    openDrawer(targetItem);
+                }
+            }
+        }
+
+        // ─── Sidebar counts ────────────────────────────────────────────────
+        const catIdMap = {
+            '': 'all',
+            'Tops & Blouses': 'tops',
+            'Bottoms': 'bottoms',
+            'Dresses': 'dresses',
+            'Outerwear': 'outerwear',
+            'Footwear': 'footwear',
+            'Accessories': 'accessories',
+            'Activewear': 'activewear',
+        };
+        function updateSidebarCounts() {
+            document.getElementById('sidebar-count-all').textContent = allItems.length;
+            for (const [cat, id] of Object.entries(catIdMap)) {
+                if (!cat) continue;
+                const el = document.getElementById(`sidebar-count-${id}`);
+                if (el) el.textContent = allItems.filter(i => i.category === cat).length;
+            }
+        }
+
+        // ─── Stats ─────────────────────────────────────────────────────────
+        function updateStats() {
+            document.getElementById('stat-total').textContent = allItems.length;
+            const cats = new Set(allItems.map(i => i.category).filter(Boolean));
+            document.getElementById('stat-categories').textContent = cats.size;
+            const seasons = new Set(allItems.map(i => i.season).filter(Boolean));
+            document.getElementById('stat-seasons').textContent = seasons.size;
+            const occasions = new Set(allItems.map(i => i.occasion).filter(Boolean));
+            document.getElementById('stat-occasions').textContent = occasions.size;
+
+            // ─── Wardrobe Summary Strip ────────────────────────────────────
+            if (allItems.length > 0) {
+                // Dominant season
+                const seasonCounts = {};
+                allItems.forEach(i => { if (i.season) seasonCounts[i.season] = (seasonCounts[i.season] || 0) + 1; });
+                const dominantSeason = Object.entries(seasonCounts).sort((a,b) => b[1]-a[1])[0]?.[0] || '—';
+                // Dominant occasion
+                const occCounts = {};
+                allItems.forEach(i => { if (i.occasion) occCounts[i.occasion] = (occCounts[i.occasion] || 0) + 1; });
+                const dominantOcc = Object.entries(occCounts).sort((a,b) => b[1]-a[1])[0]?.[0] || '—';
+
+                document.getElementById('strip-total').textContent = `${allItems.length} Items`;
+                document.getElementById('strip-categories').textContent = `${cats.size} Categories`;
+                document.getElementById('strip-season').textContent = `${dominantSeason} Dominant`;
+                document.getElementById('strip-occasion').textContent = `${dominantOcc} Style`;
+                document.getElementById('wardrobe-summary-strip').classList.remove('hidden');
+            } else {
+                document.getElementById('wardrobe-summary-strip').classList.add('hidden');
+            }
+        }
+
+        // ─── Filter logic ──────────────────────────────────────────────────
+        function filteredItems() {
+            return allItems.filter(item => {
+                if (activeCategory && item.category !== activeCategory) return false;
+                if (activeSeason && item.season !== activeSeason) return false;
+                if (activeOccasion && item.occasion !== activeOccasion) return false;
+                if (searchQuery) {
+                    const q = searchQuery.toLowerCase();
+                    const haystack = [item.name, item.category, item.subcategory, item.season, item.occasion].join(' ').toLowerCase();
+                    if (!haystack.includes(q)) return false;
+                }
+                return true;
+            });
+        }
+
+        // ─── Category colors ───────────────────────────────────────────────
+        const catColors = {
+            'Tops & Blouses': { bg: 'bg-roseAccentLight', text: 'text-roseAccent', border: 'border-roseAccent/20' },
+            'Bottoms':        { bg: 'bg-violetAccentLight', text: 'text-violetAccent', border: 'border-violetAccent/20' },
+            'Dresses':        { bg: 'bg-amberAccentLight', text: 'text-amberAccent', border: 'border-amberAccent/20' },
+            'Outerwear':      { bg: 'bg-blue-50', text: 'text-blue-500', border: 'border-blue-200' },
+            'Footwear':       { bg: 'bg-emeraldAccentLight', text: 'text-emeraldAccent', border: 'border-emeraldAccent/20' },
+            'Accessories':    { bg: 'bg-pink-50', text: 'text-pink-400', border: 'border-pink-200' },
+            'Activewear':     { bg: 'bg-orange-50', text: 'text-orange-500', border: 'border-orange-200' },
+        };
+        function catStyle(cat) {
+            return catColors[cat] || { bg: 'bg-gray-50', text: 'text-gray-500', border: 'border-gray-200' };
+        }
+
+        // ─── Rotation helpers ──────────────────────────────────────────────
+        const rotations = ['rotate-[-2deg]', 'rotate-[1.5deg]', 'rotate-[0.5deg]', 'rotate-[-1deg]', 'rotate-[2deg]', 'rotate-[-0.5deg]'];
+        let rotIdx = 0;
+        function nextRot() { return rotations[rotIdx++ % rotations.length]; }
+
+        // ─── Render gallery ────────────────────────────────────────────────
+        function renderGallery() {
+            const items = filteredItems();
+            const grid   = document.getElementById('gallery-grid');
+            const emptyW = document.getElementById('gallery-empty-wardrobe');
+            const emptyF = document.getElementById('gallery-empty-filter');
+            const resCount = document.getElementById('results-count');
+            resCount.textContent = items.length;
+
+            grid.innerHTML = '';
+            rotIdx = 0;
+
+            if (allItems.length === 0) {
+                grid.classList.add('hidden');
+                emptyW.classList.remove('hidden');
+                emptyF.classList.add('hidden');
+                return;
+            }
+            emptyW.classList.add('hidden');
+            if (items.length === 0) {
+                grid.classList.add('hidden');
+                emptyF.classList.remove('hidden');
+                return;
+            }
+            emptyF.classList.add('hidden');
+            grid.classList.remove('hidden');
+
+            items.forEach(item => {
+                const rot = nextRot();
+                const cs = catStyle(item.category);
+                const imgSrc = item.processedImagePath || item.originalImagePath || item.img || '';
+                const wrapper = document.createElement('div');
+                wrapper.className = 'garment-card-wrapper';
+
+                wrapper.innerHTML = `
+                    <div class="polaroid-card ${rot} flex flex-col" data-id="${item.id}" role="button" tabindex="0" aria-label="${item.name}">
+                        <div class="relative overflow-hidden rounded-sm" style="aspect-ratio:3/4">
+                            ${imgSrc
+                                ? `<img src="${imgSrc}" alt="${item.name}" loading="lazy" class="w-full h-full object-cover" />`
+                                : `<div class="w-full h-full bg-roseAccentLight flex items-center justify-center text-4xl">${categoryEmoji(item.category)}</div>`
+                            }
+                            <!-- Occasion badge top-right -->
+                            <span class="absolute top-1.5 right-1.5 tag-badge ${cs.bg} ${cs.text} border ${cs.border} text-[8px]">${item.occasion || item.category || '—'}</span>
+                        </div>
+                        <p class="font-handwriting text-[11px] text-center font-bold text-main mt-2 leading-tight px-1 truncate">${item.name}</p>
+                        <p class="font-label text-[8px] text-center text-muted mt-0.5 truncate">${item.season || '—'}</p>
+                    </div>
+                `;
+                // Click / keyboard event
+                const card = wrapper.querySelector('.polaroid-card');
+                card.addEventListener('click', () => openDrawer(item));
+                card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') openDrawer(item); });
+
+                grid.appendChild(wrapper);
+            });
+        }
+
+        function categoryEmoji(cat) {
+            const m = { 'Tops & Blouses':'👚', 'Bottoms':'👖', 'Dresses':'👘', 'Outerwear':'🧥', 'Footwear':'👟', 'Accessories':'👜', 'Activewear':'🏃' };
+            return m[cat] || '👗';
+        }
+
+        // ─── Filter chips ──────────────────────────────────────────────────
+        function updateSeasonChips() {
+            document.querySelectorAll('[data-season]').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.season === activeSeason);
+            });
+        }
+        function updateOccasionChips() {
+            document.querySelectorAll('[data-occasion]').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.occasion === activeOccasion);
+            });
+        }
+        function updateFilterSummary() {
+            const el = document.getElementById('filter-summary');
+            el.innerHTML = '';
+            if (activeCategory) el.appendChild(makeSummaryTag(activeCategory, () => { setCategory(''); }));
+            if (activeSeason)   el.appendChild(makeSummaryTag(activeSeason, () => { activeSeason = ''; updateSeasonChips(); renderGallery(); updateFilterSummary(); }));
+            if (activeOccasion) el.appendChild(makeSummaryTag(activeOccasion, () => { activeOccasion = ''; updateOccasionChips(); renderGallery(); updateFilterSummary(); }));
+            if (searchQuery)    el.appendChild(makeSummaryTag(`"${searchQuery}"`, () => { searchQuery = ''; document.getElementById('search-input').value = ''; renderGallery(); updateFilterSummary(); }));
+        }
+        function makeSummaryTag(label, onRemove) {
+            const el = document.createElement('span');
+            el.className = 'inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-roseAccentLight border border-roseAccent/20 text-roseAccent font-label text-[8px]';
+            el.innerHTML = `${label} <button class="ml-0.5 hover:text-pinterestRed" title="Remove filter">×</button>`;
+            el.querySelector('button').addEventListener('click', onRemove);
+            return el;
+        }
+
+        // ─── Sidebar category selection ────────────────────────────────────
+        function setCategory(cat) {
+            activeCategory = cat;
+            document.querySelectorAll('.sidebar-item').forEach(el => {
+                el.classList.toggle('active', el.dataset.cat === cat);
+            });
+            renderGallery();
+            updateFilterSummary();
+        }
+        document.querySelectorAll('.sidebar-item').forEach(el => {
+            el.addEventListener('click', () => setCategory(el.dataset.cat));
+            el.addEventListener('keydown', e => { if (e.key === 'Enter') setCategory(el.dataset.cat); });
+        });
+
+        // ─── Season chips ──────────────────────────────────────────────────
+        document.querySelectorAll('[data-season]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                activeSeason = btn.dataset.season;
+                updateSeasonChips();
+                renderGallery();
+                updateFilterSummary();
+            });
+        });
+
+        // ─── Occasion chips ────────────────────────────────────────────────
+        document.querySelectorAll('[data-occasion]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                activeOccasion = btn.dataset.occasion;
+                updateOccasionChips();
+                renderGallery();
+                updateFilterSummary();
+            });
+        });
+
+        // ─── Search ────────────────────────────────────────────────────────
+        let searchTimer = null;
+        document.getElementById('search-input').addEventListener('input', e => {
+            clearTimeout(searchTimer);
+            searchTimer = setTimeout(() => {
+                searchQuery = e.target.value.trim();
+                renderGallery();
+                updateFilterSummary();
+            }, 200);
+        });
+
+        // ─── Clear filters ─────────────────────────────────────────────────
+        function clearAllFilters() {
+            activeCategory = ''; activeSeason = ''; activeOccasion = ''; searchQuery = '';
+            document.getElementById('search-input').value = '';
+            document.querySelectorAll('.sidebar-item').forEach(el => el.classList.toggle('active', el.dataset.cat === ''));
+            updateSeasonChips();
+            updateOccasionChips();
+            renderGallery();
+            updateFilterSummary();
+        }
+        document.getElementById('clear-filters-btn').addEventListener('click', clearAllFilters);
+
+        // ─── Drawer ────────────────────────────────────────────────────────
+        function openDrawer(item) {
+            openItemId = item.id;
+            const imgSrc = item.processedImagePath || item.originalImagePath || item.img || '';
+            document.getElementById('drawer-name').textContent    = item.name || '—';
+            document.getElementById('drawer-caption').textContent = item.name || '—';
+            document.getElementById('drawer-category').textContent    = item.category || '—';
+            document.getElementById('drawer-subcategory').textContent = item.subcategory || '—';
+            document.getElementById('drawer-season').textContent   = item.season   || '—';
+            document.getElementById('drawer-occasion').textContent = item.occasion || '—';
+
+            const imgEl = document.getElementById('drawer-img');
+            if (imgSrc) {
+                imgEl.src = imgSrc;
+                imgEl.style.display = '';
+            } else {
+                imgEl.style.display = 'none';
+            }
+
+            // Context Banner
+            const contextBanner = document.getElementById('drawer-context-banner');
+            const contextLookName = document.getElementById('drawer-context-look-name');
+            if (contextBanner && contextLookName) {
+                if (currentOpenedFromContext) {
+                    contextBanner.classList.remove('hidden');
+                    contextLookName.textContent = currentOpenedFromContext;
+                } else {
+                    contextBanner.classList.add('hidden');
+                }
+            }
+
+            // Colors
+            const colorsEl = document.getElementById('drawer-colors');
+            colorsEl.innerHTML = '';
+            [item.dominantColor, item.secondaryColor].filter(Boolean).forEach(c => {
+                const swatch = document.createElement('div');
+                swatch.className = 'flex items-center gap-2';
+                swatch.innerHTML = `
+                    <div class="w-6 h-6 rounded-full border border-border shadow-sm flex-shrink-0" style="background:${c}"></div>
+                    <span class="font-label text-[9px] text-muted">${c}</span>
+                `;
+                colorsEl.appendChild(swatch);
+            });
+            if (!item.dominantColor && !item.secondaryColor) {
+                colorsEl.innerHTML = '<span class="font-handwriting text-xs text-muted font-bold">No color data</span>';
+            }
+
+            // Saved Looks Using This Garment
+            const looksUsing = savedLooks.filter(l => 
+                (l.outfit && (
+                    l.outfit.outerwear === item.id ||
+                    l.outfit.tops === item.id ||
+                    l.outfit.pants === item.id ||
+                    l.outfit.shoes === item.id
+                ))
+            );
+
+            const titleEl = document.getElementById('drawer-saved-looks-title');
+            if (titleEl) {
+                titleEl.textContent = `Used in ${looksUsing.length} Saved Looks`;
+            }
+
+            const looksEl = document.getElementById('drawer-saved-looks');
+            if (looksEl) {
+                looksEl.innerHTML = '';
+                if (looksUsing.length > 0) {
+                    looksUsing.forEach(look => {
+                        const btn = document.createElement('button');
+                        btn.className = 'w-full text-left p-2 rounded bg-roseAccentLight/45 hover:bg-roseAccentLight/85 text-main border border-roseAccent/10 text-xs flex justify-between items-center transition-colors group';
+                        btn.innerHTML = `
+                            <div class="min-w-0 flex-1">
+                                <p class="font-bold truncate text-[11px] group-hover:text-roseAccent">${look.title}</p>
+                                <span class="text-[8px] uppercase tracking-wider text-muted font-mono font-bold">${look.aesthetic || 'Custom'} • ${look.score}% Match</span>
+                            </div>
+                            <span class="material-symbols-outlined text-muted text-sm transition-transform group-hover:translate-x-0.5">arrow_forward</span>
+                        `;
+                        btn.addEventListener('click', () => {
+                            window.location.href = `my-looks.html?openLook=${encodeURIComponent(look.id)}`;
+                        });
+                        looksEl.appendChild(btn);
+                    });
+                } else {
+                    looksEl.innerHTML = '<p class="text-[10px] text-muted italic font-sans">Not used in any Saved Looks yet.</p>';
+                }
+            }
+
+            // Tags
+            const tagsEl = document.getElementById('drawer-tags');
+            tagsEl.innerHTML = '';
+            const tags = [item.category, item.subcategory, item.season, item.occasion].filter(Boolean);
+            const tagColors = ['bg-roseAccentLight text-roseAccent border-roseAccent/20', 'bg-violetAccentLight text-violetAccent border-violetAccent/20', 'bg-emeraldAccentLight text-emeraldAccent border-emeraldAccent/20', 'bg-amberAccentLight text-amberAccent border-amberAccent/20'];
+            tags.forEach((tag, i) => {
+                const span = document.createElement('span');
+                span.className = `tag-badge border ${tagColors[i % tagColors.length]}`;
+                span.textContent = tag;
+                tagsEl.appendChild(span);
+            });
+
+            document.getElementById('item-drawer').classList.add('open');
+            document.getElementById('drawer-overlay').classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeDrawer() {
+            openItemId = null;
+            currentOpenedFromContext = null;
+            const contextBanner = document.getElementById('drawer-context-banner');
+            if (contextBanner) contextBanner.classList.add('hidden');
+            document.getElementById('item-drawer').classList.remove('open');
+            document.getElementById('drawer-overlay').classList.remove('show');
+            document.body.style.overflow = '';
+        }
+
+        document.getElementById('drawer-close-btn').addEventListener('click', closeDrawer);
+        document.getElementById('drawer-overlay').addEventListener('click', closeDrawer);
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); });
+
+        // ─── Delete from drawer ────────────────────────────────────────────
+        document.getElementById('drawer-delete-btn').addEventListener('click', async () => {
+            if (!openItemId) return;
+            const item = allItems.find(i => i.id === openItemId);
+            if (!item) return;
+            if (!confirm(`Remove "${item.name}" from your wardrobe?`)) return;
+            try {
+                const res = await fetch('/api/wardrobe/delete', {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: openItemId, owner: session.email })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showBanner('Garment removed from wardrobe.', 'success');
+                    allItems = allItems.filter(i => i.id !== openItemId);
+                    closeDrawer();
+                    updateSidebarCounts();
+                    updateStats();
+                    renderGallery();
+                } else {
+                    showBanner(data.message || 'Could not remove garment.', 'error');
+                }
+            } catch {
+                showBanner('Connection error — could not remove garment.', 'error');
+            }
+        });
+
+        // ─── Init ──────────────────────────────────────────────────────────
+        // Set "All Season" chip as default active
+        document.getElementById('chip-season-all').classList.add('active');
+        document.getElementById('chip-occ-all').classList.add('active');
+        fetchWardrobe();
+    })();
+    </script>
+</body>
+</html>
