@@ -113,19 +113,13 @@ def run_weather_agent(query: str) -> Dict[str, Any]:
             print(f"[WeatherAgent Fallback] Fetching weather for fallback city: '{target_city}'")
             weather_data = get_weather(target_city)
 
-        summary_prompt = (
-            f"Based on weather data: {weather_data}, provide a concise 2-sentence summary of weather for styling."
+        summary_text = (
+            f"Weather for {weather_data.get('city', 'your location')}: {weather_data.get('temperature', 25.0)}°C, "
+            f"{weather_data.get('weather', 'Clear')} with {weather_data.get('rain_probability', 0)}% rain probability."
         )
-        api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
-        final_response = ChatGoogleGenerativeAI(
-            model="gemini-2.5-flash",
-            google_api_key=api_key,
-            temperature=0.2,
-            timeout=10
-        ).invoke(summary_prompt)
 
         return {
-            "agent_response": final_response.content.strip(),
+            "agent_response": summary_text,
             "weather_data": weather_data
         }
 

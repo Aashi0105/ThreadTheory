@@ -2154,9 +2154,22 @@
 
 
         function updateSlotsUI() {
+            // Check if active top is a Dress or One-Piece
+            const activeTopId = Object.keys(activeOutfits).find(id => (activeOutfits[id].cat === 'Tops' || activeOutfits[id].cat === 'Dresses') && activeOutfits[id].active);
+            const activeTopRow = activeTopId ? document.querySelector(`.closet-list-row[data-id="${activeTopId}"]`) : null;
+            const isDressActive = activeTopRow ? (
+                (activeTopRow.dataset.cat || '').toLowerCase().includes('dress') ||
+                (activeTopRow.dataset.cat || '').toLowerCase().includes('one-piece') ||
+                (activeTopRow.dataset.cat || '').toLowerCase().includes('jumpsuit') ||
+                (activeTopRow.dataset.cat || '').toLowerCase().includes('romper') ||
+                (activeTopRow.dataset.name || '').toLowerCase().includes('dress') ||
+                (activeTopRow.dataset.name || '').toLowerCase().includes('jumpsuit') ||
+                (activeTopRow.dataset.name || '').toLowerCase().includes('romper')
+            ) : false;
+
             const categories = ['Outerwear', 'Tops', 'Pants', 'Shoes'];
             categories.forEach(cat => {
-                const activeId = Object.keys(activeOutfits).find(id => activeOutfits[id].cat === cat && activeOutfits[id].active);
+                const activeId = Object.keys(activeOutfits).find(id => (activeOutfits[id].cat === cat || (cat === 'Tops' && activeOutfits[id].cat === 'Dresses')) && activeOutfits[id].active);
                 const slotContainer = document.getElementById(`slot-${cat.toLowerCase()}`);
                 if (!slotContainer) return;
 
@@ -2164,6 +2177,7 @@
                     const rowEl = document.querySelector(`.closet-list-row[data-id="${activeId}"]`);
                     const imgUrl = rowEl ? rowEl.dataset.img : '';
                     const name = rowEl ? rowEl.dataset.name : cat;
+                    const slotLabel = isDressActive && cat === 'Tops' ? 'Dress' : cat;
 
                     slotContainer.className = 'bg-white border-2 border-roseAccent/20 rounded-xl p-1.5 aspect-[4/3] flex flex-col justify-between relative group transition-all select-none shadow-sm';
                     slotContainer.innerHTML = `
@@ -2171,7 +2185,7 @@
                             <img src="${imgUrl}" class="w-full h-full object-cover" alt="${name}" />
                         </div>
                         <div class="mt-1 text-center min-w-0">
-                            <p class="text-[6px] uppercase tracking-wider text-roseAccent font-bold truncate">${cat}</p>
+                            <p class="text-[6px] uppercase tracking-wider text-roseAccent font-bold truncate">${slotLabel}</p>
                             <h6 class="text-[7px] font-bold text-main truncate leading-tight">${name}</h6>
                         </div>
                         <button class="absolute top-1 right-1 opacity-0 group-hover:opacity-100 bg-white/90 border border-roseAccent/30 rounded-full w-4 h-4 flex items-center justify-center text-muted hover:text-pinterestRed text-[8px] font-bold remove-slot-btn shadow-sm transition-opacity" data-id="${activeId}">×</button>
@@ -2181,6 +2195,14 @@
                         activeOutfits[activeId].active = false;
                         syncTryOnState();
                     });
+                } else if (isDressActive && cat === 'Pants') {
+                    // One-piece rule: Pants slot is not needed
+                    slotContainer.className = 'border-2 border-dashed border-border/40 bg-base/40 rounded-xl p-1.5 aspect-[4/3] flex flex-col items-center justify-center text-center select-none opacity-60';
+                    slotContainer.innerHTML = `
+                        <span class="material-symbols-outlined text-muted/50 text-base">check_circle</span>
+                        <span class="text-[7px] text-muted font-bold mt-0.5">None needed</span>
+                        <span class="text-[6px] text-muted/70">One-Piece Style</span>
+                    `;
                 } else {
                     // Check if there is an active draft with a missing item for this slot
                     const draftStr = localStorage.getItem('buildLookDraft');
@@ -2366,33 +2388,40 @@
             }
 
             // Set Compatibility Rating Score & Badge
-            const score = data.synergyScore || data.score || 0;
+            const score = (data.synergyScore !== undefined && data.synergyScore !== null) ? data.synergyScore : 
+                          ((data.score !== undefined && data.score !== null) ? data.score : null);
             if (compatibilityRating) {
-                compatibilityRating.textContent = `${score}%`;
+                compatibilityRating.textContent = score !== null ? `${score}%` : 'Curated';
             }
 
             if (synergyQualityLabel) {
-                let qualityText = 'Weak Match';
-                let labelBg = '#FEE2E2';
-                let labelColor = '#991B1B';
+                if (score !== null) {
+                    let qualityText = 'Weak Match';
+                    let labelBg = '#FEE2E2';
+                    let labelColor = '#991B1B';
 
-                if (score >= 90) {
-                    qualityText = 'Excellent Match';
-                    labelBg = '#D1FAE5';
-                    labelColor = '#065F46';
-                } else if (score >= 70) {
-                    qualityText = 'Strong Match';
-                    labelBg = '#DBEAFE';
-                    labelColor = '#1E40AF';
-                } else if (score >= 50) {
-                    qualityText = 'Fair Match';
-                    labelBg = '#FFEDD5';
-                    labelColor = '#9A3412';
+                    if (score >= 90) {
+                        qualityText = 'Excellent Match';
+                        labelBg = '#D1FAE5';
+                        labelColor = '#065F46';
+                    } else if (score >= 70) {
+                        qualityText = 'Strong Match';
+                        labelBg = '#DBEAFE';
+                        labelColor = '#1E40AF';
+                    } else if (score >= 50) {
+                        qualityText = 'Fair Match';
+                        labelBg = '#FFEDD5';
+                        labelColor = '#9A3412';
+                    }
+
+                    synergyQualityLabel.textContent = qualityText;
+                    synergyQualityLabel.style.backgroundColor = labelBg;
+                    synergyQualityLabel.style.color = labelColor;
+                } else {
+                    synergyQualityLabel.textContent = 'AI Curated';
+                    synergyQualityLabel.style.backgroundColor = '#F3E8FF';
+                    synergyQualityLabel.style.color = '#6B21A8';
                 }
-
-                synergyQualityLabel.textContent = qualityText;
-                synergyQualityLabel.style.backgroundColor = labelBg;
-                synergyQualityLabel.style.color = labelColor;
             }
 
             // Set Gemini Details (Aesthetic & Occasion)
@@ -2448,12 +2477,24 @@
         function renderLangGraphOutfitCards(data) {
             if (!data || !data.success) return;
 
+            // Only run if no active pieces exist in workspace
+            const activeCount = Object.keys(activeOutfits).filter(k => activeOutfits[k] && activeOutfits[k].active).length;
+            if (activeCount > 0) return;
+
             const grid = document.getElementById('workspace-pieces-grid');
-            if (!grid) return;
+            const isOnePiece = data.top && (
+                (data.top.category || '').toLowerCase().includes('dress') ||
+                (data.top.category || '').toLowerCase().includes('one-piece') ||
+                (data.top.category || '').toLowerCase().includes('jumpsuit') ||
+                (data.top.category || '').toLowerCase().includes('romper') ||
+                (data.top.name || '').toLowerCase().includes('dress') ||
+                (data.top.name || '').toLowerCase().includes('jumpsuit') ||
+                (data.top.name || '').toLowerCase().includes('romper')
+            );
 
             const pieces = [
-                { label: 'Top',       item: data.top,       icon: 'shirt' },
-                { label: 'Bottom',    item: data.bottom,    icon: 'checkroom' },
+                { label: isOnePiece ? 'Dress' : 'Top', item: data.top, icon: isOnePiece ? 'checkroom' : 'shirt' },
+                ...(isOnePiece ? [] : [{ label: 'Bottom', item: data.bottom, icon: 'checkroom' }]),
                 { label: 'Outerwear', item: data.outerwear, icon: 'dry_cleaning' },
                 { label: 'Shoes',     item: data.shoes,     icon: 'steps' },
             ];
@@ -2464,11 +2505,13 @@
             grid.innerHTML = '';
             pieces.forEach(({ label, item, icon }) => {
                 const name = (item && item.name) ? item.name : null;
+                const imgSrc = (item && (item.processedImagePath || item.originalImagePath || item.img)) ? (item.processedImagePath || item.originalImagePath || item.img) : null;
                 const card = document.createElement('div');
                 card.className = 'relative bg-white border border-roseAccent/15 rounded-2xl shadow-sm flex flex-col items-center justify-center p-3 gap-1.5 min-h-[90px]';
                 if (name) {
+                    const imgHtml = imgSrc ? `<img src="${imgSrc}" class="w-12 h-14 object-cover rounded border border-border/60 mb-1" alt="${name}" />` : `<span class="material-symbols-outlined text-roseAccent text-xl">${icon}</span>`;
                     card.innerHTML = `
-                        <span class="material-symbols-outlined text-roseAccent text-xl">${icon}</span>
+                        ${imgHtml}
                         <p class="text-[8px] uppercase tracking-wider text-roseAccent font-bold font-mono">${label}</p>
                         <p class="text-[10px] font-semibold text-main text-center leading-tight">${name}</p>
                     `;
@@ -2483,14 +2526,22 @@
             });
 
             // Also update score display if LangGraph returned one
-            const score = data.synergyScore || data.score || data.confidence || 82;
+            const score = (data.synergyScore !== undefined && data.synergyScore !== null) ? data.synergyScore :
+                          ((data.score !== undefined && data.score !== null) ? data.score :
+                          ((data.confidence !== undefined && data.confidence !== null) ? data.confidence : null));
             const rating = document.getElementById('compatibility-rating');
             const label = document.getElementById('synergy-quality-label');
-            if (rating) rating.textContent = `${score}%`;
+            if (rating) rating.textContent = score !== null ? `${score}%` : 'Curated';
             if (label) {
-                label.textContent = score >= 80 ? 'Strong Match' : score >= 60 ? 'Fair Match' : 'Curated';
-                label.style.backgroundColor = score >= 80 ? '#DBEAFE' : score >= 60 ? '#FFEDD5' : '#F3E8FF';
-                label.style.color = score >= 80 ? '#1E40AF' : score >= 60 ? '#9A3412' : '#6B21A8';
+                if (score !== null) {
+                    label.textContent = score >= 80 ? 'Strong Match' : score >= 60 ? 'Fair Match' : 'Curated';
+                    label.style.backgroundColor = score >= 80 ? '#DBEAFE' : score >= 60 ? '#FFEDD5' : '#F3E8FF';
+                    label.style.color = score >= 80 ? '#1E40AF' : score >= 60 ? '#9A3412' : '#6B21A8';
+                } else {
+                    label.textContent = 'AI Curated';
+                    label.style.backgroundColor = '#F3E8FF';
+                    label.style.color = '#6B21A8';
+                }
             }
 
             // Update advice text with LangGraph explanation
@@ -2559,9 +2610,9 @@
             const isDebug = window.location.search.includes('debug=true');
             const debugQueryParam = isDebug ? '&debug=true' : '';
 
-            // 25-second browser-side timeout — spinner always resolves
+            // 60-second browser-side timeout to accommodate multi-agent LangGraph execution safely
             const fetchController = new AbortController();
-            const fetchTimeout = setTimeout(() => fetchController.abort(), 25000);
+            const fetchTimeout = setTimeout(() => fetchController.abort(), 60000);
 
             fetch(`/api/recommendations?season=${season}&temp=18${emailParam}&prompt=${encodeURIComponent(prompt)}${debugQueryParam}`, {
                 signal: fetchController.signal
@@ -2580,15 +2631,37 @@
                     Object.keys(activeOutfits).forEach(k => {
                         activeOutfits[k].active = false;
                     });
+
+                    // Ensure recommended pieces exist in allClosetItemsGlobal with full verified metadata
+                    [data.outerwear, data.top, data.bottom, data.shoes].forEach(piece => {
+                        if (piece && piece.id) {
+                            const idx = allClosetItemsGlobal.findIndex(i => String(i.id) === String(piece.id));
+                            if (idx === -1) {
+                                allClosetItemsGlobal.push(piece);
+                            } else {
+                                allClosetItemsGlobal[idx] = { ...allClosetItemsGlobal[idx], ...piece };
+                            }
+                        }
+                    });
                     
+                    const isTopDress = data.top && (
+                        (data.top.category || '').toLowerCase().includes('dress') ||
+                        (data.top.category || '').toLowerCase().includes('one-piece') ||
+                        (data.top.category || '').toLowerCase().includes('jumpsuit') ||
+                        (data.top.category || '').toLowerCase().includes('romper') ||
+                        (data.top.name || '').toLowerCase().includes('dress') ||
+                        (data.top.name || '').toLowerCase().includes('jumpsuit') ||
+                        (data.top.name || '').toLowerCase().includes('romper')
+                    );
+
                     // Activate recommended items with correct categories so they sync to workspace and planner
                     if (data.outerwear && data.outerwear.id) {
                         activeOutfits[data.outerwear.id] = { active: true, cat: "Outerwear" };
                     }
                     if (data.top && data.top.id) {
-                        activeOutfits[data.top.id] = { active: true, cat: "Tops" };
+                        activeOutfits[data.top.id] = { active: true, cat: isTopDress ? "Dresses" : "Tops" };
                     }
-                    if (data.bottom && data.bottom.id) {
+                    if (!isTopDress && data.bottom && data.bottom.id) {
                         activeOutfits[data.bottom.id] = { active: true, cat: "Pants" };
                     }
                     if (data.shoes && data.shoes.id) {
@@ -2599,17 +2672,15 @@
                     let reqCount = parseInt(localStorage.getItem('recommendation_requests_count') || '0', 10);
                     localStorage.setItem('recommendation_requests_count', reqCount + 1);
 
+                    // Render real wardrobe piece cards with actual verified images into the workspace
                     syncTryOnState();
                     renderOutfitPreviewBoard(data);
-
-                    // Show named outfit cards if wardrobe IDs didn't match (LangGraph uses demo wardrobe.db)
-                    renderLangGraphOutfitCards(data);
 
                     // Render agent execution trace from data.execution_trace
                     renderAgentTrace(data);
 
-                    // LangGraph proxy always returns success:true — show success banner
-                    showErrorBanner('generate-success', '🌸 AI recommended outfit coordinates loaded!', 'blue');
+                    // Show success banner
+                    showErrorBanner('generate-success', '🌸 AI recommended outfit coordinates loaded with verified wardrobe items!', 'blue');
                 } else {
                     showErrorBanner('generate-fail', '❌ Failed to curate outfit recommendations.', 'red');
                 }
@@ -2620,8 +2691,11 @@
                     generateBtn.innerHTML = originalBtnText;
                 }
                 if (loader) loader.classList.add('hidden');
-                console.error(err);
-                showErrorBanner('generate-error', '❌ Error curating outfit.', 'red');
+                console.error("[Curation Error]", err);
+                const errMsg = err.name === 'AbortError' 
+                    ? '⚠️ Curation request timed out. Please try again.'
+                    : '❌ Error curating outfit.';
+                showErrorBanner('generate-error', errMsg, 'red');
             });
         });
 

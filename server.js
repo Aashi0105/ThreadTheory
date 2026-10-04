@@ -27,10 +27,9 @@ if (fs.existsSync(envPath)) {
     }
 }
 
-const geminiStylist = require('./gemini_stylist');
-
 const app = express();
 const PORT = process.env.PORT || 3000;
+
 
 // Middleware
 app.use(cors());
@@ -79,8 +78,8 @@ if (!fs.existsSync(publicAssetsDir)) {
 }
 app.use('/assets', express.static(publicAssetsDir));
 
-// Inspiration images — served from local public/assets/inspiration or fallback to brain folder
-const INSP_BRAIN_DIR = 'C:\\Users\\Aashi\\.gemini\\antigravity-ide\\brain\\c2b77f46-0928-4b48-80ec-74026e01d898';
+// Inspiration images — served from local public/assets/inspiration or optional external folder via env
+const INSP_BRAIN_DIR = process.env.INSP_BRAIN_DIR || '';
 app.get('/assets/inspiration/:filename', (req, res) => {
     const filename = path.basename(req.params.filename);
     const localInspirationDir = path.join(publicAssetsDir, 'inspiration');
@@ -108,16 +107,16 @@ app.get('/assets/inspiration/:filename', (req, res) => {
         }
     } catch (e) { /* ignore */ }
 
-    // Fallback: search brain directory (so images show up instantly before setup is run)
+    // Fallback: search external brain/assets directory if configured in environment
     try {
-        if (fs.existsSync(INSP_BRAIN_DIR)) {
+        if (INSP_BRAIN_DIR && fs.existsSync(INSP_BRAIN_DIR)) {
             const files = fs.readdirSync(INSP_BRAIN_DIR);
             const match = files.find(f => f.startsWith(basePrefix) && f.endsWith('.png'));
             if (match) {
                 return res.sendFile(path.join(INSP_BRAIN_DIR, match));
             }
         }
-    } catch (e) { /* brain dir not accessible */ }
+    } catch (e) { /* external dir not accessible */ }
 
     res.status(404).send('Inspiration image not found');
 });
@@ -745,7 +744,20 @@ readJSON(generatedBuildsFile, []);
 readJSON(styleDnaHistoryFile, []);
 readJSON(savedLooksFile, []);
 
-// Multer setup for image file uploads
+// Multer setup for image file uploads with strict file-type validation
+const ALLOWED_IMAGE_MIMES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
+const ALLOWED_IMAGE_EXTS = new Set(['.jpg', '.jpeg', '.png', '.webp', '.gif']);
+
+const imageFileFilter = (req, file, cb) => {
+    const ext = path.extname(file.originalname || '').toLowerCase();
+    const mime = (file.mimetype || '').toLowerCase();
+
+    if (!ALLOWED_IMAGE_MIMES.has(mime) || !ALLOWED_IMAGE_EXTS.has(ext)) {
+        return cb(new Error('INVALID_FILE_TYPE: Only valid image files (JPEG, PNG, WebP, GIF) are allowed.'), false);
+    }
+    cb(null, true);
+};
+
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, uploadsDir);
@@ -760,7 +772,8 @@ const storage = multer.diskStorage({
 
 const upload = multer({
     storage: storage,
-    limits: { fileSize: 5 * 1024 * 1024 } // 5MB Limit
+    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB Limit
+    fileFilter: imageFileFilter
 });
 
 
@@ -888,7 +901,18 @@ app.post('/api/profile/update', (req, res) => {
     if (size) users[idx].size = size;
 
     writeJSON(usersFile, users);
-    res.json({ success: true, profile: users[idx] });
+    const updated = users[idx];
+    res.json({
+        success: true,
+        profile: {
+            name: updated.name,
+            email: updated.email,
+            username: updated.username,
+            skinTone: updated.skinTone,
+            size: updated.size || 'M',
+            photo: updated.avatarPhoto
+        }
+    });
 });
 
 app.post('/api/profile/upload-photo', upload.single('photo'), (req, res) => {
@@ -988,8 +1012,16 @@ async function removeBackgroundAPI(filePath, mimeType, filename, outputPath) {
     }
 }
 
+function getPythonExe() {
+    const venvPy = path.join(__dirname, 'venv', 'Scripts', 'python.exe');
+    if (fs.existsSync(venvPy)) return venvPy;
+    const userPy = 'C:\\Users\\Aashi\\AppData\\Local\\Programs\\Python\\Python312\\python.exe';
+    if (fs.existsSync(userPy)) return userPy;
+    return 'python';
+}
+
 app.post('/api/wardrobe/add', upload.single('image'), async (req, res) => {
-    const { name, category, subcategory, occasion, owner, dominantColor, secondaryColor, temp_min_c, temp_max_c } = req.body;
+    const { name, category, subcategory, occasion, owner, dominantColor, secondaryColor, temp_min_c, temp_max_c, formality } = req.body;
     if (!name || !category || !subcategory || !occasion) {
         return res.status(400).json({ success: false, message: "Garment specifications (name, category, subcategory, occasion) missing." });
     }
@@ -1063,17 +1095,37 @@ app.post('/api/wardrobe/add', upload.single('image'), async (req, res) => {
     writeJSON(wardrobeFile, wardrobe);
     console.log(`[UPLOAD] ✅ Item saved to wardrobe DB: id=${newItem.id}`);
 
+
     // Also sync item to SQLite wardrobe.db so Python agents pick it up
     try {
-        const { execSync } = require('child_process');
+        const { execFileSync } = require('child_process');
         const dbCategory = category.toLowerCase().includes('top') ? 'top' :
                            category.toLowerCase().includes('bottom') ? 'bottom' :
                            category.toLowerCase().includes('outerwear') ? 'outerwear' :
-                           category.toLowerCase().includes('footwear') ? 'shoes' : 'accessory';
-        const pyCmd = `import sys, os; sys.path.insert(0, '.'); from tools.wardrobe import add_wardrobe_item; add_wardrobe_item(${JSON.stringify(name)}, ${JSON.stringify(dbCategory)}, ${JSON.stringify(dominantColor || 'custom')}, 'all-season', ${JSON.stringify(occasion || 'casual')}, ${tempMin}, ${tempMax})`;
-        execSync(`python -c "${pyCmd}"`, { timeout: 3000 });
+                           category.toLowerCase().includes('footwear') ? 'shoes' :
+                           category.toLowerCase().includes('dress') ? 'dress' : 'accessory';
+        const pyExe = getPythonExe();
+        const pyScript = `import sys; sys.path.insert(0, '.'); from tools.wardrobe import add_wardrobe_item; add_wardrobe_item(name=sys.argv[1], category=sys.argv[2], color=sys.argv[3], season=sys.argv[4], occasion=sys.argv[5], temp_min_c=float(sys.argv[6]), temp_max_c=float(sys.argv[7]), item_id=sys.argv[8], owner=sys.argv[9], img=sys.argv[10], original_image_path=sys.argv[11], processed_image_path=sys.argv[12], subcategory=sys.argv[13], formality=sys.argv[14])`;
+        execFileSync(pyExe, [
+            '-c', pyScript,
+            String(name || ''),
+            String(dbCategory),
+            String(dominantColor || 'custom'),
+            'all-season',
+            String(occasion || 'casual'),
+            String(tempMin !== undefined ? tempMin : 15),
+            String(tempMax !== undefined ? tempMax : 30),
+            String(newItem.id),
+            String(owner || ''),
+            String(newItem.img || ''),
+            String(newItem.originalImagePath || ''),
+            String(newItem.processedImagePath || ''),
+            String(subcategory || ''),
+            String(formality || '')
+        ], { timeout: 4000, shell: false });
+        console.log(`[UPLOAD] ✅ Synced item '${name}' (id=${newItem.id}) to SQLite wardrobe.db`);
     } catch(e) {
-        console.warn("[UPLOAD] SQLite sync skipped:", e.message);
+        console.warn("[UPLOAD] SQLite sync warning:", e.message);
     }
     console.log(`[UPLOAD]   Original: ${newItem.originalImagePath}`);
     console.log(`[UPLOAD]   Processed: ${newItem.processedImagePath}`);
@@ -1105,6 +1157,17 @@ app.delete('/api/wardrobe/:id', (req, res) => {
 
     wardrobe.splice(itemIdx, 1);
     writeJSON(wardrobeFile, wardrobe);
+
+    // Also delete from SQLite wardrobe.db
+    try {
+        const { execFileSync } = require('child_process');
+        const pyExe = getPythonExe();
+        const pyScript = `import sys; sys.path.insert(0, '.'); from tools.wardrobe import delete_wardrobe_item; delete_wardrobe_item(sys.argv[1], sys.argv[2])`;
+        execFileSync(pyExe, ['-c', pyScript, String(id), String(email)], { timeout: 4000, shell: false });
+        console.log(`[DELETE] ✅ Deleted item ${id} from SQLite wardrobe.db`);
+    } catch(e) {
+        console.warn("[DELETE] SQLite delete sync warning:", e.message);
+    }
 
     res.json({ success: true, message: "Item deleted successfully." });
 });
@@ -1511,259 +1574,6 @@ function generateRecommendationReason(top, bottom, shoes, outerwear, temp, seaso
     return `${intro}${pairing}${finishing}${harmony}`;
 }
 
-
-// ═══ WEATHER RECOMMENDATION ENGINE V3 (LEGACY — kept for reference, route renamed so LangGraph proxy wins) ═══
-// TO RESTORE: change path back to '/api/recommendations'
-// TO REMOVE: delete this entire block down to the closing }); at ~L1747
-
-app.get('/api/recommendations-legacy', async (req, res) => {
-    const season = req.query.season || "Autumn";
-    const temperature = parseFloat(req.query.temp || "18");
-    const email = req.query.email;
-    const weather = req.query.weather || "";
-    const occasion = req.query.occasion || "";
-    const style = req.query.style || "";
-    const prompt = req.query.prompt || "";
-
-    if (!email) {
-        return res.status(400).json({ success: false, message: "Email parameter required." });
-    }
-
-    const wardrobe = readJSON(wardrobeFile);
-    const userItems = wardrobe.filter(item => item.owner && item.owner.toLowerCase() === email.toLowerCase());
-
-    if (prompt) {
-        try {
-            const geminiResult = await geminiStylist.curateOutfit(prompt, userItems, weather, season);
-            if (geminiResult && geminiResult.success) {
-                return res.json({
-                    success: true,
-                    isGemini: true,
-                    top: geminiResult.top,
-                    bottom: geminiResult.bottom,
-                    shoes: geminiResult.shoes,
-                    outerwear: geminiResult.outerwear,
-                    synergyScore: geminiResult.confidence,
-                    score: geminiResult.confidence,
-                    aesthetic: geminiResult.aesthetic,
-                    occasion: geminiResult.occasion,
-                    reason: geminiResult.reason,
-                    description: geminiResult.reason,
-                    tips: geminiResult.tips,
-                    outfit: {
-                        outerwear: geminiResult.outerwear ? geminiResult.outerwear.id : null,
-                        tops: geminiResult.top ? geminiResult.top.id : null,
-                        pants: geminiResult.bottom ? geminiResult.bottom.id : null,
-                        shoes: geminiResult.shoes ? geminiResult.shoes.id : null
-                    }
-                });
-            } else {
-                console.log("Gemini Stylist returned unsuccessful curation or failed validation. Returning error.");
-                try {
-                    fs.writeFileSync(path.join(__dirname, 'recommendation_error_log.txt'), JSON.stringify(geminiResult, null, 2));
-                } catch (fsErr) {}
-                return res.status(500).json({
-                    success: false,
-                    isGemini: true,
-                    error: geminiResult.error || "Gemini validation failed (curation success is false)."
-                });
-            }
-        } catch (err) {
-            console.error("Gemini Stylist execution failed. Returning error:", err);
-            try {
-                fs.writeFileSync(path.join(__dirname, 'recommendation_error_log.txt'), JSON.stringify({ error: err.message, stack: err.stack }, null, 2));
-            } catch (fsErr) {}
-            return res.status(500).json({
-                success: false,
-                isGemini: true,
-                error: err.message || "Gemini execution failed.",
-                stack: err.stack
-            });
-        }
-    }
-
-    const tops = userItems.filter(i => ['Tops & Blouses', 'Knitwear', 'Dresses', 'Tops'].includes(i.category));
-    const bottoms = userItems.filter(i => ['Bottoms', 'Pants'].includes(i.category));
-    const shoes = userItems.filter(i => ['Footwear', 'Shoes'].includes(i.category));
-    const outerwears = userItems.filter(i => ['Outerwear'].includes(i.category));
-
-    const scoreItem = (item) => {
-        let score = 50; // base score
-        score += getSeasonScore(item.season, season);
-        score += getTempScore(item, temperature);
-        score += getOccasionScore(item, occasion);
-        score += getStyleScore(item, style);
-        score += getSubcategoryScore(item, occasion, temperature);
-        
-        if (weather) {
-            const w = weather.toLowerCase();
-            const name = (item.name || "").toLowerCase();
-            if ((w === 'rainy' || w === 'snowy') && ['boots', 'trench', 'jacket', 'leather'].some(kw => name.includes(kw))) {
-                score += 15;
-            }
-            if (w === 'sunny' && ['shorts', 'sandal', 'sundress', 'linen'].some(kw => name.includes(kw))) {
-                score += 10;
-            }
-        }
-        return score;
-    };
-
-    const scoredTops = tops.map(item => ({ item, score: scoreItem(item) })).sort((a,b) => b.score - a.score);
-    const scoredBottoms = bottoms.map(item => ({ item, score: scoreItem(item) })).sort((a,b) => b.score - a.score);
-    const scoredShoes = shoes.map(item => ({ item, score: scoreItem(item) })).sort((a,b) => b.score - a.score);
-    const scoredOuters = outerwears.map(item => ({ item, score: scoreItem(item) })).sort((a,b) => b.score - a.score);
-
-    const topCandidates = scoredTops.slice(0, 5);
-    const bottomCandidates = scoredBottoms.slice(0, 5);
-    const shoeCandidates = scoredShoes.slice(0, 5);
-    const outerCandidates = scoredOuters.slice(0, 5);
-
-    if (topCandidates.length === 0) topCandidates.push({ item: null, score: 0 });
-    if (bottomCandidates.length === 0) bottomCandidates.push({ item: null, score: 0 });
-    if (shoeCandidates.length === 0) shoeCandidates.push({ item: null, score: 0 });
-
-    const outerCandidatesWithNull = [{ item: null, score: 0 }, ...outerCandidates];
-
-    let bestCombo = null;
-    let highestComboScore = -Infinity;
-
-    for (const t of topCandidates) {
-        let validBottoms = [];
-        if (t.item && (t.item.category || "").toLowerCase() === 'dresses') {
-            validBottoms = [{ item: null, score: 0 }];
-        } else {
-            validBottoms = bottomCandidates;
-        }
-
-        for (const b of validBottoms) {
-            for (const s of shoeCandidates) {
-                let gownHeelsBonus = 0;
-                if (t.item && (t.item.subcategory || "").toLowerCase() === 'gown' && s.item) {
-                    const shoeSub = (s.item.subcategory || "").toLowerCase();
-                    if (shoeSub === 'heels') {
-                        gownHeelsBonus += 30;
-                    } else if (shoeSub === 'sneakers') {
-                        gownHeelsBonus -= 30;
-                    }
-                }
-
-                for (const o of outerCandidatesWithNull) {
-                    const outerwearItem = o.item;
-                    const outerwearScore = o.score;
-                    
-                    let includeOuterwear = false;
-                    if (outerwearItem) {
-                         if (temperature < 18 || outerwearScore > 60) {
-                             includeOuterwear = true;
-                         }
-                    }
-                    
-                    const activeOuterwear = includeOuterwear ? outerwearItem : null;
-                    const activeOuterwearScore = includeOuterwear ? outerwearScore : 0;
-                    
-                    const comboItems = [t.item, b.item, s.item, activeOuterwear].filter(Boolean);
-                    const colorHarmonyScore = getColorHarmonyScore(comboItems);
-                    
-                    let dressCompensation = 0;
-                    if (t.item && (t.item.category || "").toLowerCase() === 'dresses') {
-                        dressCompensation = 70;
-                    }
-                    
-                    const totalScore = t.score + b.score + s.score + activeOuterwearScore + colorHarmonyScore + gownHeelsBonus + dressCompensation;
-                    
-                    if (totalScore > highestComboScore) {
-                        highestComboScore = totalScore;
-                        bestCombo = {
-                            top: t.item,
-                            bottom: b.item,
-                            shoes: s.item,
-                            outerwear: activeOuterwear,
-                            topScore: t.score,
-                            bottomScore: b.score,
-                            shoesScore: s.score,
-                            outerwearScore: activeOuterwearScore,
-                            colorHarmonyScore,
-                            gownHeelsBonus,
-                            dressCompensation
-                        };
-                    }
-                }
-            }
-        }
-    }
-
-    let synergyScore = 75;
-    if (bestCombo && (bestCombo.top || bestCombo.bottom || bestCombo.shoes)) {
-        const numItems = (bestCombo.top ? 1 : 0) + (bestCombo.bottom ? 1 : 0) + (bestCombo.shoes ? 1 : 0) + (bestCombo.outerwear ? 1 : 0);
-        const maxTheoretical = (numItems * 115) + 15;
-        const rawTotal = (bestCombo.topScore || 0) + (bestCombo.bottomScore || 0) + (bestCombo.shoesScore || 0) + (bestCombo.outerwearScore || 0) + bestCombo.colorHarmonyScore + (bestCombo.gownHeelsBonus || 0);
-        
-        synergyScore = Math.round(50 + (rawTotal / maxTheoretical) * 49);
-        synergyScore = Math.min(99, Math.max(50, synergyScore));
-    }
-
-    const finalTop = bestCombo ? bestCombo.top : null;
-    const finalBottom = bestCombo ? bestCombo.bottom : null;
-    const finalShoes = bestCombo ? bestCombo.shoes : null;
-    const finalOuter = bestCombo ? bestCombo.outerwear : null;
-
-    const reasonText = finalTop || finalBottom || finalShoes 
-        ? generateRecommendationReason(finalTop, finalBottom, finalShoes, finalOuter, temperature, season, occasion, style, weather)
-        : "No items found matching the recommendation profile.";
-
-    const responsePayload = {
-        top: finalTop,
-        bottom: finalBottom,
-        shoes: finalShoes,
-        outerwear: finalOuter,
-        synergyScore: synergyScore,
-        reason: reasonText,
-
-        success: true,
-        score: synergyScore,
-        description: reasonText,
-        outfit: {
-            outerwear: finalOuter ? finalOuter.id : null,
-            tops: finalTop ? finalTop.id : null,
-            pants: finalBottom ? finalBottom.id : null,
-            shoes: finalShoes ? finalShoes.id : null
-        }
-    };
-
-    if (req.query.debug === 'true') {
-        let weatherBoost = 0;
-        let occasionBoost = 0;
-        let styleBoost = 0;
-        
-        const finalComboItems = [finalTop, finalBottom, finalShoes, finalOuter].filter(Boolean);
-        for (const item of finalComboItems) {
-            occasionBoost += getOccasionScore(item, occasion);
-            styleBoost += getStyleScore(item, style);
-            if (weather) {
-                const w = weather.toLowerCase();
-                const name = (item.name || "").toLowerCase();
-                if ((w === 'rainy' || w === 'snowy') && ['boots', 'trench', 'jacket', 'leather'].some(kw => name.includes(kw))) {
-                    weatherBoost += 15;
-                }
-                if (w === 'sunny' && ['shorts', 'sandal', 'sundress', 'linen'].some(kw => name.includes(kw))) {
-                    weatherBoost += 10;
-                }
-            }
-        }
-
-        responsePayload.debug = {
-            topScore: bestCombo ? (bestCombo.topScore || 0) : 0,
-            bottomScore: bestCombo ? (bestCombo.bottomScore || 0) : 0,
-            shoeScore: bestCombo ? (bestCombo.shoesScore || 0) : 0,
-            outerwearScore: bestCombo ? (bestCombo.outerwearScore || 0) : 0,
-            weatherBoost,
-            occasionBoost,
-            styleBoost
-        };
-    }
-
-    res.json(responsePayload);
-});
 
 
 // ═══ WARDROBE STATISTICS ENDPOINT ═══
@@ -3967,23 +3777,124 @@ app.get('/api/dev/test-gemini-status', async (req, res) => {
 // LangGraph Multi-Agent Proxy Route (Powers AI Style Suggest in studio.html)
 // NOTE: /api/inspiration/recommend is intentionally excluded here — it has its own dedicated handler above (L3100)
 app.all(['/recommend', '/api/recommend', '/api/recommendations'], async (req, res) => {
-
-
     const userPrompt = req.query.prompt || req.body.prompt || req.body.occasion || "Smart casual outfit";
+    const userEmail = (req.query.email || req.body.email || "").toLowerCase().trim();
+    const season = req.query.season || req.body.season || "all-season";
+    const temp = req.query.temp || req.body.temp || null;
+
+    if (!userEmail) {
+        return res.status(400).json({
+            success: false,
+            message: "User email parameter is required for recommendations."
+        });
+    }
+
+    const wardrobe = readJSON(wardrobeFile);
+    const userItems = wardrobe.filter(item => item.owner && item.owner.toLowerCase() === userEmail);
+
+    console.log(`[RECOMMENDATION] Request from user: "${userEmail}", Prompt: "${userPrompt}", User items available: ${userItems.length}`);
+
     const langgraphPort = process.env.LANGGRAPH_PORT || 5000;
     const pyUrl = `http://127.0.0.1:${langgraphPort}/recommend`;
 
-    try {
-        console.log(`[Express -> Python LangGraph] Forwarding request to ${pyUrl} with prompt: "${userPrompt}"`);
+    // Helper to validate and enrich recommended item strictly against user's verified items
+    function isOnePiece(item) {
+        if (!item) return false;
+        const cat = (item.category || '').toLowerCase();
+        const sub = (item.subcategory || '').toLowerCase();
+        const nm = (item.name || '').toLowerCase();
+        return cat.includes('dress') || cat.includes('one-piece') || cat.includes('jumpsuit') || cat.includes('romper') ||
+               sub.includes('dress') || sub.includes('jumpsuit') || sub.includes('romper') ||
+               nm.includes('dress') || nm.includes('jumpsuit') || nm.includes('romper');
+    }
 
-        // 20-second timeout — ensures the browser spinner always resolves even if Python hangs
+    function resolveVerifiedItem(candidate, userItemsList, defaultRole) {
+        if (!candidate) return null;
+        const candidateId = candidate.id !== undefined && candidate.id !== null ? String(candidate.id).trim() : null;
+        const candidateName = candidate.name ? candidate.name.trim().toLowerCase() : "";
+
+        if ((!candidateId || candidateId === "none") && (!candidateName || candidateName === "none" || candidateName === "none needed" || candidateName === "none." || candidateName === "n/a")) {
+            return null;
+        }
+
+        // 1. Try matching by exact ID strictly within user's wardrobe
+        let matched = null;
+        if (candidateId) {
+            matched = userItemsList.find(i => String(i.id).trim() === candidateId);
+        }
+
+        // 2. Try matching by exact name strictly within user's wardrobe
+        if (!matched && candidateName) {
+            matched = userItemsList.find(i => i.name && i.name.trim().toLowerCase() === candidateName);
+        }
+
+        // 3. Try matching by substring name strictly within user's wardrobe
+        if (!matched && candidateName) {
+            matched = userItemsList.find(i => i.name && (i.name.toLowerCase().includes(candidateName) || candidateName.includes(i.name.toLowerCase())));
+        }
+
+        // If matched, return verified record with canonical browser image URL
+        if (matched) {
+            const imgSrc = matched.processedImagePath || matched.originalImagePath || matched.img || "";
+            return {
+                id: matched.id,
+                name: matched.name,
+                category: matched.category,
+                subcategory: matched.subcategory || "",
+                color: matched.dominantColor || matched.color || "",
+                season: matched.season || "all-season",
+                formality: matched.occasion || matched.formality || "casual",
+                img: imgSrc,
+                originalImagePath: matched.originalImagePath || imgSrc,
+                processedImagePath: matched.processedImagePath || imgSrc
+            };
+        }
+
+        // Strict ownership: NEVER search all users' wardrobes or core fallback items.
+        // If not found in authenticated user's wardrobe, reject candidate item.
+        return null;
+    }
+
+    // Fast-path for empty wardrobe
+    if (userItems.length === 0) {
+        return res.json({
+            success: true,
+            isGemini: true,
+            prompt: userPrompt,
+            top: null,
+            bottom: null,
+            outerwear: null,
+            shoes: null,
+            outfit: { outerwear: null, tops: null, pants: null, shoes: null },
+            synergyScore: 0,
+            score: 0,
+            aesthetic: "Minimalist",
+            occasion: userPrompt,
+            reason: "No suitable outfit found. Your wardrobe does not currently have items available for curation.",
+            description: "No suitable outfit found. Please add items to your closet.",
+            tips: ["Add clothes to your wardrobe to receive personalized AI outfit curation."],
+            weather: { city: "Vadodara", temperature: 26.2, condition: "Clear" },
+            recommended_outfit: null,
+            execution_trace: ["Supervisor ➔ Wardrobe Agent (Empty) ➔ Stylist Agent ➔ FINISH"]
+        });
+    }
+
+    try {
+        console.log(`[Express -> Python LangGraph] Forwarding request to ${pyUrl} for user: "${userEmail}"`);
+
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 20000);
+        const timeoutId = setTimeout(() => controller.abort(), 50000);
 
         const response = await fetch(pyUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ prompt: userPrompt }),
+            body: JSON.stringify({
+                prompt: userPrompt,
+                email: userEmail,
+                wardrobe: userItems,
+                season: season,
+                temp: temp
+            }),
             signal: controller.signal
         });
         clearTimeout(timeoutId);
@@ -3994,34 +3905,62 @@ app.all(['/recommend', '/api/recommend', '/api/recommendations'], async (req, re
         }
 
         const data = await response.json();
-        
-        const topObj = data.top || (data.recommended_outfit ? data.recommended_outfit.top : null) || { id: "top-1", name: "White Oxford Cotton Shirt" };
-        const bottomObj = data.bottom || (data.recommended_outfit ? data.recommended_outfit.bottom : null) || { id: "bottom-1", name: "Beige Chino Pants" };
-        const outerwearObj = data.outerwear || (data.recommended_outfit ? data.recommended_outfit.outerwear : null) || { id: "outer-1", name: "Beige Lightweight Windbreaker" };
-        const shoesObj = data.shoes || (data.recommended_outfit ? data.recommended_outfit.shoes : null) || { id: "shoes-1", name: "Minimalist White Leather Sneakers" };
 
-        if (typeof topObj === 'string') data.top = { id: 'top-1', name: topObj };
-        else if (topObj && !topObj.id) topObj.id = 'top-1';
+        // Extract candidates
+        const rawTop = data.top || (data.recommended_outfit ? data.recommended_outfit.top : null);
+        const rawBottom = data.bottom || (data.recommended_outfit ? data.recommended_outfit.bottom : null);
+        const rawOuter = data.outerwear || (data.recommended_outfit ? data.recommended_outfit.outerwear : null);
+        const rawShoes = data.shoes || (data.recommended_outfit ? data.recommended_outfit.shoes : null);
 
-        if (typeof bottomObj === 'string') data.bottom = { id: 'bottom-1', name: bottomObj };
-        else if (bottomObj && !bottomObj.id) bottomObj.id = 'bottom-1';
+        // Server-Side Validation: Ground all candidates strictly in verified wardrobe records
+        const topObj = resolveVerifiedItem(rawTop, userItems, 'top');
+        // Dress / Jumpsuit / Romper rule: never pair bottom with a one-piece outfit
+        const bottomObj = isOnePiece(topObj) ? null : resolveVerifiedItem(rawBottom, userItems, 'bottom');
+        const outerwearObj = resolveVerifiedItem(rawOuter, userItems, 'outerwear');
+        const shoesObj = resolveVerifiedItem(rawShoes, userItems, 'shoes');
 
-        if (typeof outerwearObj === 'string') data.outerwear = { id: 'outer-1', name: outerwearObj };
-        else if (outerwearObj && !outerwearObj.id) outerwearObj.id = 'outer-1';
+        // Extract clean stylist rationale (strip markdown headers if needed)
+        let cleanReason = data.full_recommendation || data.explanation || "";
+        const rationaleMatch = cleanReason.match(/###\s*💡\s*Stylist Rationale\s*([\s\S]*)/i);
+        if (rationaleMatch) {
+            cleanReason = rationaleMatch[1].trim();
+        }
 
-        if (typeof shoesObj === 'string') data.shoes = { id: 'shoes-1', name: shoesObj };
-        else if (shoesObj && !shoesObj.id) shoesObj.id = 'shoes-1';
+        const aesthetic = "Curated Style";
+        const occasion = userPrompt;
 
         return res.json({
             success: true,
+            isGemini: true,
             prompt: userPrompt,
             top: topObj,
             bottom: bottomObj,
             outerwear: outerwearObj,
             shoes: shoesObj,
+            synergyScore: null,
+            score: null,
+            aesthetic: aesthetic,
+            occasion: occasion,
+            reason: cleanReason,
+            description: cleanReason,
+            tips: [
+                "Combine complementary textures for depth.",
+                "Ensure footwear matches the event formality."
+            ],
             weather: data.weather || { city: "Vadodara", temperature: 26.2, condition: "Clear" },
-            recommended_outfit: data.recommended_outfit || {},
-            explanation: data.full_recommendation || "Curated by LangGraph Multi-Agent Stylist.",
+            recommended_outfit: {
+                top: topObj,
+                bottom: bottomObj,
+                outerwear: outerwearObj,
+                shoes: shoesObj
+            },
+            outfit: {
+                outerwear: outerwearObj ? outerwearObj.id : null,
+                tops: topObj ? topObj.id : null,
+                pants: bottomObj ? bottomObj.id : null,
+                shoes: shoesObj ? shoesObj.id : null
+            },
+            explanation: data.full_recommendation || cleanReason,
             execution_trace: data.execution_trace || [
                 "Supervisor ➔ Weather Agent",
                 "Weather Agent Executed",
@@ -4035,23 +3974,128 @@ app.all(['/recommend', '/api/recommend', '/api/recommendations'], async (req, re
 
     } catch (err) {
         console.error("[Express -> LangGraph Warning] Python backend offline or error:", err.message);
-        
-        // Return instant resilient multi-agent response so UI never fails
+
+        if (userItems.length === 0) {
+            return res.json({
+                success: true,
+                isGemini: false,
+                prompt: userPrompt,
+                top: null,
+                bottom: null,
+                outerwear: null,
+                shoes: null,
+                outfit: { outerwear: null, tops: null, pants: null, shoes: null },
+                synergyScore: 0,
+                score: 0,
+                aesthetic: "Minimalist",
+                occasion: userPrompt,
+                reason: "No suitable outfit found. Your wardrobe does not currently have items available for curation.",
+                description: "No suitable outfit found.",
+                tips: ["Add clothes to your wardrobe to receive personalized AI outfit curation."],
+                weather: { city: "Vadodara", temperature: 26.2, condition: "Clear" },
+                recommended_outfit: null,
+                execution_trace: ["Express ➔ Grounded Closet Fallback (Wardrobe Empty) ➔ FINISH"]
+            });
+        }
+
+        // Grounded deterministic fallback using strictly the user's real wardrobe items
+        const dresses = userItems.filter(i => isOnePiece(i));
+        const tops = userItems.filter(i => (i.category || '').toLowerCase().includes('top') || (i.category || '').toLowerCase().includes('shirt') || (i.category || '').toLowerCase().includes('knitwear'));
+        const bottoms = userItems.filter(i => (i.category || '').toLowerCase().includes('bottom') || (i.category || '').toLowerCase().includes('pant') || (i.category || '').toLowerCase().includes('jean') || (i.category || '').toLowerCase().includes('short') || (i.category || '').toLowerCase().includes('skirt'));
+        const shoes = userItems.filter(i => (i.category || '').toLowerCase().includes('shoe') || (i.category || '').toLowerCase().includes('footwear') || (i.category || '').toLowerCase().includes('boot') || (i.category || '').toLowerCase().includes('sneaker'));
+        const outerwear = userItems.filter(i => (i.category || '').toLowerCase().includes('outerwear') || (i.category || '').toLowerCase().includes('jacket') || (i.category || '').toLowerCase().includes('coat'));
+
+        let topCandidate = null;
+        let bottomCandidate = null;
+
+        if (tops.length > 0 && bottoms.length > 0) {
+            topCandidate = tops[0];
+            bottomCandidate = bottoms[0];
+        } else if (dresses.length > 0) {
+            topCandidate = dresses[0];
+            bottomCandidate = null;
+        } else if (tops.length > 0) {
+            topCandidate = tops[0];
+            bottomCandidate = null;
+        }
+
+        const toItemObj = (item) => {
+            if (!item) return null;
+            const imgSrc = item.processedImagePath || item.originalImagePath || item.img || "";
+            return {
+                id: item.id,
+                name: item.name,
+                category: item.category,
+                subcategory: item.subcategory || "",
+                color: item.dominantColor || item.color || "",
+                season: item.season || "all-season",
+                formality: item.occasion || item.formality || "casual",
+                img: imgSrc,
+                originalImagePath: item.originalImagePath || imgSrc,
+                processedImagePath: item.processedImagePath || imgSrc
+            };
+        };
+
+        const topObj = toItemObj(topCandidate);
+        const bottomObj = isOnePiece(topObj) ? null : toItemObj(bottomCandidate);
+        const outerwearObj = toItemObj(outerwear[0] || null);
+        const shoesObj = toItemObj(shoes[0] || null);
+
+        const fallbackReason = `Curated outfit for "${userPrompt}" composed from your digital closet.`;
+
         return res.json({
             success: true,
+            isGemini: false,
             prompt: userPrompt,
-            top: { id: "top-1", name: "White Oxford Cotton Shirt" },
-            bottom: { id: "bottom-1", name: "Beige Chino Pants" },
-            outerwear: { id: "outer-1", name: "Beige Lightweight Windbreaker" },
-            shoes: { id: "shoes-1", name: "Minimalist White Leather Sneakers" },
+            top: topObj,
+            bottom: bottomObj,
+            outerwear: outerwearObj,
+            shoes: shoesObj,
+            synergyScore: null,
+            score: null,
+            aesthetic: "Smart Casual",
+            occasion: userPrompt,
+            reason: fallbackReason,
+            description: fallbackReason,
+            tips: [
+                "Pair neutral layers for balanced comfort.",
+                "Opt for breathable cottons in warmer weather."
+            ],
             weather: { city: "Vadodara", temperature: 26.2, condition: "Clear" },
-            explanation: `Curated outfit for ${userPrompt} based on weather in Vadodara (26.2°C).`,
-            execution_trace: ["Supervisor ➔ Rule Fallback ➔ FINISH"]
+            recommended_outfit: {
+                top: topObj,
+                bottom: bottomObj,
+                outerwear: outerwearObj,
+                shoes: shoesObj
+            },
+            outfit: {
+                outerwear: outerwearObj ? outerwearObj.id : null,
+                tops: topObj ? topObj.id : null,
+                pants: bottomObj ? bottomObj.id : null,
+                shoes: shoesObj ? shoesObj.id : null
+            },
+            explanation: fallbackReason,
+            execution_trace: ["Supervisor ➔ Grounded Closet Fallback ➔ FINISH"]
         });
     }
 });
 
 
+
+
+// Error handling middleware for upload and file validation errors
+app.use((err, req, res, next) => {
+    if (err) {
+        if (err.message && err.message.startsWith('INVALID_FILE_TYPE')) {
+            return res.status(400).json({ success: false, message: err.message });
+        }
+        if (err instanceof multer.MulterError) {
+            return res.status(400).json({ success: false, message: `Upload error: ${err.message}` });
+        }
+        return res.status(500).json({ success: false, message: err.message || 'Internal server error' });
+    }
+    next();
+});
 
 // Start Server
 app.listen(PORT, () => {

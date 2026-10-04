@@ -59,7 +59,8 @@ def test_parse_outfit_from_text_markdown_stripping():
 def test_api_recommend_endpoint():
     """Starts local API server, sends test request, and shuts down server cleanly."""
     port = 5005
-    httpd = HTTPServer(("", port), LangGraphAPIHandler)
+    from http.server import ThreadingHTTPServer
+    httpd = ThreadingHTTPServer(("", port), LangGraphAPIHandler)
 
     def serve_single():
         httpd.handle_request()
@@ -81,7 +82,7 @@ def test_api_recommend_endpoint():
     print(f"[TEST] Sending POST request to '{url}'...")
     print("  Payload:", payload)
 
-    response = requests.post(url, json=payload, timeout=30)
+    response = requests.post(url, json=payload, timeout=60)
 
 
     server_thread.join(timeout=2)

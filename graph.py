@@ -12,9 +12,11 @@ from agents.wardrobe_agent import run_wardrobe_agent
 from agents.stylist_agent import run_stylist_agent
 
 
-class AgentState(TypedDict):
+class AgentState(TypedDict, total=False):
     """Shared state object passed between agents in the LangGraph graph."""
     user_prompt: str
+    user_email: str
+    raw_wardrobe: List[Dict[str, Any]]
     next_agent: str
     weather_data: Dict[str, Any]
     wardrobe_items: List[Dict[str, Any]]
@@ -33,15 +35,19 @@ def supervisor_node(state: AgentState) -> Dict[str, Any]:
     """
     trace = list(state.get("execution_trace", []))
     
-    if not state.get("weather_data"):
+    weather_done = any("Weather Agent" in step for step in trace) or (bool(state.get("weather_data")) and state.get("weather_data") != {})
+    wardrobe_done = any("Wardrobe Agent" in step for step in trace)
+    stylist_done = any("Stylist Agent" in step for step in trace) or bool(state.get("final_response"))
+
+    if not weather_done:
         next_agent = "weather_agent"
         print("[Supervisor] Routing -> Weather Agent")
         trace.append("Supervisor ➔ Weather Agent")
-    elif not state.get("wardrobe_items"):
+    elif not wardrobe_done:
         next_agent = "wardrobe_agent"
         print("[Supervisor] Routing -> Wardrobe Agent")
         trace.append("Supervisor ➔ Wardrobe Agent")
-    elif not state.get("final_response"):
+    elif not stylist_done:
         next_agent = "stylist_agent"
         print("[Supervisor] Routing -> Stylist Agent")
         trace.append("Supervisor ➔ Stylist Agent")
@@ -71,7 +77,14 @@ def weather_agent_node(state: AgentState) -> Dict[str, Any]:
 def wardrobe_agent_node(state: AgentState) -> Dict[str, Any]:
     """Wardrobe Agent node execution."""
     print("\n--- Executing Wardrobe Agent ---")
-    res = run_wardrobe_agent(state["user_prompt"], state.get("weather_data", {}))
+    owner = state.get("user_email")
+    preloaded = state.get("raw_wardrobe")
+    res = run_wardrobe_agent(
+        query=state["user_prompt"],
+        weather_data=state.get("weather_data", {}),
+        owner=owner,
+        preloaded_items=preloaded
+    )
     trace = list(state.get("execution_trace", []))
     trace.append("Wardrobe Agent Executed")
     return {

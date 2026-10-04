@@ -93,5 +93,50 @@
       "Gray"
     ],
     "confidenceScore": 8
+  },
+  {
+    "email": "dhwani@gmail.co",
+    "timestamp": "2026-09-25T09:53:52.613Z",
+    "topAesthetics": {
+      "Minimalism": 27,
+      "Old Money": 28,
+      "Dark Academia": 17,
+      "Clean Girl": 17,
+      "Streetwear": 11
+    },
+    "topColors": [
+      "Navy",
+      "Cream",
+      "Burgundy",
+      "Olive",
+      "White"
+    ],
+    "confidenceScore": 0
+  },
+  {
+    "email": "dhwani@gmail.co",
+    "timestamp": "2026-10-03T17:13:02.465Z",
+    "topAesthetics": {
+      "Cottagecore": 9,
+      "Coquette": 9,
+      "Boho Chic": 9,
+      "Whimsigoth": 9,
+      "Indie Sleaze": 9,
+      "Clean Girl": 9,
+      "Minimalism": 6,
+      "Dark Academia": 6,
+      "Streetwear": 6,
+      "Grunge": 6,
+      "Old Money": 6,
+      "Techwear": 6,
+      "Y2K": 4,
+      "Gorpcore": 4,
+      "Eclectic Grandpa": 2
+    },
+    "topColors": [
+      "White",
+      "Gray"
+    ],
+    "confidenceScore": 59
   }
 ]

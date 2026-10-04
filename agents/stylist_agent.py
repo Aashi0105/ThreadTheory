@@ -6,7 +6,7 @@ This agent has NO tools—it operates purely on LLM reasoning over input context
 """
 
 import os
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
 
@@ -54,21 +54,42 @@ def run_stylist_agent(
         Dict containing:
             - agent_response: str (structured Markdown outfit recommendation and rationale)
     """
+    if not wardrobe_items:
+        return {
+            "agent_response": (
+                "### 👔 Recommended Outfit\n"
+                "- **Top:** None available\n"
+                "- **Bottom:** None available\n"
+                "- **Outerwear:** None needed\n"
+                "- **Shoes:** None available\n"
+                "- **Accessories:** None needed\n\n"
+                "### 💡 Stylist Rationale\n"
+                "Your digital wardrobe currently contains no clothing items to curate an outfit. "
+                "Please add garments to your closet to receive personalized styling recommendations."
+            ),
+            "recommended_outfit": None
+        }
+
     stylist_system_prompt = (
         "You are ThreadTheory's Senior Personal AI Stylist.\n"
         "Your task is to analyze: (1) User Request, (2) Real-Time Weather Data, and (3) Available Wardrobe Items.\n"
         "Compose a cohesive, stylish, and weather-appropriate outfit.\n\n"
-        "STRICT CONSTRAINTS:\n"
-        "1. Select items EXCLUSIVELY from the provided Wardrobe Items list. Never invent or hallucinate items not present.\n"
-        "2. Ensure weather comfort (temperature, rain probability, wind speed).\n"
-        "3. Match formality and color harmony.\n\n"
-        "OUTPUT FORMAT:\n"
+        "STRICT CONSTRAINTS & COMPATIBILITY RULES:\n"
+        "1. Select items EXCLUSIVELY by their exact 'id' from the provided Available Wardrobe Items list.\n"
+        "2. Never invent, hallucinate, or alter clothing items or IDs.\n"
+        "3. OUTFIT STRUCTURE RULES:\n"
+        "   - Standard Outfit: Exactly ONE Top + Exactly ONE Bottom + Shoes.\n"
+        "   - One-Piece Outfit: If a Dress, Jumpsuit, or Romper is selected, place it in 'Top:' and specify 'Bottom: None needed'.\n"
+        "   - MUTUALLY EXCLUSIVE: NEVER combine a Dress, Jumpsuit, or Romper with Shorts, Skirts, Jeans, Pants, or Trousers.\n"
+        "   - NEVER combine multiple Tops or multiple Bottoms.\n"
+        "4. Ensure weather comfort (temperature, rain probability, wind speed) and color harmony.\n\n"
+        "OUTPUT FORMAT (Return valid Markdown formatted exactly like this):\n"
         "### 👔 Recommended Outfit\n"
-        "- **Top:** [Item Name]\n"
-        "- **Bottom:** [Item Name]\n"
-        "- **Outerwear:** [Item Name or None needed]\n"
-        "- **Shoes:** [Item Name]\n"
-        "- **Accessories:** [Item Name(s)]\n\n"
+        "- **Top:** [Item Name] (ID: [Exact Item ID])\n"
+        "- **Bottom:** [Item Name or None needed] (ID: [Exact Item ID or None])\n"
+        "- **Outerwear:** [Item Name or None needed] (ID: [Exact Item ID or None])\n"
+        "- **Shoes:** [Item Name or None needed] (ID: [Exact Item ID or None])\n"
+        "- **Accessories:** [Item Name or None needed] (ID: [Exact Item ID or None])\n\n"
         "### 💡 Stylist Rationale\n"
         "[2-3 sentence explanation of why this outfit works for the weather and event]\n"
     )
@@ -87,69 +108,108 @@ def run_stylist_agent(
 
     # Fast deterministic styling rule builder
     def _build_deterministic_recommendation():
-        # Extract weather values first — used by _pick() and outerwear logic
-        temp = weather_data.get('temperature', 25.0)
-        rain_prob = weather_data.get('rain_probability', 0)
+        temp = float(weather_data.get('temperature', 25.0))
+        rain_prob = float(weather_data.get('rain_probability', 0))
 
-        # Helper: first item matching category AND within temp range; two-level fallback
-        def _pick(category: str, fallback_name: str, name_filter: str = None) -> str:
+        def _cat_match(item_cat: str, role: str) -> bool:
+            c = (item_cat or "").lower().strip()
+            r = role.lower()
+            if r in ("dress", "one_piece", "one-piece"):
+                return any(k in c for k in ["dress", "jumpsuit", "romper", "one-piece", "one_piece"])
+            if r == "top":
+                return any(k in c for k in ["top", "shirt", "blouse", "knitwear", "tee", "sweater"]) and not any(k in c for k in ["dress", "jumpsuit", "romper"])
+            if r == "bottom":
+                return any(k in c for k in ["bottom", "pant", "jean", "trouser", "short", "skirt"]) and not any(k in c for k in ["dress", "jumpsuit", "romper"])
+            if r == "outerwear":
+                return any(k in c for k in ["outerwear", "jacket", "coat", "windbreaker", "blazer", "cardigan"])
+            if r == "shoes":
+                return any(k in c for k in ["shoe", "boot", "sneaker", "footwear", "oxford", "heel", "sandal"])
+            if r == "accessory":
+                return any(k in c for k in ["accessory", "scarf", "glass", "belt", "hat", "bag"])
+            return r in c
+
+        def _pick_item(role: str, name_filter: str = None) -> Optional[Dict[str, Any]]:
+            # First match: role AND comfortable in live temperature
             temp_ok = [
                 i for i in wardrobe_items
-                if i.get('category') == category
-                and i.get('temp_min_c', -99) <= temp <= i.get('temp_max_c', 99)
-                and (name_filter is None or name_filter in i['name'].lower())
+                if _cat_match(i.get('category', ''), role)
+                and float(i.get('temp_min_c', -99)) <= temp <= float(i.get('temp_max_c', 99))
+                and (name_filter is None or name_filter in i.get('name', '').lower())
             ]
             if temp_ok:
-                return temp_ok[0]['name']
-            # Fallback level 2: ignore temperature, match category only
-            any_cat = [i for i in wardrobe_items if i.get('category') == category
-                       and (name_filter is None or name_filter in i['name'].lower())]
-            return any_cat[0]['name'] if any_cat else fallback_name
+                return temp_ok[0]
+            # Second match: role without temperature constraint
+            any_cat = [
+                i for i in wardrobe_items
+                if _cat_match(i.get('category', ''), role)
+                and (name_filter is None or name_filter in i.get('name', '').lower())
+            ]
+            return any_cat[0] if any_cat else None
 
-        selected_top = _pick('top', 'White Oxford Cotton Shirt')
-        selected_bottom = _pick('bottom', 'Beige Chino Pants')
+        # Check if user specifically requested a one-piece or if wardrobe favors a one-piece
+        dress_requested = any(w in user_prompt.lower() for w in ["dress", "gown", "sundress", "one-piece", "jumpsuit", "romper"])
+        dress_item = _pick_item('dress')
 
-        # Select weather-appropriate outerwear (unchanged logic)
-        if temp < 15.0:
-            selected_outerwear = _pick('outerwear', 'Navy Blue Wool Trench Coat', 'coat')
-        elif rain_prob > 50:
-            selected_outerwear = _pick('outerwear', 'Beige Lightweight Windbreaker', 'windbreaker')
+        top_item = _pick_item('top')
+        bottom_item = _pick_item('bottom')
+        shoes_item = _pick_item('shoes')
+
+        # Decide between One-Piece outfit and Standard two-piece outfit
+        is_one_piece = False
+        if dress_requested and dress_item:
+            is_one_piece = True
+        elif dress_item and (not top_item or not bottom_item):
+            is_one_piece = True
+        elif not top_item and not bottom_item and dress_item:
+            is_one_piece = True
+
+        if is_one_piece and dress_item:
+            top_str = f"{dress_item['name']} (ID: {dress_item['id']})"
+            bottom_str = "None needed"
         else:
-            selected_outerwear = "None needed"
+            top_str = f"{top_item['name']} (ID: {top_item['id']})" if top_item else "None available"
+            bottom_str = f"{bottom_item['name']} (ID: {bottom_item['id']})" if bottom_item else "None available"
 
-        selected_shoes = _pick('shoes', 'Minimalist White Leather Sneakers')
-        selected_accessory = next((i['name'] for i in wardrobe_items if i.get('category') == 'accessory'), "UV Protection Sunglasses")
+        # Outerwear logic
+        outer_item = None
+        if temp < 18.0 or rain_prob > 40:
+            outer_item = _pick_item('outerwear')
 
+        acc_item = _pick_item('accessory')
+
+        outer_str = f"{outer_item['name']} (ID: {outer_item['id']})" if outer_item else "None needed"
+        shoes_str = f"{shoes_item['name']} (ID: {shoes_item['id']})" if shoes_item else "None available"
+        acc_str = f"{acc_item['name']} (ID: {acc_item['id']})" if acc_item else "None needed"
 
         city = weather_data.get('city', 'your location')
         weather_desc = weather_data.get('weather', 'Clear')
 
         return (
             f"### 👔 Recommended Outfit\n"
-            f"- **Top:** {selected_top}\n"
-            f"- **Bottom:** {selected_bottom}\n"
-            f"- **Outerwear:** {selected_outerwear}\n"
-            f"- **Shoes:** {selected_shoes}\n"
-            f"- **Accessories:** {selected_accessory}\n\n"
+            f"- **Top:** {top_str}\n"
+            f"- **Bottom:** {bottom_str}\n"
+            f"- **Outerwear:** {outer_str}\n"
+            f"- **Shoes:** {shoes_str}\n"
+            f"- **Accessories:** {acc_str}\n\n"
             f"### 💡 Stylist Rationale\n"
             f"This outfit balances your styling request for {user_prompt} with real-time weather in {city} "
             f"({temp}°C, {weather_desc}, {rain_prob}% rain probability). The selected layers ensure comfort and color harmony."
         )
 
-    # 1. Fast-Path Deterministic Styling: Avoids Gemini 429 rate limit delays during local server execution
-    use_fast_path = os.getenv("USE_DETERMINISTIC_STYLIST", "true").lower() in ("1", "true", "yes")
+    # 1. Deterministic bypass check
+    use_fast_path = os.getenv("USE_DETERMINISTIC_STYLIST", "false").lower() in ("1", "true", "yes")
     if use_fast_path:
-        print("[StylistAgent] Fast-path deterministic stylist rule applied (0ms latency).")
+        print("[StylistAgent] Deterministic stylist rule applied.")
         return {"agent_response": _build_deterministic_recommendation()}
-
 
     # 2. Gemini LLM Reasoning Path with Graceful Fallback
     try:
         llm = create_stylist_llm()
         response = llm.invoke(context_prompt)
-        return {
-            "agent_response": response.content.strip()
-        }
+        content = response.content.strip() if response and response.content else ""
+        if content and ("Top:" in content or "Recommended Outfit" in content):
+            return {"agent_response": content}
+        return {"agent_response": _build_deterministic_recommendation()}
     except Exception as e:
         print(f"[StylistAgent Graceful Fallback] Gemini API unavailable/rate-limited ({e}). Applying curated rule...")
         return {

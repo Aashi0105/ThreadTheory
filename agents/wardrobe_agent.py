@@ -5,6 +5,7 @@ powered by Gemini.
 """
 
 import os
+import re
 from typing import Dict, Any, Optional, List, Tuple
 from dotenv import load_dotenv
 from langchain_core.tools import tool
@@ -51,7 +52,12 @@ def create_wardrobe_llm() -> ChatGoogleGenerativeAI:
     return llm.bind_tools([fetch_wardrobe_inventory])
 
 
-def _try_fast_inventory_lookup(query: str, max_temp_c: Optional[float] = None) -> Optional[Tuple[List[Dict[str, Any]], str]]:
+def _try_fast_inventory_lookup(
+    query: str,
+    max_temp_c: Optional[float] = None,
+    owner: Optional[str] = None,
+    preloaded_items: Optional[List[Dict[str, Any]]] = None
+) -> Optional[Tuple[List[Dict[str, Any]], str]]:
     """Fast-path deterministic query parser for simple wardrobe queries.
 
     BENEFIT OF THIS OPTIMIZATION:
@@ -60,6 +66,19 @@ def _try_fast_inventory_lookup(query: str, max_temp_c: Optional[float] = None) -
     API free-tier quota (5 RPM limit), eliminates network overhead, and prevents 429 errors.
     """
     q = query.lower().strip()
+
+    # If user provided items directly in memory, filter them
+    if preloaded_items:
+        items = list(preloaded_items)
+        if max_temp_c is not None:
+            temp_filtered = [
+                i for i in items
+                if float(i.get("temp_min_c", -99)) <= max_temp_c <= float(i.get("temp_max_c", 99))
+            ]
+            if temp_filtered:
+                items = temp_filtered
+        summary = f"Retrieved {len(items)} items from user's active digital closet."
+        return items, summary
 
     # Match category filter
     matched_category = None
@@ -90,10 +109,10 @@ def _try_fast_inventory_lookup(query: str, max_temp_c: Optional[float] = None) -
     ])
 
     if matched_category or matched_formality or is_general_query:
-        items = get_wardrobe_items(category=matched_category, formality=matched_formality, max_temp_c=max_temp_c)
+        items = get_wardrobe_items(category=matched_category, formality=matched_formality, max_temp_c=max_temp_c, owner=owner)
         if not items and max_temp_c is not None:
             # Fallback: retry without temperature constraint if temp filter returned 0 items
-            items = get_wardrobe_items(category=matched_category, formality=matched_formality)
+            items = get_wardrobe_items(category=matched_category, formality=matched_formality, owner=owner)
 
         if not items:
             summary = f"No clothing items matching your filter were found in your closet."
@@ -105,28 +124,36 @@ def _try_fast_inventory_lookup(query: str, max_temp_c: Optional[float] = None) -
     return None
 
 
-def run_wardrobe_agent(query: str, weather_data: Dict[str, Any] = None) -> Dict[str, Any]:
+def run_wardrobe_agent(
+    query: str,
+    weather_data: Dict[str, Any] = None,
+    owner: Optional[str] = None,
+    preloaded_items: Optional[List[Dict[str, Any]]] = None
+) -> Dict[str, Any]:
     """Runs the Wardrobe Agent to process a user closet inquiry.
 
     Args:
         query: User prompt (e.g., "Show my formal clothing", "What tops do I have?").
         weather_data: Optional weather dict from Weather Agent (provides temperature for filtering).
+        owner: Optional user email identifier.
+        preloaded_items: Optional pre-loaded wardrobe items from request payload.
 
     Returns:
         Dict containing:
             - agent_response: str (natural language summary of closet findings)
-            - wardrobe_items: list of dicts (matching items from SQLite)
+            - wardrobe_items: list of dicts (matching items from SQLite or user payload)
     """
     weather_data = weather_data or {}
     current_temp = weather_data.get("temperature")  # float or None
     if current_temp is not None:
         print(f"[WardrobeAgent] Received live weather: {current_temp}°C — filtering wardrobe by temperature range")
-    # 1. Fast-Path Optimization: Check for simple deterministic queries first
-    fast_result = _try_fast_inventory_lookup(query, max_temp_c=current_temp)
+
+    # 1. Fast-Path / Direct user items optimization
+    fast_result = _try_fast_inventory_lookup(query, max_temp_c=current_temp, owner=owner, preloaded_items=preloaded_items)
     if fast_result is not None:
         items, summary = fast_result
         temp_str = f" (temp filter: {current_temp}°C)" if current_temp is not None else ""
-        print(f"[WardrobeAgent FastPath] Resolved query directly via tools/wardrobe.py ({len(items)} items found){temp_str}")
+        print(f"[WardrobeAgent FastPath] Resolved query directly ({len(items)} items found){temp_str}")
         return {
             "agent_response": summary,
             "wardrobe_items": items
@@ -155,59 +182,60 @@ def run_wardrobe_agent(query: str, weather_data: Dict[str, Any] = None) -> Dict[
                     items = get_wardrobe_items(
                         category=args.get("category"),
                         formality=args.get("formality"),
-                        max_temp_c=args.get("max_temp_c")
+                        max_temp_c=args.get("max_temp_c"),
+                        owner=owner
                     )
                     tool_executed = True
                     break
 
         if not tool_executed:
             if weather_data:
-                print("[WardrobeAgent Fallback] No specific tool call executed; providing climate-appropriate wardrobe items.")
-                items = get_wardrobe_items(max_temp_c=current_temp)
+                print("[WardrobeAgent Fallback] Providing climate-appropriate wardrobe items.")
+                items = get_wardrobe_items(max_temp_c=current_temp, owner=owner) or get_wardrobe_items(owner=owner)
             else:
                 print("[WardrobeAgent Fallback] No specific tool call executed for query.")
-                items = []
+                items = get_wardrobe_items(owner=owner)
 
-        api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
         if not items:
-            summary_prompt = (
-                f"User asked: '{query}'. Database returned 0 matching items. "
-                f"Provide an honest 1-sentence answer stating no such items exist in their closet."
-            )
+            summary_text = f"I checked your closet: No items matching '{query}' were found in your wardrobe."
         else:
-            summary_prompt = (
-                f"User asked: '{query}'. Matching items: {items}.\n"
-                f"Provide a clear bulleted list summarizing these clothing items."
-            )
-
-        final_response = ChatGoogleGenerativeAI(
-            model="gemini-2.5-flash",
-            google_api_key=api_key,
-            temperature=0.2
-        ).invoke(summary_prompt)
-
-        resp_text = final_response.content
-        if isinstance(resp_text, list):
-            resp_text = "".join(b.get("text", "") if isinstance(b, dict) else str(b) for b in resp_text)
-        elif not isinstance(resp_text, str):
-            resp_text = str(resp_text)
+            summary_text = f"Retrieved {len(items)} matching items from your digital closet."
 
         return {
-            "agent_response": resp_text.strip(),
+            "agent_response": summary_text,
             "wardrobe_items": items
         }
 
     except Exception as e:
         # Graceful Rate Limit (429) & Exception Handling
         print(f"[WardrobeAgent Graceful Fallback] Gemini API unavailable/rate-limited: {e}")
-        # Fall back to direct database retrieval, still applying temperature filter
-        items = get_wardrobe_items(max_temp_c=current_temp)
+        # Fall back to direct database retrieval, checking if query specifies item keywords
+        all_candidate_items = get_wardrobe_items(max_temp_c=current_temp, owner=owner) or get_wardrobe_items(owner=owner)
+        
+        # Check if user asked for specific keywords/items
+        q_lower = query.lower()
+        query_words = [
+            w for w in re.findall(r'\b\w+\b', q_lower)
+            if len(w) > 3 and w not in ["have", "what", "show", "wear", "with", "from", "your", "today", "these", "some", "clothes", "outfit", "closet", "wardrobe"]
+        ]
+        
+        # If specific items were queried that don't match standard style prompts
+        is_generic_style_prompt = any(term in q_lower for term in ["outfit", "wear", "meeting", "formal", "casual", "smart", "weekend", "work", "office"])
+        if query_words and not is_generic_style_prompt:
+            matching_items = [
+                it for it in all_candidate_items
+                if any(w in it.get("name", "").lower() or w in it.get("category", "").lower() for w in query_words)
+            ]
+            items = matching_items
+        else:
+            items = all_candidate_items
+
         if not items:
-            fallback_msg = f"No matching items found in your wardrobe for query '{query}'."
+            fallback_msg = f"I checked your closet: No items matching '{query}' exist in your wardrobe."
         else:
             item_list = ", ".join([item['name'] for item in items[:5]])
             fallback_msg = (
-                f"I checked your closet directly: You have {len(items)} total items available, "
+                f"I checked your closet directly: You have {len(items)} matching items available, "
                 f"including {item_list}."
             )
         
