@@ -55,7 +55,8 @@ def parse_outfit_from_text(text: str, wardrobe_items: List[dict] = None, user_em
             "category": item.get("category", ""),
             "color": item.get("color") or item.get("dominantColor") or "",
             "season": item.get("season", ""),
-            "formality": item.get("formality") or item.get("occasion") or "",
+            "formality": item.get("formality") or "casual",
+            "occasion": item.get("occasion") or "",
             "img": img_url,
             "originalImagePath": item.get("originalImagePath") or item.get("original_image_path") or img_url,
             "processedImagePath": item.get("processedImagePath") or item.get("processed_image_path") or img_url

@@ -1013,11 +1013,19 @@ async function removeBackgroundAPI(filePath, mimeType, filename, outputPath) {
 }
 
 function getPythonExe() {
-    const venvPy = path.join(__dirname, 'venv', 'Scripts', 'python.exe');
-    if (fs.existsSync(venvPy)) return venvPy;
-    const userPy = 'C:\\Users\\Aashi\\AppData\\Local\\Programs\\Python\\Python312\\python.exe';
-    if (fs.existsSync(userPy)) return userPy;
-    return 'python';
+    if (process.env.PYTHON_PATH && fs.existsSync(process.env.PYTHON_PATH)) {
+        return process.env.PYTHON_PATH;
+    }
+    const candidates = [
+        path.join(__dirname, 'venv', 'Scripts', 'python.exe'),
+        path.join(__dirname, 'venv', 'bin', 'python'),
+        path.join(__dirname, '.venv', 'Scripts', 'python.exe'),
+        path.join(__dirname, '.venv', 'bin', 'python')
+    ];
+    for (const pyPath of candidates) {
+        if (fs.existsSync(pyPath)) return pyPath;
+    }
+    return process.platform === 'win32' ? 'python' : 'python3';
 }
 
 app.post('/api/wardrobe/add', upload.single('image'), async (req, res) => {
@@ -1075,6 +1083,10 @@ app.post('/api/wardrobe/add', upload.single('image'), async (req, res) => {
     }
 
     const wardrobe = readJSON(wardrobeFile);
+    const resolvedFormality = (formality !== undefined && formality !== null && String(formality).trim() !== "")
+        ? String(formality).trim()
+        : "casual";
+
     const newItem = {
         id: `custom_${Date.now()}`,
         name,
@@ -1083,6 +1095,7 @@ app.post('/api/wardrobe/add', upload.single('image'), async (req, res) => {
         temp_min_c: tempMin,
         temp_max_c: tempMax,
         occasion,
+        formality: resolvedFormality,
         img: imgUrl,                         // best available (processed if exists, else original)
         originalImagePath: originalImagePath, // always the raw upload URL
         processedImagePath: processedImagePath, // transparent PNG, or null if removal failed
@@ -1121,7 +1134,7 @@ app.post('/api/wardrobe/add', upload.single('image'), async (req, res) => {
             String(newItem.originalImagePath || ''),
             String(newItem.processedImagePath || ''),
             String(subcategory || ''),
-            String(formality || '')
+            String(resolvedFormality)
         ], { timeout: 4000, shell: false });
         console.log(`[UPLOAD] ✅ Synced item '${name}' (id=${newItem.id}) to SQLite wardrobe.db`);
     } catch(e) {
@@ -3843,7 +3856,8 @@ app.all(['/recommend', '/api/recommend', '/api/recommendations'], async (req, re
                 subcategory: matched.subcategory || "",
                 color: matched.dominantColor || matched.color || "",
                 season: matched.season || "all-season",
-                formality: matched.occasion || matched.formality || "casual",
+                formality: matched.formality || "casual",
+                occasion: matched.occasion || "",
                 img: imgSrc,
                 originalImagePath: matched.originalImagePath || imgSrc,
                 processedImagePath: matched.processedImagePath || imgSrc
@@ -4029,7 +4043,8 @@ app.all(['/recommend', '/api/recommend', '/api/recommendations'], async (req, re
                 subcategory: item.subcategory || "",
                 color: item.dominantColor || item.color || "",
                 season: item.season || "all-season",
-                formality: item.occasion || item.formality || "casual",
+                formality: item.formality || "casual",
+                occasion: item.occasion || "",
                 img: imgSrc,
                 originalImagePath: item.originalImagePath || imgSrc,
                 processedImagePath: item.processedImagePath || imgSrc

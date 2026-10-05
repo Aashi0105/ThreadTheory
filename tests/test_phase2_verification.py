@@ -260,3 +260,77 @@ def test_13_formality_mapping_data_integrity():
     finally:
         delete_wardrobe_item(test_id)
 
+
+def test_14_formality_recommendation_and_persistence_integrity():
+    """TEST 14: Verifies occasion does NOT overwrite formality in persistence or recommendation metadata.
+
+    Input:
+        occasion = 'Party'
+        formality = 'Casual'
+    Expected persisted data:
+        occasion = 'Party'
+        formality = 'Casual'
+    Expected recommendation metadata:
+        occasion = 'Party'
+        formality = 'Casual'
+    Fails if formality becomes 'Party'.
+    """
+    # 1. Recommendation metadata verification via parse_outfit_from_text
+    mock_wardrobe = [
+        {
+            "id": "item_party_casual_1",
+            "name": "Party Silk Shirt",
+            "category": "top",
+            "color": "black",
+            "season": "all-season",
+            "formality": "Casual",
+            "occasion": "Party",
+            "img": "/uploads/party_shirt.png"
+        }
+    ]
+    raw_ai_text = (
+        "### 👔 Recommended Outfit\n"
+        "- **Top:** Party Silk Shirt\n"
+        "- **Bottom:** None\n"
+        "- **Outerwear:** None\n"
+        "- **Shoes:** None\n"
+    )
+    parsed = parse_outfit_from_text(raw_ai_text, mock_wardrobe)
+    assert parsed["top"] is not None
+    assert parsed["top"]["formality"] == "Casual", f"Expected formality 'Casual', got {parsed['top']['formality']}"
+    assert parsed["top"]["occasion"] == "Party", f"Expected occasion 'Party', got {parsed['top']['occasion']}"
+    assert parsed["top"]["formality"] != "Party", "Formality was improperly overwritten with occasion 'Party'!"
+
+    # 2. Wardrobe persistence data integrity
+    import sqlite3
+    from tools.wardrobe import add_wardrobe_item, delete_wardrobe_item, DB_PATH
+
+    test_id = "test_persistence_formality_001"
+    try:
+        add_wardrobe_item(
+            item_id=test_id,
+            name="Party Silk Shirt",
+            category="top",
+            color="black",
+            season="all-season",
+            formality="Casual",
+            temp_min_c=15.0,
+            temp_max_c=30.0,
+            owner="audit@threadtheory.io",
+            occasion="Party"
+        )
+
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute("SELECT formality, occasion FROM wardrobe WHERE id = ?", (test_id,))
+        row = cursor.fetchone()
+        conn.close()
+
+        assert row is not None, "Item was not inserted into wardrobe.db"
+        persisted_formality, persisted_occasion = row
+        assert persisted_formality == "Casual", f"Expected persisted formality 'Casual', got {persisted_formality}"
+        assert persisted_occasion == "Party", f"Expected persisted occasion 'Party', got {persisted_occasion}"
+        assert persisted_formality != "Party", "Persisted formality was improperly set to occasion 'Party'!"
+    finally:
+        delete_wardrobe_item(test_id)
+
