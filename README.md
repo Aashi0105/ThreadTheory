@@ -14,7 +14,7 @@ The core intelligence is powered by a **LangGraph multi-agent architecture** run
 * **Hallucination-Free Grounding**: Outfit selections are strictly constrained to items verified in the user's SQLite wardrobe inventory (`wardrobe.db`).
 * **Real-Time Weather Intelligence**: Live atmospheric metrics (temperature, precipitation probability, wind speed) dynamically filter suitable garment layers.
 * **Stylist Rationale**: Clear explanations detailing why specific pieces, colors, and layers were combined for the requested occasion and forecast.
-* **Digital Closet Management**: Organize, tag, and filter personal garments by category, subcategory, color, formality, and temperature comfort range.
+* **Digital Closet Management**: Organize, tag, and filter personal garments by category, subcategory, color, formality, occasion, and temperature comfort range.
 * **Interactive Outfit Studio**: Visual canvas to preview outfit coordinates, swap individual pieces, and review agent execution steps.
 * **Multi-Dimensional Inspiration Lookbook**: Curated editorial lookbooks across color stories, color combinations, and fashion aesthetics with intelligent "Build This Look" matching.
 * **Wardrobe Gap Analysis**: Automatically identifies missing wardrobe pieces when comparing personal inventory against inspiration boards.
@@ -137,7 +137,9 @@ ThreadTheory/
 │   └── weather.py              # Open-Meteo geocoding and forecast fetcher
 ├── tests/                      # Automated test suite
 │   ├── test_api.py             # API endpoint and Markdown parsing tests
+│   ├── test_app.py             # Application package import tests
 │   ├── test_graph.py           # LangGraph orchestration state machine tests
+│   ├── test_phase2_verification.py # Outfit compatibility, isolation & integrity tests
 │   ├── test_stylist_agent.py   # Stylist agent unit tests
 │   ├── test_wardrobe_agent.py  # Wardrobe agent unit tests
 │   ├── test_wardrobe_tool.py   # Database query tool tests
@@ -146,6 +148,7 @@ ThreadTheory/
 ├── data/                       # Local JSON stores for user profiles, wardrobe, looks
 ├── public/                     # Static assets and lookbook resources
 ├── api.py                      # Python HTTP REST API server (Port 5000)
+├── app.py                      # Application entry point
 ├── graph.py                    # LangGraph StateGraph & Supervisor logic
 ├── server.js                   # Node.js/Express web server (Port 3000)
 ├── setup_db.py                 # SQLite wardrobe database initialisation script
@@ -267,13 +270,14 @@ python -m pytest tests/
 tests/test_api.py ................. Passed
 tests/test_app.py ................. Passed
 tests/test_graph.py ............... Passed
+tests/test_phase2_verification.py . Passed
 tests/test_stylist_agent.py ....... Passed
 tests/test_wardrobe_agent.py ...... Passed
 tests/test_wardrobe_tool.py ....... Passed
 tests/test_weather_agent.py ....... Passed
 tests/test_weather_tool.py ........ Passed
 
-======================= 15 passed in 19.60s =======================
+======================= 29 passed =======================
 ```
 
 ### Test Coverage Highlights
@@ -282,6 +286,8 @@ tests/test_weather_tool.py ........ Passed
 * **Agents**: Isolated agent tool execution, input validation, handling empty search results.
 * **State Machine**: Full LangGraph supervisor routing through `Weather → Wardrobe → Stylist → FINISH`.
 * **API & Parsing**: Markdown symbol stripping (`*`, `_`, `` ` ``), database ID binding, and HTTP serialization.
+* **Compatibility Rules**: Strict outfit constraint validation (dress/top/bottom layer rules, jumpsuit exclusivity, single-bottom enforcement).
+* **Data Isolation & Integrity**: Strict multi-user wardrobe data isolation, ID spoofing prevention, image mapping integrity, and independent formality vs. occasion decoupling.
 
 ---
 
