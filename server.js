@@ -34,8 +34,30 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
-// Serve root static html/css/js files (index.html, studio.html, closet.html, etc.)
-app.use(express.static(__dirname));
+// Explicit static routing for public frontend entry points
+const PUBLIC_HTML_PAGES = [
+    'index.html',
+    'studio.html',
+    'closet.html',
+    'calendar.html',
+    'my-looks.html',
+    'inspiration.html',
+    'login.html',
+    'signup.html',
+    'style-dna.html'
+];
+
+// Serve index.html as root
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// Explicitly serve allowed frontend HTML pages
+PUBLIC_HTML_PAGES.forEach(page => {
+    app.get(`/${page}`, (req, res) => {
+        res.sendFile(path.join(__dirname, page));
+    });
+});
 
 // Serve static uploaded assets
 
@@ -4112,8 +4134,13 @@ app.use((err, req, res, next) => {
     next();
 });
 
-// Start Server
-app.listen(PORT, () => {
-    console.log(`ThreadTheory backend running on http://localhost:${PORT}`);
-});
+// Start Server if executed directly
+let server = null;
+if (require.main === module) {
+    server = app.listen(PORT, () => {
+        console.log(`ThreadTheory backend running on http://localhost:${PORT}`);
+    });
+}
+
+module.exports = { app, server };
 
