@@ -1,6 +1,12 @@
 # Environment — never commit secrets
 .env
 .env*.local
+data/.session_secret
+data/sessions.json
+data/uploads/
+data/.phase2b3_backup_*
+data/.remediation_backup_*
+data/.*_backup_*
 
 # Python
 __pycache__/

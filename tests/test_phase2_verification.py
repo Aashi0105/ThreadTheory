@@ -131,6 +131,7 @@ def test_6_empty_wardrobe_graceful():
     state = {
         "user_prompt": "cocktail party",
         "weather_data": {"city": "Vadodara", "temperature": 25.0},
+        "raw_wardrobe": [],
         "wardrobe_items": [],
         "stylist_response": None,
         "recommended_outfit": None,

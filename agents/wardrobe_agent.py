@@ -68,16 +68,19 @@ def _try_fast_inventory_lookup(
     q = query.lower().strip()
 
     # If user provided items directly in memory, filter them
-    if preloaded_items:
+    if preloaded_items is not None:
         items = list(preloaded_items)
-        if max_temp_c is not None:
+        if max_temp_c is not None and items:
             temp_filtered = [
                 i for i in items
                 if float(i.get("temp_min_c", -99)) <= max_temp_c <= float(i.get("temp_max_c", 99))
             ]
             if temp_filtered:
                 items = temp_filtered
-        summary = f"Retrieved {len(items)} items from user's active digital closet."
+        if not items:
+            summary = "No clothing items found in user's active digital closet."
+        else:
+            summary = f"Retrieved {len(items)} items from user's active digital closet."
         return items, summary
 
     # Match category filter

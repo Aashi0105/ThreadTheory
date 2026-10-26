@@ -31,9 +31,77 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 
-// Middleware
-app.use(cors());
+// Allowed Origin Configuration
+const ALLOWED_ORIGINS = new Set([
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    'http://localhost:5173',
+    'http://127.0.0.1:5173'
+]);
+
+if (process.env.APP_ORIGIN) {
+    process.env.APP_ORIGIN.split(',').forEach(o => {
+        const trimmed = o.trim();
+        if (trimmed) ALLOWED_ORIGINS.add(trimmed);
+    });
+}
+
+// Strict CORS: Allow only explicit allowlisted origins with credentials
+app.use(cors({
+    origin: function (origin, callback) {
+        // Allow requests with no origin (e.g. mobile apps, curl, same-origin browser navigations)
+        if (!origin) return callback(null, true);
+        if (ALLOWED_ORIGINS.has(origin)) {
+            return callback(null, true);
+        }
+        return callback(new Error('CORS_ORIGIN_DENIED: Cross-origin request blocked by security policy.'));
+    },
+    credentials: true
+}));
+
 app.use(bodyParser.json());
+
+// Minimal zero-dependency cookie parser middleware
+app.use((req, res, next) => {
+    req.cookies = {};
+    const cookieHeader = req.headers.cookie;
+    if (cookieHeader) {
+        cookieHeader.split(';').forEach(c => {
+            const [k, ...v] = c.trim().split('=');
+            if (k) {
+                req.cookies[k.trim()] = decodeURIComponent(v.join('='));
+            }
+        });
+    }
+    next();
+});
+
+// CSRF Defense-in-depth: Origin/Referer verification on state-changing requests (POST, PUT, DELETE, PATCH)
+app.use((req, res, next) => {
+    const isStateChanging = ['POST', 'PUT', 'DELETE', 'PATCH'].includes(req.method.toUpperCase());
+    if (!isStateChanging) return next();
+
+    // Verify Origin or Referer if present against allowed origins
+    const origin = req.headers.origin;
+    const referer = req.headers.referer;
+
+    if (origin) {
+        if (!ALLOWED_ORIGINS.has(origin)) {
+            return res.status(403).json({ success: false, message: "Cross-site request blocked: Invalid or unapproved Origin." });
+        }
+    } else if (referer) {
+        try {
+            const parsedReferer = new URL(referer);
+            const refererOrigin = parsedReferer.origin;
+            if (!ALLOWED_ORIGINS.has(refererOrigin)) {
+                return res.status(403).json({ success: false, message: "Cross-site request blocked: Invalid or unapproved Referer." });
+            }
+        } catch (e) {
+            return res.status(403).json({ success: false, message: "Cross-site request blocked: Malformed Referer." });
+        }
+    }
+    next();
+});
 // Explicit static routing for public frontend entry points
 const PUBLIC_HTML_PAGES = [
     'index.html',
@@ -59,13 +127,78 @@ PUBLIC_HTML_PAGES.forEach(page => {
     });
 });
 
-// Serve static uploaded assets
-
-const uploadsDir = path.join(__dirname, 'public', 'uploads');
-if (!fs.existsSync(uploadsDir)) {
-    fs.mkdirSync(uploadsDir, { recursive: true });
+// Data directory definition
+const dataDir = path.join(__dirname, 'data');
+if (!fs.existsSync(dataDir)) {
+    fs.mkdirSync(dataDir, { recursive: true });
 }
-app.use('/uploads', express.static(uploadsDir));
+
+// Asset storage directories
+const legacyUploadsDir = path.join(__dirname, 'public', 'uploads');
+
+// Private wardrobe uploads stored outside public webroot
+const wardrobeUploadsDir = path.join(dataDir, 'uploads', 'wardrobe');
+if (!fs.existsSync(wardrobeUploadsDir)) {
+    fs.mkdirSync(wardrobeUploadsDir, { recursive: true });
+}
+
+// Authenticated private wardrobe asset serving:
+// Verifies session identity and ownership of the associated wardrobe item before returning binary content.
+app.get('/uploads/:filename', (req, res, next) => {
+    const rawFilename = req.params.filename;
+
+    // Check strict wardrobe filename pattern before authentication to prevent leaking route existence or failing traversal with 401
+    const sanitizedFilename = path.basename(rawFilename);
+    if (!sanitizedFilename || sanitizedFilename !== rawFilename || sanitizedFilename.includes('..') || !/^image-[0-9]+-[0-9]+.*$/i.test(sanitizedFilename)) {
+        return res.status(404).json({ success: false, message: "Asset not found." });
+    }
+
+    requireAuth(req, res, () => {
+        const email = req.user.email.toLowerCase();
+
+    // Resolve file from private wardrobe storage (or legacy fallback location)
+    let filePath = path.join(wardrobeUploadsDir, sanitizedFilename);
+    if (!fs.existsSync(filePath)) {
+        filePath = path.join(legacyUploadsDir, sanitizedFilename);
+    }
+
+    // Verify canonical path does not escape allowed storage directories
+    const canonicalPath = path.resolve(filePath);
+    const inWardrobeDir = canonicalPath.startsWith(path.resolve(wardrobeUploadsDir));
+    const inLegacyDir = canonicalPath.startsWith(path.resolve(legacyUploadsDir));
+    if (!inWardrobeDir && !inLegacyDir) {
+        return res.status(404).json({ success: false, message: "Asset not found." });
+    }
+
+    if (!fs.existsSync(canonicalPath)) {
+        return res.status(404).json({ success: false, message: "Asset not found." });
+    }
+
+    // Verify ownership: requested file must be associated with a wardrobe item owned by the authenticated user
+    const wardrobe = readJSON(wardrobeFile, []);
+    const isOwner = wardrobe.some(item => {
+        if (!item.owner || item.owner.toLowerCase() !== email) return false;
+        const matchesOriginal = item.originalImagePath && path.basename(item.originalImagePath) === sanitizedFilename;
+        const matchesProcessed = item.processedImagePath && path.basename(item.processedImagePath) === sanitizedFilename;
+        const matchesImg = item.img && path.basename(item.img) === sanitizedFilename;
+        return matchesOriginal || matchesProcessed || matchesImg;
+    });
+
+    if (!isOwner) {
+        // Return 403 Forbidden without disclosing asset metadata
+        return res.status(403).json({ success: false, message: "Access forbidden: you do not own this resource." });
+    }
+
+    // Set secure response headers (prevent caching of private images)
+    res.setHeader('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+
+        // Send file
+        res.sendFile(canonicalPath);
+    });
+});
 
 // Mannequin base copy logic removed (mannequin system disabled)
 
@@ -620,6 +753,9 @@ app.get('/api/inspiration', async (req, res) => {
 
 // Developer utility endpoint: Run this once to copy generated images into public/assets/inspiration/
 app.get('/api/dev/setup-inspiration', (req, res) => {
+    if (process.env.NODE_ENV === 'production') {
+        return res.status(404).json({ success: false, message: "Endpoint not found." });
+    }
     const localInspirationDir = path.join(publicAssetsDir, 'inspiration');
     if (!fs.existsSync(localInspirationDir)) {
         fs.mkdirSync(localInspirationDir, { recursive: true });
@@ -654,10 +790,6 @@ app.get('/api/dev/setup-inspiration', (req, res) => {
 });
 
 // JSON file configurations
-const dataDir = path.join(__dirname, 'data');
-if (!fs.existsSync(dataDir)) {
-    fs.mkdirSync(dataDir, { recursive: true });
-}
 const usersFile = path.join(dataDir, 'users.json');
 const wardrobeFile = path.join(dataDir, 'wardrobe.json');
 const plannerFile = path.join(dataDir, 'planner.json');
@@ -716,7 +848,18 @@ function readJSON(filePath, defaultData = []) {
 }
 
 function writeJSON(filePath, data) {
-    fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf8');
+    const tmpPath = `${filePath}.${process.pid}.${Date.now()}.tmp`;
+    const content = JSON.stringify(data, null, 2);
+    try {
+        fs.writeFileSync(tmpPath, content, 'utf8');
+        fs.renameSync(tmpPath, filePath);
+    } catch (err) {
+        // Fallback for Windows file locks or cross-filesystem scenarios
+        try {
+            if (fs.existsSync(tmpPath)) fs.unlinkSync(tmpPath);
+        } catch (_) {}
+        fs.writeFileSync(filePath, content, 'utf8');
+    }
 }
 
 // Pre-populate default wardrobe if empty
@@ -724,23 +867,179 @@ const defaultWardrobe = [];
 
 const crypto = require('crypto');
 
-// Hashing helpers
-function hashPassword(password) {
+// ═══ SESSION & SECURITY CONFIGURATION ═══
+const sessionsFile = path.join(dataDir, 'sessions.json');
+const SESSION_COOKIE_NAME = 'tt_session';
+const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
+const MODERN_PBKDF2_ITERATIONS = 210000;
+const LEGACY_PBKDF2_ITERATIONS = 1000;
+const MAX_PBKDF2_ITERATIONS = 500000;
+
+// Resolve secret: In production, fail closed immediately if absent or < 32 characters
+function getSessionSecret() {
+    const isProduction = process.env.NODE_ENV === 'production';
+    const envSecret = process.env.SESSION_SECRET ? process.env.SESSION_SECRET.trim() : '';
+
+    if (isProduction) {
+        if (!envSecret || envSecret.length < 32) {
+            throw new Error("FATAL CONFIGURATION ERROR: In production (NODE_ENV=production), SESSION_SECRET must be explicitly defined with at least 32 characters of high-entropy random data.");
+        }
+        return envSecret;
+    }
+
+    if (envSecret && envSecret.length >= 32) {
+        return envSecret;
+    }
+
+    // Development only: persist a machine-local secret to data/.session_secret with 0600 mode
+    const secretPath = path.join(dataDir, '.session_secret');
+    try {
+        if (fs.existsSync(secretPath)) {
+            const existing = fs.readFileSync(secretPath, 'utf8').trim();
+            if (existing.length >= 32) return existing;
+        }
+        const generated = crypto.randomBytes(32).toString('hex');
+        fs.writeFileSync(secretPath, generated, { mode: 0o600 });
+        return generated;
+    } catch (e) {
+        return 'threadtheory_dev_only_local_fallback_secret_key_32chars_minimum_2026';
+    }
+}
+const SESSION_SECRET = getSessionSecret();
+
+// Sign and verify cookie signatures (cookie value = id.signature)
+function signSessionId(id) {
+    const hmac = crypto.createHmac('sha256', SESSION_SECRET).update(id).digest('base64url');
+    return `${id}.${hmac}`;
+}
+
+function verifySignedSessionId(signed) {
+    if (!signed || typeof signed !== 'string' || !signed.includes('.')) return null;
+    const dotIdx = signed.lastIndexOf('.');
+    const id = signed.substring(0, dotIdx);
+    const signature = signed.substring(dotIdx + 1);
+    const expected = crypto.createHmac('sha256', SESSION_SECRET).update(id).digest('base64url');
+    const sigBuf = Buffer.from(signature);
+    const expectedBuf = Buffer.from(expected);
+    if (sigBuf.length !== expectedBuf.length) return null;
+    if (!crypto.timingSafeEqual(sigBuf, expectedBuf)) return null;
+    return id;
+}
+
+// Session store operations
+function getActiveSession(signedCookieOrToken) {
+    const sessionId = verifySignedSessionId(signedCookieOrToken);
+    if (!sessionId) return null;
+    const sessions = readJSON(sessionsFile, {});
+    const session = sessions[sessionId];
+    if (!session) return null;
+    if (session.expiresAt && Date.now() > session.expiresAt) {
+        delete sessions[sessionId];
+        writeJSON(sessionsFile, sessions);
+        return null;
+    }
+    return { sessionId, ...session };
+}
+
+function createSession(email) {
+    const sessionId = crypto.randomBytes(24).toString('base64url');
+    const sessions = readJSON(sessionsFile, {});
+    const now = Date.now();
+    sessions[sessionId] = {
+        email: email.toLowerCase(),
+        createdAt: now,
+        expiresAt: now + SESSION_TTL_MS
+    };
+    writeJSON(sessionsFile, sessions);
+    return signSessionId(sessionId);
+}
+
+function destroySession(signedCookieOrToken) {
+    const sessionId = verifySignedSessionId(signedCookieOrToken);
+    if (!sessionId) return false;
+    const sessions = readJSON(sessionsFile, {});
+    if (sessions[sessionId]) {
+        delete sessions[sessionId];
+        writeJSON(sessionsFile, sessions);
+        return true;
+    }
+    return false;
+}
+
+// Authentication middleware populates req.user
+function requireAuth(req, res, next) {
+    let rawToken = req.cookies && req.cookies[SESSION_COOKIE_NAME];
+    if (!rawToken && req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
+        rawToken = req.headers.authorization.substring(7).trim();
+    }
+    const session = getActiveSession(rawToken);
+    if (!session) {
+        return res.status(401).json({ success: false, message: "Authentication required." });
+    }
+    const users = readJSON(usersFile, []);
+    const user = users.find(u => u.email.toLowerCase() === session.email.toLowerCase());
+    if (!user) {
+        return res.status(401).json({ success: false, message: "User account no longer exists." });
+    }
+    req.user = {
+        email: user.email,
+        name: user.name,
+        username: user.username,
+        size: user.size || 'M',
+        skinTone: user.skinTone || 'fair',
+        avatarPhoto: user.avatarPhoto || ''
+    };
+    req.sessionId = session.sessionId;
+    next();
+}
+
+// Password hashing & verification with rehash-on-login upgrade
+function hashPassword(password, iterations = MODERN_PBKDF2_ITERATIONS) {
     const salt = crypto.randomBytes(16).toString('hex');
-    const hash = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512').toString('hex');
-    return `${salt}:${hash}`;
+    const hash = crypto.pbkdf2Sync(password, salt, iterations, 64, 'sha512').toString('hex');
+    return `${iterations}:${salt}:${hash}`;
 }
 
 function verifyPassword(password, stored) {
-    if (!stored || !stored.includes(':')) {
-        return password === stored;
+    if (!stored || typeof stored !== 'string') return { valid: false, needsRehash: false };
+    if (!stored.includes(':')) {
+        // Plaintext legacy fallback
+        return { valid: password === stored, needsRehash: true };
     }
-    const [salt, originalHash] = stored.split(':');
-    const hash = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512').toString('hex');
-    return hash === originalHash;
+    const parts = stored.split(':');
+    if (parts.length === 2) {
+        // Legacy 1000-iteration PBKDF2 without explicit prefix: salt:hash
+        const [salt, originalHash] = parts;
+        if (!salt || !originalHash || salt.length !== 32 || originalHash.length !== 128) {
+            return { valid: false, needsRehash: false };
+        }
+        const hash = crypto.pbkdf2Sync(password, salt, LEGACY_PBKDF2_ITERATIONS, 64, 'sha512').toString('hex');
+        const hashBuf = Buffer.from(hash);
+        const origBuf = Buffer.from(originalHash);
+        const match = hashBuf.length === origBuf.length && crypto.timingSafeEqual(hashBuf, origBuf);
+        return { valid: match, needsRehash: match };
+    }
+    if (parts.length === 3) {
+        // Modern format: iterations:salt:hash
+        const [iterStr, salt, originalHash] = parts;
+        const iters = parseInt(iterStr, 10);
+        // Bound iterations between 1,000 and 500,000 to prevent DoS from maliciously crafted large values
+        if (isNaN(iters) || iters < 1000 || iters > MAX_PBKDF2_ITERATIONS) {
+            return { valid: false, needsRehash: false };
+        }
+        if (!salt || !originalHash || salt.length !== 32 || originalHash.length !== 128) {
+            return { valid: false, needsRehash: false };
+        }
+        const hash = crypto.pbkdf2Sync(password, salt, iters, 64, 'sha512').toString('hex');
+        const hashBuf = Buffer.from(hash);
+        const origBuf = Buffer.from(originalHash);
+        const match = hashBuf.length === origBuf.length && crypto.timingSafeEqual(hashBuf, origBuf);
+        return { valid: match, needsRehash: match && iters < MODERN_PBKDF2_ITERATIONS };
+    }
+    return { valid: false, needsRehash: false };
 }
 
-// Auto-migrate plaintext passwords to PBKDF2 hashes
+// Auto-migrate plaintext passwords to PBKDF2 hashes on boot without modifying valid existing hashes
 function migrateUsersDatabase() {
     const users = readJSON(usersFile, []);
     let migrated = false;
@@ -780,23 +1079,26 @@ const imageFileFilter = (req, file, cb) => {
     cb(null, true);
 };
 
-const storage = multer.diskStorage({
+// Storage for private wardrobe images (stored outside public webroot in data/uploads/wardrobe)
+const wardrobeStorage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, uploadsDir);
+        cb(null, wardrobeUploadsDir);
     },
     filename: function (req, file, cb) {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
         const ext = path.extname(file.originalname);
-        // Save with _original suffix so we always keep the raw upload
         cb(null, file.fieldname + '-' + uniqueSuffix + '_original' + ext);
     }
 });
 
-const upload = multer({
-    storage: storage,
+const wardrobeUpload = multer({
+    storage: wardrobeStorage,
     limits: { fileSize: 5 * 1024 * 1024 }, // 5MB Limit
     fileFilter: imageFileFilter
 });
+
+// Alias for generic handlers
+const upload = wardrobeUpload;
 
 
 // ═══ AUTHENTICATION ENDPOINTS ═══
@@ -833,7 +1135,8 @@ app.post('/api/auth/signup', (req, res) => {
     users.push(newUser);
     writeJSON(usersFile, users);
 
-    res.json({ success: true, user: { email, name, username, size: newUser.size, skinTone: newUser.skinTone } });
+    // Signup establishes explicit validated user record (does not bypass login credentials)
+    res.json({ success: true, message: "Account created successfully.", user: { email, name, username, size: newUser.size, skinTone: newUser.skinTone } });
 });
 
 app.post('/api/auth/login', (req, res) => {
@@ -843,12 +1146,38 @@ app.post('/api/auth/login', (req, res) => {
         return res.status(400).json({ success: false, message: "Email and password are required." });
     }
 
-    const users = readJSON(usersFile);
-    const user = users.find(u => u.email.toLowerCase() === email.toLowerCase());
+    const users = readJSON(usersFile, []);
+    const user = users.find(u => u.email && u.email.toLowerCase() === email.toLowerCase());
 
-    if (!user || !verifyPassword(password, user.password)) {
-        return res.status(400).json({ success: false, message: "Incorrect email or password." });
+    if (!user) {
+        // Generic failure response prevents user enumeration
+        return res.status(401).json({ success: false, message: "Invalid email or password." });
     }
+
+    const verification = verifyPassword(password, user.password);
+    if (!verification.valid) {
+        return res.status(401).json({ success: false, message: "Invalid email or password." });
+    }
+
+    // Rehash-on-success: silently upgrade legacy 1000-iter or plaintext hashes to modern 210,000 iterations
+    if (verification.needsRehash) {
+        try {
+            user.password = hashPassword(password);
+            writeJSON(usersFile, users);
+            console.log(`[Security] Upgraded password hash parameters for user: ${user.email}`);
+        } catch (rehashErr) {
+            console.error("[Security] Error saving rehashed password:", rehashErr);
+        }
+    }
+
+    // Create server-side session
+    const signedToken = createSession(user.email);
+    const isProduction = process.env.NODE_ENV === 'production';
+
+    // Set HttpOnly, SameSite cookie
+    res.setHeader('Set-Cookie', [
+        `${SESSION_COOKIE_NAME}=${encodeURIComponent(signedToken)}; Path=/; Max-Age=${SESSION_TTL_MS / 1000}; HttpOnly; SameSite=Lax${isProduction ? '; Secure' : ''}`
+    ]);
 
     res.json({
         success: true,
@@ -861,6 +1190,31 @@ app.post('/api/auth/login', (req, res) => {
             avatarPhoto: user.avatarPhoto
         }
     });
+});
+
+// Session status endpoint: verifies if active session exists and returns verified identity
+app.get('/api/auth/status', requireAuth, (req, res) => {
+    res.json({
+        success: true,
+        authenticated: true,
+        user: req.user
+    });
+});
+
+// Logout endpoint: invalidates server-side session and clears cookie
+app.post('/api/auth/logout', (req, res) => {
+    let rawToken = req.cookies && req.cookies[SESSION_COOKIE_NAME];
+    if (!rawToken && req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
+        rawToken = req.headers.authorization.substring(7).trim();
+    }
+    if (rawToken) {
+        destroySession(rawToken);
+    }
+    const isProduction = process.env.NODE_ENV === 'production';
+    res.setHeader('Set-Cookie', [
+        `${SESSION_COOKIE_NAME}=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; SameSite=Lax${isProduction ? '; Secure' : ''}`
+    ]);
+    res.json({ success: true, message: "Logged out successfully." });
 });
 
 // Check username availability
@@ -890,11 +1244,8 @@ app.get('/api/auth/check-email', (req, res) => {
 
 // ═══ USER PROFILE ENDPOINTS ═══
 
-app.get('/api/profile', (req, res) => {
-    const email = req.query.email;
-    if (!email) {
-        return res.status(400).json({ success: false, message: "Email parameter required." });
-    }
+app.get('/api/profile', requireAuth, (req, res) => {
+    const email = req.user.email;
 
     const users = readJSON(usersFile);
     const user = users.find(u => u.email.toLowerCase() === email.toLowerCase());
@@ -906,11 +1257,9 @@ app.get('/api/profile', (req, res) => {
     res.json({ success: true, profile: { name: user.name, email: user.email, skinTone: user.skinTone, size: user.size || 'M', photo: user.avatarPhoto } });
 });
 
-app.post('/api/profile/update', (req, res) => {
-    const { email, skinTone, size } = req.body;
-    if (!email) {
-        return res.status(400).json({ success: false, message: "Email required." });
-    }
+app.post('/api/profile/update', requireAuth, (req, res) => {
+    const email = req.user.email;
+    const { skinTone, size } = req.body;
 
     const users = readJSON(usersFile);
     const idx = users.findIndex(u => u.email.toLowerCase() === email.toLowerCase());
@@ -937,10 +1286,10 @@ app.post('/api/profile/update', (req, res) => {
     });
 });
 
-app.post('/api/profile/upload-photo', upload.single('photo'), (req, res) => {
-    const { email } = req.body;
-    if (!email || !req.file) {
-        return res.status(400).json({ success: false, message: "Email and photo file required." });
+app.post('/api/profile/upload-photo', requireAuth, upload.single('photo'), (req, res) => {
+    const email = req.user.email;
+    if (!req.file) {
+        return res.status(400).json({ success: false, message: "Photo file required." });
     }
 
     const users = readJSON(usersFile);
@@ -950,7 +1299,6 @@ app.post('/api/profile/upload-photo', upload.single('photo'), (req, res) => {
         return res.status(404).json({ success: false, message: "User not found." });
     }
 
-    // Standard profile photo URL (no facial analysis performed)
     const photoUrl = `/uploads/${req.file.filename}`;
     users[idx].avatarPhoto = photoUrl;
     
@@ -961,14 +1309,11 @@ app.post('/api/profile/upload-photo', upload.single('photo'), (req, res) => {
 
 // ═══ WARDROBE ENDPOINTS ═══
 
-app.get('/api/wardrobe', (req, res) => {
-    const email = req.query.email;
-    if (!email) {
-        return res.status(400).json({ success: false, message: "User session/email parameter is required." });
-    }
+app.get('/api/wardrobe', requireAuth, (req, res) => {
+    const email = req.user.email;
     const wardrobe = readJSON(wardrobeFile);
     
-    // Filter wardrobe items strictly by user email (must be logged in)
+    // Filter wardrobe items strictly by authenticated user email
     const items = wardrobe.filter(item => item.owner && item.owner.toLowerCase() === email.toLowerCase());
     
     // Ensure all items expose originalImagePath and processedImagePath
@@ -1050,13 +1395,11 @@ function getPythonExe() {
     return process.platform === 'win32' ? 'python' : 'python3';
 }
 
-app.post('/api/wardrobe/add', upload.single('image'), async (req, res) => {
-    const { name, category, subcategory, occasion, owner, dominantColor, secondaryColor, temp_min_c, temp_max_c, formality } = req.body;
+app.post('/api/wardrobe/add', requireAuth, wardrobeUpload.single('image'), async (req, res) => {
+    const { name, category, subcategory, occasion, dominantColor, secondaryColor, temp_min_c, temp_max_c, formality } = req.body;
+    const owner = req.user.email;
     if (!name || !category || !subcategory || !occasion) {
         return res.status(400).json({ success: false, message: "Garment specifications (name, category, subcategory, occasion) missing." });
-    }
-    if (!owner) {
-        return res.status(400).json({ success: false, message: "User owner/email parameter is required." });
     }
 
     const tempMin = (temp_min_c !== undefined && temp_min_c !== null && temp_min_c !== "") ? parseFloat(temp_min_c) : 10.0;
@@ -1079,7 +1422,7 @@ app.post('/api/wardrobe/add', upload.single('image'), async (req, res) => {
         // Derive processed filename: replace _original.ext with _processed.png
         const baseName = req.file.filename.replace(/_original\.[^.]+$/, '');
         const processedFilename = baseName + '_processed.png';
-        processedFilePath = path.join(uploadsDir, processedFilename);
+        processedFilePath = path.join(wardrobeUploadsDir, processedFilename);
         processedImagePath = `/uploads/${processedFilename}`;
 
         // Attempt background removal — write result to _processed.png (never overwrites original)
@@ -1121,7 +1464,7 @@ app.post('/api/wardrobe/add', upload.single('image'), async (req, res) => {
         img: imgUrl,                         // best available (processed if exists, else original)
         originalImagePath: originalImagePath, // always the raw upload URL
         processedImagePath: processedImagePath, // transparent PNG, or null if removal failed
-        owner: owner,
+        owner: owner.toLowerCase(),
         dominantColor: dominantColor || '#ffffff',
         secondaryColor: secondaryColor || '#888888'
     };
@@ -1170,12 +1513,12 @@ app.post('/api/wardrobe/add', upload.single('image'), async (req, res) => {
     res.json({ success: true, item: newItem });
 });
 
-app.delete('/api/wardrobe/:id', (req, res) => {
-    const { id } = req.params;
-    const email = req.query.email;
+app.delete(['/api/wardrobe/:id', '/api/wardrobe/delete'], requireAuth, (req, res) => {
+    const id = req.params.id || req.body.id;
+    const email = req.user.email;
     
-    if (!email) {
-        return res.status(400).json({ success: false, message: "Email parameter required." });
+    if (!id) {
+        return res.status(400).json({ success: false, message: "Item ID required." });
     }
 
     const wardrobe = readJSON(wardrobeFile);
@@ -1208,10 +1551,11 @@ app.delete('/api/wardrobe/:id', (req, res) => {
 });
 
 // ─── Re-process a single existing item through remove.bg ─────────────────────
-app.post('/api/wardrobe/reprocess', async (req, res) => {
-    const { id, email } = req.body;
-    if (!id || !email) {
-        return res.status(400).json({ success: false, message: "id and email are required." });
+app.post('/api/wardrobe/reprocess', requireAuth, async (req, res) => {
+    const { id } = req.body;
+    const email = req.user.email;
+    if (!id) {
+        return res.status(400).json({ success: false, message: "id is required." });
     }
 
     const wardrobe = readJSON(wardrobeFile);
@@ -1227,7 +1571,10 @@ app.post('/api/wardrobe/reprocess', async (req, res) => {
     }
 
     const relPath = sourceUrl.replace(/^\//, '');
-    const sourcePath = path.join(__dirname, 'public', relPath);
+    let sourcePath = path.join(wardrobeUploadsDir, path.basename(relPath));
+    if (!fs.existsSync(sourcePath)) {
+        sourcePath = path.join(__dirname, 'public', relPath);
+    }
 
     if (!fs.existsSync(sourcePath)) {
         console.error(`[REPROCESS] ❌ Source file not found: ${sourcePath}`);
@@ -1237,7 +1584,7 @@ app.post('/api/wardrobe/reprocess', async (req, res) => {
     const sourceFilename = path.basename(sourcePath);
     const baseName = sourceFilename.replace(/_original\.[^.]+$/, '').replace(/\.[^.]+$/, '');
     const processedFilename = baseName + '_processed.png';
-    const processedFilePath = path.join(uploadsDir, processedFilename);
+    const processedFilePath = path.join(wardrobeUploadsDir, processedFilename);
     const processedImagePath = `/uploads/${processedFilename}`;
 
     console.log(`[REPROCESS] 🔄 Reprocessing item id=${id} ("${item.name}")`);
@@ -1257,15 +1604,12 @@ app.post('/api/wardrobe/reprocess', async (req, res) => {
 });
 
 // ─── Batch re-process ALL items missing processedImagePath ───────────────────
-app.post('/api/wardrobe/reprocess-all', async (req, res) => {
-    const { email } = req.body;
-    if (!email) {
-        return res.status(400).json({ success: false, message: "email is required." });
-    }
+app.post('/api/wardrobe/reprocess-all', requireAuth, async (req, res) => {
+    const email = req.user.email;
 
     const wardrobe = readJSON(wardrobeFile);
     const toProcess = wardrobe.filter(
-        item => item.owner.toLowerCase() === email.toLowerCase() && !item.processedImagePath
+        item => item.owner && item.owner.toLowerCase() === email.toLowerCase() && !item.processedImagePath
     );
 
     const results = { success: [], failed: [], skipped: [] };
@@ -1278,7 +1622,10 @@ app.post('/api/wardrobe/reprocess-all', async (req, res) => {
         }
 
         const relPath = sourceUrl.replace(/^\//, '');
-        const sourcePath = path.join(__dirname, 'public', relPath);
+        let sourcePath = path.join(wardrobeUploadsDir, path.basename(relPath));
+        if (!fs.existsSync(sourcePath)) {
+            sourcePath = path.join(__dirname, 'public', relPath);
+        }
 
         if (!fs.existsSync(sourcePath)) {
             results.skipped.push(item.id);
@@ -1288,7 +1635,7 @@ app.post('/api/wardrobe/reprocess-all', async (req, res) => {
         const sourceFilename = path.basename(sourcePath);
         const baseName = sourceFilename.replace(/_original\.[^.]+$/, '').replace(/\.[^.]+$/, '');
         const processedFilename = baseName + '_processed.png';
-        const processedFilePath = path.join(uploadsDir, processedFilename);
+        const processedFilePath = path.join(wardrobeUploadsDir, processedFilename);
         const processedImagePath = `/uploads/${processedFilename}`;
 
         const itemIdx = wardrobe.findIndex(w => w.id === item.id);
@@ -1309,6 +1656,9 @@ app.post('/api/wardrobe/reprocess-all', async (req, res) => {
 });
 
 app.get('/api/debug/wardrobe', (req, res) => {
+    if (process.env.NODE_ENV === 'production') {
+        return res.status(404).json({ success: false, message: "Endpoint not found." });
+    }
     const wardrobe = readJSON(wardrobeFile);
     const debugData = wardrobe.map(item => ({
         id: item.id,
@@ -1613,11 +1963,8 @@ function generateRecommendationReason(top, bottom, shoes, outerwear, temp, seaso
 
 // ═══ WARDROBE STATISTICS ENDPOINT ═══
 
-app.get('/api/wardrobe/stats', (req, res) => {
-    const email = req.query.email;
-    if (!email) {
-        return res.status(400).json({ success: false, message: "Email parameter required." });
-    }
+app.get('/api/wardrobe/stats', requireAuth, (req, res) => {
+    const email = req.user.email;
 
     const wardrobe = readJSON(wardrobeFile);
     const planner = readJSON(plannerFile, []);
@@ -1636,7 +1983,7 @@ app.get('/api/wardrobe/stats', (req, res) => {
     };
     userItems.forEach(item => {
         const cat = (item.category || "").toLowerCase();
-        if (cat === 'tops') categoryBreakdown.tops++;
+        if (cat === 'tops' || cat === 'tops & blouses') categoryBreakdown.tops++;
         else if (cat === 'pants' || cat === 'bottoms') categoryBreakdown.pants++;
         else if (cat === 'shoes' || cat === 'footwear') categoryBreakdown.shoes++;
         else if (cat === 'outerwear' || cat === 'dresses') categoryBreakdown.outerwear++;
@@ -1723,18 +2070,22 @@ app.get('/api/wardrobe/stats', (req, res) => {
 
 // ═══ SAVED LOOKS (MY LOOKS) ENDPOINTS ═══
 
-app.post('/api/saved-looks', (req, res) => {
-    const { id, email, title, aesthetic, occasion, score, note, img, outfit } = req.body;
-    if (!email || !title || !outfit) {
+app.post('/api/saved-looks', requireAuth, (req, res) => {
+    const { id, title, aesthetic, occasion, score, note, img, outfit } = req.body;
+    if (!title || !outfit) {
         return res.status(400).json({ success: false, message: "Required saved look fields missing." });
     }
     
     const looks = readJSON(savedLooksFile, []);
-    const userEmail = email.toLowerCase();
+    const userEmail = req.user.email.toLowerCase();
     
     if (id) {
-        const idx = looks.findIndex(l => l.id === id && l.owner.toLowerCase() === userEmail);
-        if (idx !== -1) {
+        const existing = looks.find(l => l.id === id);
+        if (existing) {
+            if (!existing.owner || existing.owner.toLowerCase() !== userEmail) {
+                return res.status(403).json({ success: false, message: "Unauthorized update: look belongs to another user." });
+            }
+            const idx = looks.indexOf(existing);
             looks[idx] = {
                 ...looks[idx],
                 title,
@@ -1769,22 +2120,16 @@ app.post('/api/saved-looks', (req, res) => {
     res.json({ success: true, message: "Look saved successfully.", look: newLook });
 });
 
-app.get('/api/saved-looks', (req, res) => {
-    const email = req.query.email;
-    if (!email) {
-        return res.status(400).json({ success: false, message: "Email parameter required." });
-    }
+app.get('/api/saved-looks', requireAuth, (req, res) => {
+    const email = req.user.email;
     const looks = readJSON(savedLooksFile, []);
     const userLooks = looks.filter(l => l.owner && l.owner.toLowerCase() === email.toLowerCase());
     res.json({ success: true, looks: userLooks });
 });
 
-app.delete('/api/saved-looks/:id', (req, res) => {
+app.delete('/api/saved-looks/:id', requireAuth, (req, res) => {
     const { id } = req.params;
-    const email = req.query.email;
-    if (!email) {
-        return res.status(400).json({ success: false, message: "Email parameter required." });
-    }
+    const email = req.user.email;
     const looks = readJSON(savedLooksFile, []);
     const idx = looks.findIndex(l => l.id === id);
     if (idx === -1) {
@@ -1801,11 +2146,8 @@ app.delete('/api/saved-looks/:id', (req, res) => {
 
 // ═══ OUTFIT PLANNER ENDPOINTS ═══
 
-app.get('/api/planner', (req, res) => {
-    const email = req.query.email;
-    if (!email) {
-        return res.status(400).json({ success: false, message: "Email parameter required." });
-    }
+app.get('/api/planner', requireAuth, (req, res) => {
+    const email = req.user.email;
     
     const planner = readJSON(plannerFile, []);
     const userEvents = planner.filter(e => e.owner && e.owner.toLowerCase() === email.toLowerCase());
@@ -1813,10 +2155,11 @@ app.get('/api/planner', (req, res) => {
     res.json({ success: true, planner: userEvents });
 });
 
-app.post('/api/planner/save', (req, res) => {
-    const { email, day, date, name, desc, img, rating, note, outfit, savedLookId } = req.body;
+app.post('/api/planner/save', requireAuth, (req, res) => {
+    const { day, date, name, desc, img, rating, note, outfit, savedLookId } = req.body;
+    const email = req.user.email;
     
-    if (!email || (!day && !date) || !name) {
+    if ((!day && !date) || !name) {
         return res.status(400).json({ success: false, message: "Required planner fields missing." });
     }
 
@@ -1830,6 +2173,14 @@ app.post('/api/planner/save', (req, res) => {
         finalDate = `2026-01-${String(finalDay).padStart(2, '0')}`;
     }
 
+    if (savedLookId) {
+        const looks = readJSON(savedLooksFile, []);
+        const referencedLook = looks.find(l => l.id === savedLookId);
+        if (referencedLook && (!referencedLook.owner || referencedLook.owner.toLowerCase() !== email.toLowerCase())) {
+            return res.status(403).json({ success: false, message: "Unauthorized: referenced saved look belongs to another user." });
+        }
+    }
+
     let idx = -1;
     if (finalDate) {
         idx = planner.findIndex(e => e.date && e.date.toString() === finalDate.toString() && e.owner.toLowerCase() === email.toLowerCase());
@@ -1840,7 +2191,7 @@ app.post('/api/planner/save', (req, res) => {
     
     const plannerEvent = {
         id: idx !== -1 ? planner[idx].id : `plan_${Date.now()}`,
-        owner: email,
+        owner: email.toLowerCase(),
         date: finalDate,
         day: finalDay.toString(),
         name,
@@ -1862,17 +2213,13 @@ app.post('/api/planner/save', (req, res) => {
     res.json({ success: true, event: plannerEvent });
 });
 
-app.delete('/api/planner/:date', (req, res) => {
+app.delete('/api/planner/:date', requireAuth, (req, res) => {
     const { date } = req.params;
-    const email = req.query.email;
-    
-    if (!email) {
-        return res.status(400).json({ success: false, message: "Email parameter required for deletion." });
-    }
+    const email = req.user.email;
 
     const planner = readJSON(plannerFile, []);
-    const idx = planner.findIndex(e => 
-        e.owner.toLowerCase() === email.toLowerCase() && 
+    const idx = planner.findIndex(e =>
+        e.owner && e.owner.toLowerCase() === email.toLowerCase() &&
         ((e.date && e.date.toString() === date.toString()) || (e.day && e.day.toString() === date.toString()))
     );
 
@@ -1906,14 +2253,14 @@ function updateMoodboardStats(moodboard) {
 }
 
 // 1. Create Moodboard
-app.post('/api/moodboards', (req, res) => {
-    const { email, name, description, tags } = req.body;
-    if (!email || !name) {
-        return res.status(400).json({ success: false, message: "Email and Name are required." });
+app.post('/api/moodboards', requireAuth, (req, res) => {
+    const { name, description, tags } = req.body;
+    if (!name) {
+        return res.status(400).json({ success: false, message: "Name is required." });
     }
 
     const moodboards = readJSON(moodboardsFile, {});
-    const userEmail = email.toLowerCase();
+    const userEmail = req.user.email.toLowerCase();
 
     if (!moodboards[userEmail]) {
         moodboards[userEmail] = [];
@@ -1949,26 +2296,22 @@ app.post('/api/moodboards', (req, res) => {
 });
 
 // 2. Get Moodboards
-app.get('/api/moodboards', (req, res) => {
-    const email = req.query.email;
-    if (!email) {
-        return res.status(400).json({ success: false, message: "Email parameter required." });
-    }
+app.get('/api/moodboards', requireAuth, (req, res) => {
     const moodboards = readJSON(moodboardsFile, {});
-    const userEmail = email.toLowerCase();
+    const userEmail = req.user.email.toLowerCase();
     const userMoodboards = moodboards[userEmail] || [];
     res.json({ success: true, moodboards: userMoodboards });
 });
 
 // 3. Save Inspiration (Add card)
-app.post('/api/moodboards/save', async (req, res) => {
-    const { email, moodboardId, inspirationId } = req.body;
-    if (!email || !moodboardId || !inspirationId) {
-        return res.status(400).json({ success: false, message: "Email, moodboardId, and inspirationId are required." });
+app.post('/api/moodboards/save', requireAuth, async (req, res) => {
+    const { moodboardId, inspirationId } = req.body;
+    if (!moodboardId || !inspirationId) {
+        return res.status(400).json({ success: false, message: "moodboardId and inspirationId are required." });
     }
 
     const moodboards = readJSON(moodboardsFile, {});
-    const userEmail = email.toLowerCase();
+    const userEmail = req.user.email.toLowerCase();
     const userMoodboards = moodboards[userEmail] || [];
     const moodboard = userMoodboards.find(mb => mb.id === moodboardId);
 
@@ -2003,14 +2346,14 @@ app.post('/api/moodboards/save', async (req, res) => {
 });
 
 // 4. Remove Inspiration (Delete card from moodboard)
-app.delete('/api/moodboards/save', async (req, res) => {
-    const { email, moodboardId, inspirationId } = req.body;
-    if (!email || !moodboardId || !inspirationId) {
-        return res.status(400).json({ success: false, message: "Email, moodboardId, and inspirationId are required." });
+app.delete('/api/moodboards/save', requireAuth, async (req, res) => {
+    const { moodboardId, inspirationId } = req.body;
+    if (!moodboardId || !inspirationId) {
+        return res.status(400).json({ success: false, message: "moodboardId and inspirationId are required." });
     }
 
     const moodboards = readJSON(moodboardsFile, {});
-    const userEmail = email.toLowerCase();
+    const userEmail = req.user.email.toLowerCase();
     const userMoodboards = moodboards[userEmail] || [];
     const moodboard = userMoodboards.find(mb => mb.id === moodboardId);
 
@@ -2053,14 +2396,14 @@ app.delete('/api/moodboards/save', async (req, res) => {
 });
 
 // 5. Set Cover Image
-app.post('/api/moodboards/set-cover', async (req, res) => {
-    const { email, moodboardId, inspirationId } = req.body;
-    if (!email || !moodboardId || !inspirationId) {
-        return res.status(400).json({ success: false, message: "Email, moodboardId, and inspirationId are required." });
+app.post('/api/moodboards/set-cover', requireAuth, async (req, res) => {
+    const { moodboardId, inspirationId } = req.body;
+    if (!moodboardId || !inspirationId) {
+        return res.status(400).json({ success: false, message: "moodboardId and inspirationId are required." });
     }
 
     const moodboards = readJSON(moodboardsFile, {});
-    const userEmail = email.toLowerCase();
+    const userEmail = req.user.email.toLowerCase();
     const userMoodboards = moodboards[userEmail] || [];
     const moodboard = userMoodboards.find(mb => mb.id === moodboardId);
 
@@ -2088,15 +2431,10 @@ app.post('/api/moodboards/set-cover', async (req, res) => {
 });
 
 // 6. Delete Moodboard
-app.delete('/api/moodboards/:id', (req, res) => {
+app.delete('/api/moodboards/:id', requireAuth, (req, res) => {
     const { id } = req.params;
-    const email = req.query.email || req.body.email;
-    if (!email) {
-        return res.status(400).json({ success: false, message: "Email parameter required." });
-    }
-
     const moodboards = readJSON(moodboardsFile, {});
-    const userEmail = email.toLowerCase();
+    const userEmail = req.user.email.toLowerCase();
     const userMoodboards = moodboards[userEmail] || [];
 
     const idx = userMoodboards.findIndex(mb => mb.id === id);
@@ -2463,10 +2801,10 @@ function generateMatchExplanation(card, owned, substitutes, missing, score) {
     return `${summaryPrefix} ${explanationParts.join(" ")}`;
 }
 
-app.post('/api/inspiration/match', (req, res) => {
-    const { email, inspirationId } = req.body;
-    if (!email || !inspirationId) {
-        return res.status(400).json({ success: false, message: "Email and inspirationId are required." });
+app.post('/api/inspiration/match', requireAuth, (req, res) => {
+    const { inspirationId } = req.body;
+    if (!inspirationId) {
+        return res.status(400).json({ success: false, message: "inspirationId is required." });
     }
     
     const card = curatedInspiration.find(c => c.id === inspirationId);
@@ -2475,7 +2813,7 @@ app.post('/api/inspiration/match', (req, res) => {
     }
     
     const wardrobe = readJSON(wardrobeFile);
-    const userEmail = email.toLowerCase();
+    const userEmail = req.user.email.toLowerCase();
     const userWardrobe = wardrobe.filter(item => (item.owner || "").toLowerCase() === userEmail);
     
     const report = matchInspirationToWardrobe(userWardrobe, card);
@@ -2495,14 +2833,14 @@ app.post('/api/inspiration/match', (req, res) => {
     res.json({ success: true, report });
 });
 
-app.post('/api/moodboards/match', (req, res) => {
-    const { email, moodboardId } = req.body;
-    if (!email || !moodboardId) {
-        return res.status(400).json({ success: false, message: "Email and moodboardId are required." });
+app.post('/api/moodboards/match', requireAuth, (req, res) => {
+    const { moodboardId } = req.body;
+    if (!moodboardId) {
+        return res.status(400).json({ success: false, message: "moodboardId is required." });
     }
     
     const moodboards = readJSON(moodboardsFile, {});
-    const userEmail = email.toLowerCase();
+    const userEmail = req.user.email.toLowerCase();
     const userMoodboards = moodboards[userEmail] || [];
     const moodboard = userMoodboards.find(mb => mb.id === moodboardId);
     
@@ -2903,7 +3241,7 @@ function getMissingItemMetrics(email, missingItem, userMoodboards, matchHistory)
     // 3. Count match history frequency
     let matchedCount = 0;
     matchHistory.forEach(record => {
-        if (record.email === email && record.missingItems) {
+        if ((record.email || '').toLowerCase() === (email || '').toLowerCase() && record.missingItems) {
             record.missingItems.forEach(mi => {
                 const miLower = mi.toLowerCase();
                 if (miLower.includes(cat) && (!color || miLower.includes(color))) {
@@ -2961,10 +3299,10 @@ function generateWardrobeRecommendations(card, matchReport, wardrobe, userMoodbo
     };
 }
 
-app.post('/api/inspiration/recommend', (req, res) => {
-    const { email, inspirationId } = req.body;
-    if (!email || !inspirationId) {
-        return res.status(400).json({ success: false, message: "Email and inspirationId are required." });
+app.post('/api/inspiration/recommend', requireAuth, (req, res) => {
+    const { inspirationId } = req.body;
+    if (!inspirationId) {
+        return res.status(400).json({ success: false, message: "inspirationId is required." });
     }
     
     const card = curatedInspiration.find(c => c.id === inspirationId);
@@ -2973,7 +3311,7 @@ app.post('/api/inspiration/recommend', (req, res) => {
     }
     
     const wardrobe = readJSON(wardrobeFile);
-    const userEmail = email.toLowerCase();
+    const userEmail = req.user.email.toLowerCase();
     const userWardrobe = wardrobe.filter(item => (item.owner || "").toLowerCase() === userEmail);
     
     // Get match report
@@ -2995,7 +3333,7 @@ app.post('/api/inspiration/recommend', (req, res) => {
     
     // Update style_recommendations.json with current gaps
     const styleRecs = readJSON(styleRecommendationsFile, []);
-    let userRec = styleRecs.find(r => r.email === userEmail);
+    let userRec = styleRecs.find(r => (r.email || '').toLowerCase() === userEmail);
     if (!userRec) {
         userRec = { email: userEmail, missingItems: [], lastUpdated: "" };
         styleRecs.push(userRec);
@@ -3021,10 +3359,10 @@ app.post('/api/inspiration/recommend', (req, res) => {
     });
 });
 
-app.post('/api/inspiration/build', (req, res) => {
-    const { email, inspirationId } = req.body;
-    if (!email || !inspirationId) {
-        return res.status(400).json({ success: false, message: "Email and inspirationId are required." });
+app.post('/api/inspiration/build', requireAuth, (req, res) => {
+    const { inspirationId } = req.body;
+    if (!inspirationId) {
+        return res.status(400).json({ success: false, message: "inspirationId is required." });
     }
     
     const card = curatedInspiration.find(c => c.id === inspirationId);
@@ -3033,7 +3371,7 @@ app.post('/api/inspiration/build', (req, res) => {
     }
     
     const wardrobe = readJSON(wardrobeFile);
-    const userEmail = email.toLowerCase();
+    const userEmail = req.user.email.toLowerCase();
     const userWardrobe = wardrobe.filter(item => (item.owner || "").toLowerCase() === userEmail);
     
     if (userWardrobe.length === 0) {
@@ -3056,15 +3394,16 @@ app.post('/api/inspiration/build', (req, res) => {
     });
 });
 
-app.post('/api/inspiration/build/save', (req, res) => {
-    const { email, inspirationId, score, outfit, missing } = req.body;
-    if (!email || !inspirationId) {
-        return res.status(400).json({ success: false, message: "Email and inspirationId are required." });
+app.post('/api/inspiration/build/save', requireAuth, (req, res) => {
+    const { inspirationId, score, outfit, missing } = req.body;
+    if (!inspirationId) {
+        return res.status(400).json({ success: false, message: "inspirationId is required." });
     }
     
+    const userEmail = req.user.email.toLowerCase();
     const buildId = `build_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`;
     const newBuild = {
-        email: email.toLowerCase(),
+        email: userEmail,
         buildId,
         inspirationId,
         score: score || 0,
@@ -3162,12 +3501,8 @@ function getOccasionsForCard(card) {
     return [...new Set(list)];
 }
 
-app.get('/api/style-dna', (req, res) => {
-    const email = req.query.email;
-    if (!email) {
-        return res.status(400).json({ success: false, message: "Email parameter is required." });
-    }
-    const userEmail = email.toLowerCase();
+app.get('/api/style-dna', requireAuth, (req, res) => {
+    const userEmail = req.user.email.toLowerCase();
     
     // Load databases
     const wardrobe = readJSON(wardrobeFile, []);
@@ -3183,7 +3518,7 @@ app.get('/api/style-dna', (req, res) => {
     const userBuilds = builds.filter(b => (b.email || "").toLowerCase() === userEmail);
     
     const styleRecs = readJSON(styleRecommendationsFile, []);
-    const userRecs = styleRecs.find(r => r.email === userEmail);
+    const userRecs = styleRecs.find(r => (r.email || "").toLowerCase() === userEmail);
     
     // 1. Calculate Aesthetic points
     const aestheticPoints = {};
@@ -3625,6 +3960,9 @@ app.get('/api/style-dna', (req, res) => {
     });
 });
 app.get('/api/test-verification-flow', (req, res) => {
+    if (process.env.NODE_ENV === 'production') {
+        return res.status(404).json({ success: false, message: "Endpoint not found." });
+    }
     const log = [];
     const assert = (condition, message) => {
         if (!condition) {
@@ -3741,6 +4079,9 @@ app.get('/api/test-verification-flow', (req, res) => {
 
 // Developer Diagnostic Endpoint for Gemini API Connectivity
 app.get('/api/dev/test-gemini-status', async (req, res) => {
+    if (process.env.NODE_ENV === 'production') {
+        return res.status(404).json({ success: false, message: "Endpoint not found." });
+    }
     try {
         const { GoogleGenAI } = await import('@google/genai');
         const apiKey = process.env.GEMINI_API_KEY;
@@ -3811,18 +4152,11 @@ app.get('/api/dev/test-gemini-status', async (req, res) => {
 
 // LangGraph Multi-Agent Proxy Route (Powers AI Style Suggest in studio.html)
 // NOTE: /api/inspiration/recommend is intentionally excluded here — it has its own dedicated handler above (L3100)
-app.all(['/recommend', '/api/recommend', '/api/recommendations'], async (req, res) => {
+app.all(['/recommend', '/api/recommend', '/api/recommendations'], requireAuth, async (req, res) => {
     const userPrompt = req.query.prompt || req.body.prompt || req.body.occasion || "Smart casual outfit";
-    const userEmail = (req.query.email || req.body.email || "").toLowerCase().trim();
+    const userEmail = req.user.email.toLowerCase().trim();
     const season = req.query.season || req.body.season || "all-season";
     const temp = req.query.temp || req.body.temp || null;
-
-    if (!userEmail) {
-        return res.status(400).json({
-            success: false,
-            message: "User email parameter is required for recommendations."
-        });
-    }
 
     const wardrobe = readJSON(wardrobeFile);
     const userItems = wardrobe.filter(item => item.owner && item.owner.toLowerCase() === userEmail);
@@ -4123,6 +4457,9 @@ app.all(['/recommend', '/api/recommend', '/api/recommendations'], async (req, re
 // Error handling middleware for upload and file validation errors
 app.use((err, req, res, next) => {
     if (err) {
+        if (err.message && err.message.startsWith('CORS_ORIGIN_DENIED')) {
+            return res.status(403).json({ success: false, message: err.message });
+        }
         if (err.message && err.message.startsWith('INVALID_FILE_TYPE')) {
             return res.status(400).json({ success: false, message: err.message });
         }
@@ -4142,5 +4479,20 @@ if (require.main === module) {
     });
 }
 
-module.exports = { app, server };
+module.exports = {
+    app,
+    server,
+    hashPassword,
+    verifyPassword,
+    createSession,
+    destroySession,
+    getActiveSession,
+    requireAuth,
+    getSessionSecret,
+    SESSION_COOKIE_NAME,
+    MODERN_PBKDF2_ITERATIONS,
+    LEGACY_PBKDF2_ITERATIONS,
+    MAX_PBKDF2_ITERATIONS,
+    ALLOWED_ORIGINS
+};
 

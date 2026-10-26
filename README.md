@@ -1,6 +1,10 @@
 # ThreadTheory
 
+[![CI](https://github.com/Aashi0105/ThreadTheory/actions/workflows/ci.yml/badge.svg)](https://github.com/Aashi0105/ThreadTheory/actions/workflows/ci.yml)
+
 > An AI-powered digital wardrobe and multi-agent styling platform that curates cohesive, weather-appropriate outfits strictly from clothes you actually own.
+
+**Status:** working prototype. A shop-focused version is in development: [Moda](https://github.com/Aashi0105/Moda).
 
 ThreadTheory addresses the everyday problem of "a closet full of clothes, but nothing to wear." While standard LLM chatbots often invent or hallucinate non-existent garments, ThreadTheory grounds every suggestion in a personal digital wardrobe database. 
 
@@ -128,6 +132,9 @@ flowchart LR
 
 ```text
 ThreadTheory/
+├── .github/
+│   └── workflows/
+│       └── ci.yml              # Automated GitHub Actions CI workflow
 ├── agents/                     # LangGraph Agent implementations
 │   ├── stylist_agent.py        # Gemini reasoning agent for outfit synthesis
 │   ├── wardrobe_agent.py       # Inventory filtering agent
@@ -135,11 +142,14 @@ ThreadTheory/
 ├── tools/                      # Tool definitions invoked by agents
 │   ├── wardrobe.py             # SQLite parameterized query interface
 │   └── weather.py              # Open-Meteo geocoding and forecast fetcher
-├── tests/                      # Automated test suite
+├── tests/                      # Automated test suite (Python & Node.js)
 │   ├── test_api.py             # API endpoint and Markdown parsing tests
 │   ├── test_app.py             # Application package import tests
+│   ├── test_auth_foundation.js # Node.js authentication foundation assertions (13)
 │   ├── test_graph.py           # LangGraph orchestration state machine tests
 │   ├── test_phase2_verification.py # Outfit compatibility, isolation & integrity tests
+│   ├── test_route_authorization.js # Node.js route authorization & multi-tenant assertions (117)
+│   ├── test_static_exposure.js # Node.js static exposure & path traversal assertions (41)
 │   ├── test_stylist_agent.py   # Stylist agent unit tests
 │   ├── test_wardrobe_agent.py  # Wardrobe agent unit tests
 │   ├── test_wardrobe_tool.py   # Database query tool tests
@@ -151,7 +161,7 @@ ThreadTheory/
 ├── app.py                      # Application entry point
 ├── graph.py                    # LangGraph StateGraph & Supervisor logic
 ├── server.js                   # Node.js/Express web server (Port 3000)
-├── setup_db.py                 # SQLite wardrobe database initialisation script
+├── setup_db.py                 # SQLite wardrobe database initialization script
 ├── test_env.py                 # Environment and dependency verification script
 ├── requirements.txt            # Python dependencies
 ├── package.json                # Node.js dependencies and scripts
@@ -219,11 +229,16 @@ Copy the example environment template and add your API credentials:
 cp .env.example .env
 ```
 
-Open `.env` and set your Google Gemini API key:
+Open `.env` and configure your credentials:
 ```env
 GEMINI_API_KEY=your_gemini_api_key_here
 GOOGLE_API_KEY=your_gemini_api_key_here
+SESSION_SECRET=your_secure_session_secret_minimum_32_characters_here
+PORT=3000
 ```
+
+> **Security Note on `SESSION_SECRET`:** In production (`NODE_ENV=production`), the Express backend enforces a strict minimum length of 32 characters for `SESSION_SECRET` and fails closed on startup if it is missing or insecure. In development mode, a warning is emitted if unset.
+
 *(Pexels, Unsplash, and Remove.bg keys are optional for extended lookbook and image features).*
 
 ### 6. Verify Environment
@@ -256,48 +271,73 @@ Open `http://localhost:3000` in your browser.
 
 ## 🧪 Testing
 
-The repository contains an automated test suite covering tools, agents, graph routing, and API handlers.
+ThreadTheory includes a verified automated test suite encompassing **30 passing Python tests** and **171 passing Node.js security assertions**.
 
-Run the test suite with `pytest`:
+### 1. Python Automated Test Suite (30 Tests)
+
+Tests the multi-agent LangGraph supervisor orchestration, SQLite queries, weather tools, Markdown parsing, and outfit compatibility rules:
 
 ```bash
-python -m pytest tests/
+# Set deterministic stylist flag to avoid external API calls during testing
+python -m pytest tests/ -v
 ```
 
-### Verified Test Suite Result
-
+**Verified Test Suite Results:**
 ```text
-tests/test_api.py ................. Passed
-tests/test_app.py ................. Passed
-tests/test_graph.py ............... Passed
-tests/test_phase2_verification.py . Passed
-tests/test_stylist_agent.py ....... Passed
-tests/test_wardrobe_agent.py ...... Passed
-tests/test_wardrobe_tool.py ....... Passed
-tests/test_weather_agent.py ....... Passed
-tests/test_weather_tool.py ........ Passed
+tests/test_api.py ......................... Passed [4/30]
+tests/test_app.py ......................... Passed [1/30]
+tests/test_graph.py ....................... Passed [2/30]
+tests/test_phase2_verification.py ......... Passed [14/30]
+tests/test_stylist_agent.py ............... Passed [2/30]
+tests/test_wardrobe_agent.py .............. Passed [3/30]
+tests/test_wardrobe_tool.py ............... Passed [1/30]
+tests/test_weather_agent.py ............... Passed [1/30]
+tests/test_weather_tool.py ................ Passed [2/30]
 
-======================= 29 passed =======================
+======================= 30 passed in 1.45s =======================
 ```
+
+### 2. Node.js Security Test Suites (171 Assertions)
+
+Validates route authorization, static asset protection, session integrity, and user data isolation:
+
+```bash
+# 1. Static exposure and path traversal defenses (41 assertions)
+node tests/test_static_exposure.js
+
+# 2. Authentication foundation, session cookies, and PBKDF2 hashing (13 assertions)
+node tests/test_auth_foundation.js
+
+# 3. Route authorization, user isolation, and upload security (117 assertions)
+node tests/test_route_authorization.js
+```
+
+**Verified Node.js Security Breakdown:**
+* **Static File Protection (`test_static_exposure.js`)**: 41/41 passing assertions. Validates whitelist-based static routing, path traversal rejection (`..%2f`), dotfile blocking (`.env`), and protection of private storage directories.
+* **Authentication Foundation (`test_auth_foundation.js`)**: 13/13 passing assertions. Validates salted PBKDF2 credential verification, secure session cookie issuance, and login boundary handling.
+* **Route Authorization & Isolation (`test_route_authorization.js`)**: 117/117 passing assertions. Validates user-scoped isolation for all closet, lookbook, and planner endpoints, authenticated `/uploads/:filename` access control, and physical media retention on item deletion.
 
 ### Test Coverage Highlights
 
-* **Tools**: Parameterized SQL queries, category/formality filtering, Open-Meteo HTTP responses.
-* **Agents**: Isolated agent tool execution, input validation, handling empty search results.
-* **State Machine**: Full LangGraph supervisor routing through `Weather → Wardrobe → Stylist → FINISH`.
-* **API & Parsing**: Markdown symbol stripping (`*`, `_`, `` ` ``), database ID binding, and HTTP serialization.
-* **Compatibility Rules**: Strict outfit constraint validation (dress/top/bottom layer rules, jumpsuit exclusivity, single-bottom enforcement).
-* **Data Isolation & Integrity**: Strict multi-user wardrobe data isolation, ID spoofing prevention, image mapping integrity, and independent formality vs. occasion decoupling.
+* **Multi-Agent State Machine**: Complete LangGraph supervisor flow (`Weather → Wardrobe → Stylist → FINISH`).
+* **Deterministic Test Harness**: `USE_DETERMINISTIC_STYLIST=true` enables instant, zero-cost regression testing without hitting live Gemini quotas.
+* **Outfit Compatibility Engine**: Strict constraint enforcement (dress/top/bottom exclusivity, jumpsuit layer rules, single-bottom logic).
+* **Defensive Markdown Parsing**: Strips Markdown noise (`*`, `_`, `` ` ``) to guarantee accurate foreign key lookup against `wardrobe.db`.
+* **Multi-Tenant Isolation**: Enforces strict user-ownership boundaries across SQLite wardrobe items and JSON stores.
 
 ---
 
-## 🔐 Security & Privacy
+## 🔐 Security Architecture & Privacy
 
-* **Secrets Management**: `.env` is excluded via `.gitignore`. API keys and credentials are never checked into version control.
-* **Clean Template**: `.env.example` contains only descriptive placeholders without real credentials.
-* **Runtime Uploads Ignored**: `public/uploads/*` is excluded (with `.gitkeep` maintained) to prevent personal garment photos or avatars from being tracked.
-* **Sanitized Demo Data**: Flat-file JSON databases (`data/*.json`) use generic demo accounts (`demo@threadtheory.io`) with salted PBKDF2 password hashes.
-* **Local Databases**: SQLite database files (`*.db`, `*.sqlite3`) are ignored to avoid committing mutated local runtime state.
+ThreadTheory is hardened following defense-in-depth principles:
+
+* **Private Wardrobe Upload Authorization**: Direct filesystem exposure of `data/uploads/wardrobe/` is strictly disabled. Uploaded garment images are served exclusively through the authenticated `/uploads/:filename` route, which verifies user ownership in `wardrobe.db` before streaming and attaches `Cache-Control: private, no-store, max-age=0` headers.
+* **Fail-Closed Session Management**: Production environments enforce a minimum 32-character `SESSION_SECRET` on server initialization, aborting startup if unconfigured or weak.
+* **Path Traversal & Static Route Whitelisting**: Public static file serving is restricted to explicit public directories (`public/`). Attempted traversals, source file requests, and dotfile queries (`.env`, `.git`) return HTTP 403/404.
+* **Physical Media Retention**: Deleting a garment from the user's closet removes the record from SQLite while safely retaining the original media file in storage for disaster recovery.
+* **PBKDF2 Password Hashing**: Passwords are authenticated with salted PBKDF2 cryptographic hashing using bounded iteration counts and constant-time comparisons.
+* **Strict User Scoping**: All user-specific endpoints (`/api/wardrobe`, `/api/planner`, `/api/looks`, `/api/recommendations`) are guarded by session authentication and strictly scoped by user identifier.
+* **Secrets Hygiene**: `.env` and runtime SQLite databases (`*.db`) are ignored in version control. A clean `.env.example` provides documentation without leaking credentials.
 
 ---
 
@@ -382,13 +422,22 @@ Content-Type: application/json
 * **Overcoming LLM Hallucinations**: Prompting an LLM to recommend clothing often leads to fictional garments. We addressed this by implementing parameterized SQL retrieval where only verified garment IDs are provided to the model, ensuring recommendations are 100% wearable.
 * **Decoupled Architecture**: Rather than maintaining a monolithic Python app, we divided responsibilities between an Express server (specialized in static asset serving, session handling, and file uploads) and a Python microservice (specialized in LangGraph state machines and LLM integrations).
 * **LLM Markdown Sanitization**: Gemini occasionally returned item names wrapped in bold asterisks (e.g. `**Beige Lightweight Windbreaker**`). A sanitization layer was built into `api.py` to strip Markdown artifacts before database lookup, ensuring foreign keys resolve accurately.
-* **Graceful Degradation**: To prevent UI freezes if external APIs experience latency or rate limits, the system features configurable timeouts and rule-based fallback engines.
+* **Graceful Degradation & Deterministic Testing**: To prevent UI freezes if external APIs experience latency or rate limits, the system features configurable timeouts and rule-based fallback engines. A deterministic mode (`USE_DETERMINISTIC_STYLIST=true`) enables instant, zero-cost CI testing without live LLM calls.
+
+---
+
+## ⚠️ Prototype Boundaries & Limitations
+
+* **Single-Node Architecture**: The working prototype utilizes local SQLite (`wardrobe.db`) and local flat-file JSON stores (`data/*.json`). For cloud production deployment, migrating to PostgreSQL with connection pooling and cloud object storage (e.g., AWS S3) is recommended.
+* **Microservice Topology**: The system operates as two cooperating services: Express on port 3000 and Python LangGraph on port 5000. In local development, both services run concurrently.
+* **External Network Access**: Real-time atmospheric forecasting requires access to the Open-Meteo REST API, and dynamic styling requires Google Gemini API connectivity. When offline or during CI runs, the deterministic stylist engine provides reproducible execution.
 
 ---
 
 ## 🔮 Future Improvements
 
-* [ ] **Multi-User Wardrobe DBs**: Migrate SQLite to PostgreSQL for multi-tenant wardrobe inventory isolation in production deployments.
+* [ ] **Cloud Database Migration**: Transition SQLite and flat-file JSON data stores to PostgreSQL with row-level security.
+* [ ] **Object Storage Integration**: Stream user wardrobe images directly to S3/Cloud Storage with signed temporary URLs.
 * [ ] **Computer Vision Tagging**: Implement automatic garment categorization, color extraction, and season detection using Gemini Vision on upload.
 * [ ] **Vector Similarity Search**: Add semantic embeddings (e.g., ChromaDB) for aesthetic style matching beyond categorical queries.
 * [ ] **Calendar Export**: Enable iCal / Google Calendar sync for scheduled outfits.
